@@ -10,7 +10,7 @@ type Props = {
 
 export default function TokenInput({ value, onChange }: Props) {
   const { chainId, address } = useAccount();
-  const [inputValue, setInputValue] = useState(formatUnits(value, 6));
+  const [inputValue, setInputValue] = useState(value === 0n ? "" : formatUnits(value, 6));
 
   const { data: balance } = useReadContract({
     address: CHAINS_CONFIG[chainId ?? 1].usdc,
@@ -36,7 +36,7 @@ export default function TokenInput({ value, onChange }: Props) {
   };
 
   useEffect(() => {
-    setInputValue(formatUnits(value, 6));
+    setInputValue(value === 0n ? "" : formatUnits(value, 6));
   }, [value]);
 
   return (
