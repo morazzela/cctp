@@ -20,6 +20,8 @@ type UseBurnTxDetailsType = {
   isMinted: boolean,
   amount: bigint,
   minFinalityThreshold: number,
+  isFast: boolean
+  hash: Hex
 }
 
 export function useBurnTxDetails(tx: BurnTx) {
@@ -86,6 +88,8 @@ export function useBurnTxDetails(tx: BurnTx) {
       isMinted: false,
       amount: decodedLog.args.amount,
       minFinalityThreshold: decodedLog.args.minFinalityThreshold,
+      isFast: decodedLog.args.minFinalityThreshold <= 1000,
+      hash: tx.hash,
     };
 
     return res

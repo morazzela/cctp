@@ -1,6 +1,8 @@
 import { Address } from "viem";
 import { arbitrum, avalanche, base, linea, mainnet, sonic } from "viem/chains";
 
+export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions"
+
 type ChainsConfigType = {
   domain: number;
   tokenMessenger: Address;

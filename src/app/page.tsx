@@ -5,11 +5,12 @@ import Content from "./components/Content";
 import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
+import { LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
 
 function App() {
-  const [txs] = useLocalStorage<BurnTx[]>("transactions", []);
+  const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const isClient = useIsClient();
-
+  
   if (!isClient) {
     return;
   }
@@ -28,7 +29,7 @@ function App() {
           <Link
             href="https://www.circle.com/en/cross-chain-transfer-protocol"
             target="_blank"
-            className="btn btn-primary mt-8"
+            className="btn btn-secondary mt-8"
           >
             Learn More
           </Link>

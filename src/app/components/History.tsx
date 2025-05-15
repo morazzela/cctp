@@ -7,7 +7,10 @@ import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
 import Loader from "./ui/Loader";
-import { ArrowPathIcon, BoltIcon, CheckCircleIcon, StrikethroughIcon } from "@heroicons/react/16/solid";
+import { ArrowPathIcon, BoltIcon, CheckCircleIcon } from "@heroicons/react/16/solid";
+import { useMemo } from "react";
+import { useTime } from "../hooks/useUtils";
+import Link from "next/link";
 
 type HistoryProps = {
   transactions: BurnTx[];
@@ -38,6 +41,7 @@ function Row({ tx }: { tx: BurnTx }) {
   const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
   const { chainId } = useAccount();
   const client = usePublicClient({ chainId: data?.dstChain?.id as any })
+  const time = useTime()
 
   const onMintClick = async () => {
     if (!data || !data.dstChain) {
@@ -60,6 +64,20 @@ function Row({ tx }: { tx: BurnTx }) {
     await refetchNonceUsed()
   };
 
+  const eta = useMemo(() => {
+    if (data === undefined || !data.isPending) {
+      return
+    }
+
+    const eta = data.isFast ? CHAINS_CONFIG[data.srcChain.id].fastEta : CHAINS_CONFIG[data.srcChain.id].eta
+
+    if (data.time + eta < time) {
+      return
+    }
+
+    return moment.utc(data.time * 1000).add().add(eta, "seconds").fromNow(true)
+  }, [time, data])
+
   return (
     <div className="relative h-16 flex items-center px-3">
       {(isLoading || data === undefined) && (
@@ -70,11 +88,9 @@ function Row({ tx }: { tx: BurnTx }) {
       {!isLoading && data !== undefined && (
         <>
           <div className="w-1/5 flex items-center">
-            {data.minFinalityThreshold <= 1000 && (
-              <div className="size-4 mr-2">
-                <BoltIcon className="size-4 text-primary"/>
-              </div>
-            )}
+            <div className="size-4 mr-2 shrink-0">
+              {data.isFast && <BoltIcon title="Fast Transfer" className="size-4 text-primary" />}
+            </div>
             <span>{moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}</span>
           </div>
           <div className="w-1/5 flex items-center gap-x-2">
@@ -98,26 +114,29 @@ function Row({ tx }: { tx: BurnTx }) {
             {data.isMinted && (
               <div className="flex items-center gap-x-3">
                 <span className="text-primary-gradient">Fulfilled</span>
-                <CheckCircleIcon className="size-4 text-primary"/>
+                <CheckCircleIcon className="size-4 text-primary" />
               </div>
             )}
             {data.isComplete && (
               <div className="flex items-center gap-x-3">
                 <span className="text-primary-gradient">Received</span>
-                <CheckCircleIcon className="size-4 text-primary"/>
+                <CheckCircleIcon className="size-4 text-primary" />
               </div>
             )}
             {data.isPending && (
               <div className="flex items-center gap-x-2">
-                <span className="text-primary-gradient">Pending</span>
-                <ArrowPathIcon className="size-4 text-primary animate-spin"/>
+                <span className="text-primary-gradient">Pending: {eta ?? "now"}</span>
+                <ArrowPathIcon className="size-4 text-primary animate-spin" />
               </div>
             )}
-            {data.isComplete && (
-              <button onClick={onMintClick} className="btn btn-sm btn-primary ml-auto">
-                Mint
-              </button>
-            )}
+            <div className="ml-auto flex gap-x-2">
+              {data.isComplete && (
+                <button onClick={onMintClick} className="btn btn-sm btn-primary">
+                  Mint
+                </button>
+              )}
+              <Link href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`} target="_blank" className="btn btn-sm btn-secondary">View Tx</Link>
+            </div>
           </div>
         </>
       )}

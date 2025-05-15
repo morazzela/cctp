@@ -91,7 +91,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
           </div>
           <div className="flex w-full items-center text-base md:mt-1 justify-end gap-x-3">
             <span>Balance: {formatUnits(balance ?? 0n, 6)}</span>
-            {balance !== undefined && (
+            {balance !== undefined && balance > 0n && (
               <>
                 <div
                   onClick={() => onChange(balance / 2n)}

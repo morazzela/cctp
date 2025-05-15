@@ -9,7 +9,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
-import { CHAINS_CONFIG } from "../constants";
+import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { erc20Abi, formatUnits, isAddress, pad, zeroAddress } from "viem";
 import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
@@ -23,7 +23,7 @@ import { track } from "@vercel/analytics"
 
 export default function Content() {
   const isClient = useIsClient();
-  const [, setTransactions] = useLocalStorage<BurnTx[]>("transactions", []);
+  const [, setTransactions] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const chains = useChains();
   const { writeContractAsync } = useWriteContract();
   const { address, isConnected } = useAccount();
@@ -110,7 +110,11 @@ export default function Content() {
     track("Burn", { hash: res })
 
     setTransactions((txs) => [
-      { hash: res, srcDomain: CHAINS_CONFIG[srcChain.id].domain },
+      {
+        hash: res,
+        srcDomain: CHAINS_CONFIG[srcChain.id].domain,
+        srcAddress: address
+      },
       ...txs,
     ]);
   };
