@@ -19,6 +19,7 @@ import ConnectGuard from "./guard/ConnectGuard";
 import Checkbox from "./ui/Checkbox";
 import moment from "moment";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { track } from "@vercel/analytics"
 
 export default function Content() {
   const isClient = useIsClient();
@@ -105,6 +106,8 @@ export default function Content() {
         fast && CHAINS_CONFIG[srcChain.id].fastAvailable === true ? 1000 : 2000,
       ],
     });
+
+    track("Burn", { hash: res })
 
     setTransactions((txs) => [
       { hash: res, srcDomain: CHAINS_CONFIG[srcChain.id].domain },
