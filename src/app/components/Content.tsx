@@ -31,7 +31,7 @@ export default function Content() {
   const { writeContractAsync } = useWriteContract();
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances()
-  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx|undefined>(txs[0])
+  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx|undefined>()
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false)
