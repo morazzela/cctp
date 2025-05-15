@@ -74,7 +74,7 @@ export default function BurnCard() {
               value={srcChain}
               onChange={(chain) => {
                 setSrcChain(chain);
-                switchChainAsync({ chainId: chain.id });
+                switchChainAsync({ chainId: chain.id as any });
               }}
             />
           </div>

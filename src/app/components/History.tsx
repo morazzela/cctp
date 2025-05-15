@@ -4,10 +4,8 @@ import { useBurnTxDetails } from "../hooks/useBurnTxDetails";
 import moment from "moment";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { CHAINS_CONFIG } from "../constants";
-import { getChainIdFromDomainId } from "../utils";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { formatUnits } from "viem";
-import { ArrowLongRightIcon } from "@heroicons/react/16/solid";
 
 export default function History() {
   const [burnTxs] = useLocalStorage<BurnTx[]>("transactions", []);
@@ -33,7 +31,7 @@ function Row({ tx }: { tx: BurnTx }) {
     }
 
     if (chainId !== data.dstChain.id) {
-      await switchChainAsync({ chainId: data.dstChain.id });
+      await switchChainAsync({ chainId: data.dstChain.id as any });
     }
 
     const res = await writeContractAsync({
@@ -41,7 +39,7 @@ function Row({ tx }: { tx: BurnTx }) {
       abi: MESSAGE_TRANSMITTER_ABI,
       functionName: "receiveMessage",
       args: [data.message, data.attestation],
-      chainId: data.dstChain.id,
+      chainId: data.dstChain.id as any,
     });
   };
 

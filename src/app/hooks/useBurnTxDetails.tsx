@@ -14,14 +14,14 @@ export function useBurnTxDetails(tx: BurnTx) {
   );
 
   const { data: receipt, isLoading: receiptLoading } =
-    useWaitForTransactionReceipt({ hash: tx.hash, chainId });
+    useWaitForTransactionReceipt({ hash: tx.hash, chainId: chainId as any });
   const { data: messages, isLoading: messagesLoading } = useMessages({
     srcDomain: tx.srcDomain,
     txHash: tx.hash,
   });
   const { data: block, isLoading: blockLoading } = useBlock({
     blockHash: receipt?.blockHash,
-    chainId,
+    chainId: chainId as any,
   });
 
   const isLoading = useMemo(
