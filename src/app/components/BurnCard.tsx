@@ -6,7 +6,7 @@ import { useAccount, useChains, useSwitchChain, useWriteContract } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { Hex, pad } from "viem";
+import { pad } from "viem";
 import { useFastBurnFees } from "../hooks/useApi";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";

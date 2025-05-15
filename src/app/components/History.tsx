@@ -1,4 +1,3 @@
-import { useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
 import { useBurnTxDetails } from "../hooks/useBurnTxDetails";
 import moment from "moment";
@@ -6,13 +5,16 @@ import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { CHAINS_CONFIG } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { formatUnits } from "viem";
+import ChainIcon from "./ChainIcon";
 
-export default function History() {
-  const [burnTxs] = useLocalStorage<BurnTx[]>("transactions", []);
+type HistoryProps = {
+  transactions: BurnTx[]
+}
 
+export default function History({ transactions }: HistoryProps) {
   return (
     <div className="card w-full card-transparent divide-y divide-dark">
-      {burnTxs.map((tx) => (
+      {transactions.map((tx) => (
         <Row key={tx.hash + "-" + tx.srcDomain} tx={tx} />
       ))}
     </div>
@@ -51,8 +53,14 @@ function Row({ tx }: { tx: BurnTx }) {
           <div className="w-1/5 pl-3">
             {moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
           </div>
-          <div className="w-1/5">{data.srcChain.name}</div>
-          <div className="w-1/5">{data.dstChain?.name}</div>
+          <div className="w-1/5 flex items-center gap-x-2">
+            <ChainIcon chainId={data.srcChain.id} className="size-4"/>
+            <span>{data.srcChain.name}</span>
+          </div>
+          <div className="w-1/5 flex items-center gap-x-2">
+            {data.dstChain && <ChainIcon chainId={data.dstChain.id} className="size-4"/>}
+            <span>{data.dstChain?.name}</span>
+          </div>
           <div className="w-1/5 flex items-center gap-x-1.5">
             <span>{formatUnits(data.amount, 6)}</span>
             <img
