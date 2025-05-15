@@ -29,7 +29,7 @@ export default function ConnectGuard({ chain, children }: Props) {
   return (
     <div>
       <button onClick={onClick} className="btn btn-xl btn-primary w-full">
-        {chain.id !== requiredChainId
+        {isConnected && chain.id !== requiredChainId
           ? `Connect to ${chain.name}`
           : "Connect wallet"}
       </button>
@@ -57,8 +57,8 @@ function Modal({ chainId, open, setOpen }: ModalProps) {
   }
 
   return createPortal(
-    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center">
-      <div className="card card-dark card-body w-full max-w-lg">
+    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center" onClick={() => setOpen(false)}>
+      <div className="card card-dark card-body w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-4xl">Connect Wallet</h2>
         <div className="flex flex-col gap-y-2 mt-6">
           {connectors.map((connector) => (
