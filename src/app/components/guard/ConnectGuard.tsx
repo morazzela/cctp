@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { createPortal } from "react-dom";
 import { Chain } from "viem";
 import { Connector, useAccount, useConnectors, useSwitchChain } from "wagmi";
@@ -33,17 +33,28 @@ export default function ConnectGuard({ chain, children }: Props) {
           ? `Connect to ${chain.name}`
           : "Connect wallet"}
       </button>
-      {open && <Modal chainId={chain.id} />}
+      <Modal chainId={chain.id} open={open} setOpen={setOpen} />
     </div>
   );
 }
 
-function Modal({ chainId }: { chainId: number }) {
+type ModalProps = {
+  chainId: number
+  open: boolean
+  setOpen: Dispatch<SetStateAction<boolean>>
+}
+
+function Modal({ chainId, open, setOpen }: ModalProps) {
   const connectors = useConnectors();
 
-  const onConnectorClick = (con: Connector) => {
-    con.connect({ chainId });
+  const onConnectorClick = async (con: Connector) => {
+    await con.connect({ chainId });
+    setOpen(false)
   };
+
+  if (!open) {
+    return
+  }
 
   return createPortal(
     <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center">
