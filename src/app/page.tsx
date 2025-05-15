@@ -15,13 +15,13 @@ function App() {
   }
 
   return (
-    <div className="container mx-auto min-h-dvh flex flex-col justify-center py-32">
-      <div className="flex items-start">
-        <div className="w-1/2 pr-12 pt-12">
-          <h1 className="font-bold text-7xl">
+    <div className="container mx-auto min-h-dvh flex flex-col justify-center py-12 xl:py-32 px-4">
+      <div className="flex flex-wrap items-start">
+        <div className="w-full xl:w-1/2 xl:pr-12 xl:pt-12">
+          <h1 className="font-bold text-4xl xl:text-7xl">
             Bridge USDC across all eligble chains, without fees.
           </h1>
-          <h2 className="text-dark mt-4 text-2xl">
+          <h2 className="text-dark mt-2 xl:mt-4 text-xl xl:text-2xl">
             Bridge your USDC using Circle's CCTP bridge directly without any
             fees.
           </h2>
@@ -33,7 +33,7 @@ function App() {
             Learn More
           </Link>
         </div>
-        <div className="w-1/2">
+        <div className="w-full xl:w-1/2 max-xl:mt-12">
           <BurnCard />
         </div>
       </div>

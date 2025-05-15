@@ -40,7 +40,7 @@ export default function TokenInput({ value, onChange }: Props) {
   }, [value]);
 
   return (
-    <div className="flex w-full flex-col rounded-2xl border border-dark bg-darker md:flex-row rounded-tr-none">
+    <div className="flex w-full flex-col rounded-2xl border border-dark bg-darker md:flex-row">
       <div className="flex w-full items-center justify-between p-2 flex-col md:flex-row">
         <button className="flex shrink-0 items-center self-start rounded-xl bg-dark md:hidden">
           <div className="relative flex size-9 items-center justify-center">

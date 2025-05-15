@@ -118,8 +118,8 @@ export default function BurnCard() {
         Burn your USDC and claim it on the destination chain
       </h3>
       <div className="mt-6 flex flex-col gap-4">
-        <div className="gap-x-2 flex">
-          <div className="w-1/2">
+        <div className="gap-2 flex max-md:flex-wrap">
+          <div className="w-full md:w-1/2">
             <div className="text-xl mb-1">Source Chain</div>
             <ChainSelect
               chains={chains.map((c) => c)}
@@ -127,7 +127,7 @@ export default function BurnCard() {
               onChange={onSourceChainChange}
             />
           </div>
-          <div className="w-1/2">
+          <div className="w-full md:w-1/2">
             <div className="text-xl mb-1">Destination Chain</div>
             <ChainSelect
               chains={chains.map((c) => c)}
@@ -137,27 +137,29 @@ export default function BurnCard() {
           </div>
         </div>
         <TokenInput value={amount} onChange={(val) => setAmount(val)} />
-        <div className="flex items-center text-dark my-4 gap-x-3">
-          <div className="bg-primary/20 rounded-lg px-2 py-0.5">
-            <div className="text-primary-gradient">
-              Fee: {formatUnits(fee, 6)} USDC
+        <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
+          <div className="flex flex-wrap gap-x-3 gap-y-2">
+            <div className="bg-primary/20 rounded-lg px-2 py-0.5">
+              <div className="text-primary-gradient">
+                Fee: {formatUnits(fee, 6)} USDC
+              </div>
             </div>
-          </div>
-          <div className="bg-primary/20 rounded-lg px-2 py-0.5">
-            <div className="text-primary-gradient">
-              ETA:{" "}
-              {moment
-                .duration(
-                  fast
-                    ? CHAINS_CONFIG[srcChain.id].fastEta
-                    : CHAINS_CONFIG[srcChain.id].eta,
-                  "seconds",
-                )
-                .humanize()}
+            <div className="bg-primary/20 rounded-lg px-2 py-0.5">
+              <div className="text-primary-gradient">
+                ETA:{" "}
+                {moment
+                  .duration(
+                    fast
+                      ? CHAINS_CONFIG[srcChain.id].fastEta
+                      : CHAINS_CONFIG[srcChain.id].eta,
+                    "seconds",
+                  )
+                  .humanize()}
+              </div>
             </div>
           </div>
           {CHAINS_CONFIG[srcChain.id].fastAvailable && (
-            <div className="flex items-center gap-x-2 ml-auto">
+            <div className="flex items-center gap-x-2">
               <div
                 className={`font-medium ${fast ? "text-primary-gradient" : ""}`}
               >

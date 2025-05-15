@@ -34,7 +34,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         />
       </button>
       {open && (
-        <div className="z-10 absolute top-full translate-y-1 left-0 w-full bg-dark rounded-lg border overflow-hidden">
+        <div className="z-10 absolute top-full translate-y-1 left-0 w-full bg-darker rounded-lg border border-dark overflow-hidden">
           {chains.map((chain) => (
             <div
               onClick={() => {
@@ -42,7 +42,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
                 onChange(chain);
               }}
               key={chain.id}
-              className="form-control border-none rounded-none bg-transparent hover:bg-darker cursor-pointer flex items-center gap-x-2"
+              className="form-control border-none rounded-none bg-transparent hover:bg-dark cursor-pointer flex items-center gap-x-2"
             >
               <ChainIcon chainId={chain.id} className="size-4" />
               <span>{chain.name}</span>

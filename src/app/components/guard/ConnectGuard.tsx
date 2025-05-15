@@ -39,26 +39,32 @@ export default function ConnectGuard({ chain, children }: Props) {
 }
 
 type ModalProps = {
-  chainId: number
-  open: boolean
-  setOpen: Dispatch<SetStateAction<boolean>>
-}
+  chainId: number;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
 
 function Modal({ chainId, open, setOpen }: ModalProps) {
   const connectors = useConnectors();
 
   const onConnectorClick = async (con: Connector) => {
     await con.connect({ chainId });
-    setOpen(false)
+    setOpen(false);
   };
 
   if (!open) {
-    return
+    return;
   }
 
   return createPortal(
-    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center" onClick={() => setOpen(false)}>
-      <div className="card card-dark card-body w-full max-w-lg" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 backdrop-blur-md flex items-center justify-center"
+      onClick={() => setOpen(false)}
+    >
+      <div
+        className="card card-dark card-body w-full max-w-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="text-4xl">Connect Wallet</h2>
         <div className="flex flex-col gap-y-2 mt-6">
           {connectors.map((connector) => (
