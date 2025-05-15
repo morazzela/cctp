@@ -91,7 +91,7 @@ function Row({ tx }: { tx: BurnTx }) {
             <div className="size-4 mr-2 shrink-0">
               {data.isFast && <BoltIcon title="Fast Transfer" className="size-4 text-primary" />}
             </div>
-            <span>{moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}</span>
+            <span className="text-dark">{moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}</span>
           </div>
           <div className="w-1/5 flex items-center gap-x-2">
             <ChainIcon chainId={data.srcChain.id} className="size-4" />

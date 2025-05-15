@@ -107,7 +107,7 @@ export default function Content() {
       ],
     });
 
-    track("Burn", { hash: res })
+    track("Burn")
 
     setTransactions((txs) => [
       {
