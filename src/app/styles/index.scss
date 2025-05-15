@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+
+@import "./colors.scss";
+@import "./buttons.scss";
+@import "./text.scss";
+@import "./badges.scss";
+@import "./cards.scss";
+@import "./forms.scss";
+
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url("../../public/landing_bg.jpg");
+  @apply bg-dark bg-cover text-light font-satoshi font-medium;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

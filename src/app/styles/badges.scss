@@ -1,0 +1,19 @@
+.badge {
+    @apply bg-muted-dark text-muted border px-5 py-2 leading-none rounded-full inline-block font-satoshi text-lg shadow-badge font-medium whitespace-nowrap;
+}
+
+.badge-dark {
+    @apply shadow-none bg-dark text-dark;
+}
+
+.badge-sm {
+    @apply px-2 py-1 text-xs;
+}
+
+.badge-lg {
+    @apply px-6 py-2 text-xl;
+}
+
+.badge-primary {
+    @apply bg-primary-gradient;
+}

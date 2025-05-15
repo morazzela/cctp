@@ -1,0 +1,48 @@
+.btn {
+    @apply rounded-xl border border-muted inline-block px-4 py-2 font-satoshi font-medium text-center whitespace-nowrap;
+
+    &:disabled {
+        @apply cursor-default;
+    }
+}
+
+.btn-muted {
+    @apply bg-dark text-dark;
+}
+
+.btn-dark {
+    @apply bg-darker text-light;
+}
+
+.btn-primary {
+    @apply bg-primary-gradient text-darker border shadow-primary-glow;
+
+    &:disabled {
+        @apply border shadow-none text-dark;
+    }
+}
+
+.btn-danger {
+    @apply bg-error-gradient text-light;
+}
+
+.btn-lg {
+    @apply text-base md:text-lg px-10 py-2;
+}
+
+.btn-xl {
+    @apply text-xl md:text-2xl px-6 py-4;
+}
+
+.btn-sm {
+    @apply text-base px-3 py-1.5;
+}
+
+.btn-xs {
+    @apply text-xs px-2 py-1;
+}
+
+.btn:disabled {
+    background-image: none;
+    @apply bg-darker border-dark;
+}

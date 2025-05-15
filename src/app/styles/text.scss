@@ -1,0 +1,11 @@
+.text-primary-gradient {
+    @apply bg-primary-gradient text-transparent bg-clip-text;
+}
+
+.text-error-gradient, .text-danger-gradient {
+    @apply bg-error-gradient text-transparent bg-clip-text;
+}
+
+.text-bw-gradient {
+    @apply bg-bw-gradient text-transparent bg-clip-text;
+}
