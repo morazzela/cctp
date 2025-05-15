@@ -1,31 +1,78 @@
-import { Chain } from "viem/chains";
+import { Chain, mainnet, sonic } from "viem/chains";
 import ChainSelect from "./ui/ChainSelect";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
-import { useAccount, useChains, useSwitchChain, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useChains,
+  useReadContract,
+  useWriteContract,
+} from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { pad } from "viem";
-import { useFastBurnFees } from "../hooks/useApi";
-import { useLocalStorage } from "@uidotdev/usehooks";
+import { erc20Abi, formatUnits, pad, zeroAddress } from "viem";
+import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
+import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
+import ConnectGuard from "./guard/ConnectGuard";
+import Checkbox from "./ui/Checkbox";
+import moment from "moment";
 
 export default function BurnCard() {
+  const isClient = useIsClient();
   const [, setTransactions] = useLocalStorage<BurnTx[]>("transactions", []);
   const chains = useChains();
-  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
-  const { address, chain } = useAccount();
+  const { address } = useAccount();
 
-  const [srcChain, setSrcChain] = useState<Chain | undefined>(chain);
-  const [destChain, setDestChain] = useState<Chain | undefined>();
+  const [fast, setFast] = useState(true);
+  const [srcChain, setSrcChain] = useState<Chain>(mainnet);
+  const [destChain, setDestChain] = useState<Chain>(sonic);
   const [amount, setAmount] = useState(0n);
 
-  const { data: minFee } = useFastBurnFees({
+  const { data: balance } = useReadContract({
+    address: CHAINS_CONFIG[srcChain.id].usdc,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [address ?? zeroAddress],
+    chainId: srcChain.id as any,
+    query: { enabled: address !== undefined },
+  });
+
+  const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: CHAINS_CONFIG[srcChain?.id ?? -1]?.domain,
     dstDomain: CHAINS_CONFIG[destChain?.id ?? -1]?.domain,
   });
+
+  const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
+    useFastBurnAllowance();
+
+  const fee = useMemo(() => {
+    if (
+      !fast ||
+      fastBurnFee === undefined ||
+      CHAINS_CONFIG[srcChain.id].fastAvailable === false
+    ) {
+      return 0n;
+    }
+
+    return (amount * BigInt(fastBurnFee)) / 10000n;
+  }, [amount, fast, fastBurnFee, srcChain.id]);
+
+  const onSourceChainChange = (chain: Chain) => {
+    if (destChain.id === chain.id) {
+      setDestChain(srcChain);
+    }
+    setSrcChain(chain);
+  };
+
+  const onDestChainChange = (chain: Chain) => {
+    if (srcChain.id === chain.id) {
+      setSrcChain(destChain);
+    }
+    setDestChain(chain);
+  };
 
   const onBurnClick = async () => {
     if (
@@ -33,7 +80,8 @@ export default function BurnCard() {
       !destChain ||
       amount <= 0n ||
       address === undefined ||
-      minFee === undefined
+      fastBurnFeeLoading ||
+      fastBurnAllowanceLoading
     ) {
       return;
     }
@@ -48,8 +96,8 @@ export default function BurnCard() {
         pad(address),
         CHAINS_CONFIG[srcChain.id].usdc,
         pad("0x"),
-        (amount * 5n) / 1000n,
-        2000,
+        fee,
+        fast && CHAINS_CONFIG[srcChain.id].fastAvailable === true ? 1000 : 2000,
       ],
     });
 
@@ -58,6 +106,10 @@ export default function BurnCard() {
       ...txs,
     ]);
   };
+
+  if (!isClient) {
+    return;
+  }
 
   return (
     <div className="card card-body card-transparent">
@@ -70,37 +122,71 @@ export default function BurnCard() {
           <div className="w-1/2">
             <div className="text-xl mb-1">Source Chain</div>
             <ChainSelect
-              chains={chains.filter((c) => c.id !== destChain?.id)}
+              chains={chains.map((c) => c)}
               value={srcChain}
-              onChange={(chain) => {
-                setSrcChain(chain);
-                switchChainAsync({ chainId: chain.id as any });
-              }}
+              onChange={onSourceChainChange}
             />
           </div>
           <div className="w-1/2">
             <div className="text-xl mb-1">Destination Chain</div>
             <ChainSelect
-              chains={chains.filter((c) => c.id !== srcChain?.id)}
+              chains={chains.map((c) => c)}
               value={destChain}
-              onChange={(chain) => setDestChain(chain)}
+              onChange={onDestChainChange}
             />
           </div>
         </div>
         <TokenInput value={amount} onChange={(val) => setAmount(val)} />
-        <ApproveGuard
-          tokenAddress={CHAINS_CONFIG[srcChain?.id ?? 1].usdc}
-          amount={amount}
-          spender={CHAINS_CONFIG[srcChain?.id ?? 1].tokenMessenger}
-        >
-          <button
-            disabled={amount <= 0n}
-            onClick={onBurnClick}
-            className="btn btn-xl btn-primary"
+        <div className="flex items-center text-dark my-4 gap-x-3">
+          <div className="bg-primary/20 rounded-lg px-2 py-0.5">
+            <div className="text-primary-gradient">
+              Fee: {formatUnits(fee, 6)} USDC
+            </div>
+          </div>
+          <div className="bg-primary/20 rounded-lg px-2 py-0.5">
+            <div className="text-primary-gradient">
+              ETA:{" "}
+              {moment
+                .duration(
+                  fast
+                    ? CHAINS_CONFIG[srcChain.id].fastEta
+                    : CHAINS_CONFIG[srcChain.id].eta,
+                  "seconds",
+                )
+                .humanize()}
+            </div>
+          </div>
+          {CHAINS_CONFIG[srcChain.id].fastAvailable && (
+            <div className="flex items-center gap-x-2 ml-auto">
+              <div
+                className={`font-medium ${fast ? "text-primary-gradient" : ""}`}
+              >
+                Fast Transfer
+              </div>
+              <Checkbox checked={fast} setChecked={setFast} />
+            </div>
+          )}
+        </div>
+        <ConnectGuard chain={srcChain}>
+          <ApproveGuard
+            tokenAddress={CHAINS_CONFIG[srcChain?.id ?? 1].usdc}
+            amount={amount}
+            spender={CHAINS_CONFIG[srcChain?.id ?? 1].tokenMessenger}
+            bypass={balance !== undefined && amount > balance}
           >
-            Burn
-          </button>
-        </ApproveGuard>
+            <button
+              disabled={
+                amount <= 0n || balance === undefined || balance < amount
+              }
+              onClick={onBurnClick}
+              className="btn btn-xl btn-primary"
+            >
+              {balance === undefined || (amount > 0n && balance < amount)
+                ? "Insufficient balance"
+                : "Burn"}
+            </button>
+          </ApproveGuard>
+        </ConnectGuard>
       </div>
     </div>
   );

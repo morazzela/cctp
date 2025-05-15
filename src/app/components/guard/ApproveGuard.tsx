@@ -13,6 +13,7 @@ type Props = {
   tokenAddress: Address;
   spender: Address;
   amount: bigint;
+  bypass?: boolean;
 };
 
 export default function ApproveGuard({
@@ -20,6 +21,7 @@ export default function ApproveGuard({
   tokenAddress,
   spender,
   amount,
+  bypass,
 }: Props) {
   const [hash, setHash] = useState<Hex>();
 
@@ -46,7 +48,12 @@ export default function ApproveGuard({
     setHash(undefined);
   }, [txReceipt]);
 
-  if (amount <= 0n || allowance === undefined || allowance >= amount) {
+  if (
+    bypass === true ||
+    amount <= 0n ||
+    allowance === undefined ||
+    allowance >= amount
+  ) {
     return children;
   }
 

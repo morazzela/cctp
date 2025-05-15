@@ -1,10 +1,18 @@
 import { http, cookieStorage, createConfig, createStorage } from "wagmi";
-import { avalanche, base, linea, mainnet, sepolia, sonic } from "wagmi/chains";
+import {
+  arbitrum,
+  avalanche,
+  base,
+  linea,
+  mainnet,
+  sepolia,
+  sonic,
+} from "wagmi/chains";
 import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors";
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, sonic, avalanche, linea, base],
+    chains: [mainnet, sonic, avalanche, linea, base, arbitrum],
     connectors: [
       injected(),
       coinbaseWallet(),
@@ -20,6 +28,7 @@ export function getConfig() {
       [avalanche.id]: http(),
       [linea.id]: http(),
       [base.id]: http(),
+      [arbitrum.id]: http(),
     },
   });
 }

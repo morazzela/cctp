@@ -21,8 +21,12 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         onClick={() => setOpen(true)}
         className="form-control flex items-center justify-between"
       >
-        <span className={`flex items-center gap-x-2 ${value === undefined ? "text-dark" : ""}`}>
-          {value !== undefined && <ChainIcon chainId={value.id} className="size-4"/>}
+        <span
+          className={`flex items-center gap-x-2 ${value === undefined ? "text-dark" : ""}`}
+        >
+          {value !== undefined && (
+            <ChainIcon chainId={value.id} className="size-4" />
+          )}
           {value === undefined ? "Select a chain..." : value.name}
         </span>
         <ChevronDownIcon
@@ -40,7 +44,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
               key={chain.id}
               className="form-control border-none rounded-none bg-transparent hover:bg-darker cursor-pointer flex items-center gap-x-2"
             >
-              <ChainIcon chainId={chain.id} className="size-4"/>
+              <ChainIcon chainId={chain.id} className="size-4" />
               <span>{chain.name}</span>
             </div>
           ))}

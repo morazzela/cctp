@@ -7,7 +7,7 @@ import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
 
 function App() {
-  const [txs] = useLocalStorage<BurnTx[]>("transactions", [])
+  const [txs] = useLocalStorage<BurnTx[]>("transactions", []);
   const isClient = useIsClient();
 
   if (!isClient) {
@@ -16,16 +16,20 @@ function App() {
 
   return (
     <div className="container mx-auto min-h-dvh flex flex-col justify-center py-32">
-      <div className="flex items-center">
-        <div className="w-1/2">
-          <h1 className="font-bold text-5xl">
+      <div className="flex items-start">
+        <div className="w-1/2 pr-12 pt-12">
+          <h1 className="font-bold text-7xl">
             Bridge USDC across all eligble chains, without fees.
           </h1>
-          <h2 className="text-dark mt-4">
+          <h2 className="text-dark mt-4 text-2xl">
             Bridge your USDC using Circle's CCTP bridge directly without any
             fees.
           </h2>
-          <Link href="https://www.circle.com/fr/cross-chain-transfer-protocol" target="_blank" className="btn btn-primary mt-8">
+          <Link
+            href="https://www.circle.com/fr/cross-chain-transfer-protocol"
+            target="_blank"
+            className="btn btn-primary mt-8"
+          >
             Learn More
           </Link>
         </div>

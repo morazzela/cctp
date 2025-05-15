@@ -8,6 +8,9 @@ type ChainsConfigType = {
   tokenMinter: Address;
   usdc: Address;
   iconUri?: string;
+  eta: number;
+  fastEta: number;
+  fastAvailable: boolean;
 };
 
 export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
@@ -17,7 +20,11 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri: "https://tokens.debridge.finance/Logo/1/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    iconUri:
+      "https://tokens.debridge.finance/Logo/1/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    fastAvailable: true,
+    eta: 15 * 60,
+    fastEta: 20,
   },
   [sonic.id]: {
     domain: 13,
@@ -25,7 +32,11 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri: "https://tokens.debridge.finance/Logo/100000014/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    iconUri:
+      "https://tokens.debridge.finance/Logo/100000014/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    fastAvailable: false,
+    eta: 8,
+    fastEta: 8,
   },
   [avalanche.id]: {
     domain: 1,
@@ -33,7 +44,11 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri: "https://tokens.debridge.finance/Logo/43114/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    iconUri:
+      "https://tokens.debridge.finance/Logo/43114/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    fastAvailable: false,
+    eta: 8,
+    fastEta: 8,
   },
   [base.id]: {
     domain: 6,
@@ -41,7 +56,11 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri: "https://tokens.debridge.finance/Logo/8453/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    iconUri:
+      "https://tokens.debridge.finance/Logo/8453/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    fastAvailable: true,
+    eta: 15 * 60,
+    fastEta: 8,
   },
   [linea.id]: {
     domain: 11,
@@ -49,7 +68,11 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri: "https://tokens.debridge.finance/Logo/59144/0x0000000000000000000000000000000000000000/small/token-logo.svg"
+    iconUri:
+      "https://tokens.debridge.finance/Logo/59144/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    fastAvailable: true,
+    eta: 12 * 60 * 60,
+    fastEta: 8,
   },
   [arbitrum.id]: {
     domain: 3,
@@ -57,6 +80,10 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri: "https://tokens.debridge.finance/Logo/42161/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    iconUri:
+      "https://tokens.debridge.finance/Logo/42161/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    fastAvailable: true,
+    eta: 15 * 60,
+    fastEta: 8,
   },
 };

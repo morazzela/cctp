@@ -6,10 +6,11 @@ import { CHAINS_CONFIG } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
+import Loader from "./ui/Loader";
 
 type HistoryProps = {
-  transactions: BurnTx[]
-}
+  transactions: BurnTx[];
+};
 
 export default function History({ transactions }: HistoryProps) {
   return (
@@ -47,18 +48,24 @@ function Row({ tx }: { tx: BurnTx }) {
 
   return (
     <div className="relative h-16 flex items-center px-3">
-      <div></div>
+      {isLoading && (
+        <div className="absolute inset-0 bg-darker flex items-center justify-center">
+          <Loader size="sm" />
+        </div>
+      )}
       {data !== undefined && (
         <>
           <div className="w-1/5 pl-3">
             {moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
           </div>
           <div className="w-1/5 flex items-center gap-x-2">
-            <ChainIcon chainId={data.srcChain.id} className="size-4"/>
+            <ChainIcon chainId={data.srcChain.id} className="size-4" />
             <span>{data.srcChain.name}</span>
           </div>
           <div className="w-1/5 flex items-center gap-x-2">
-            {data.dstChain && <ChainIcon chainId={data.dstChain.id} className="size-4"/>}
+            {data.dstChain && (
+              <ChainIcon chainId={data.dstChain.id} className="size-4" />
+            )}
             <span>{data.dstChain?.name}</span>
           </div>
           <div className="w-1/5 flex items-center gap-x-1.5">

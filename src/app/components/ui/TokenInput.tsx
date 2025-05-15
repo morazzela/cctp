@@ -83,7 +83,7 @@ export default function TokenInput({ value, onChange }: Props) {
             <input
               onInput={onInput}
               placeholder="0.0"
-              className="w-full bg-transparent text-3xl font-bold text-light outline-none placeholder:text-dark md:text-4xl text-right"
+              className="w-full bg-transparent text-3xl font-semibold text-light outline-none placeholder:text-dark md:text-4xl text-right"
               value={inputValue}
             />
           </div>
@@ -93,13 +93,13 @@ export default function TokenInput({ value, onChange }: Props) {
               <>
                 <div
                   onClick={() => onChange(balance / 2n)}
-                  className="font-bold text-primary-gradient cursor-pointer group"
+                  className="font-semibold text-primary-gradient cursor-pointer hover:bg-none hover:text-primary-light"
                 >
                   Half
                 </div>
                 <div
                   onClick={() => onChange(balance)}
-                  className="font-bold text-primary-gradient cursor-pointer group"
+                  className="font-semibold text-primary-gradient cursor-pointer hover:bg-none hover:text-primary-light"
                 >
                   Max
                 </div>

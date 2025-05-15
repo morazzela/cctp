@@ -6,6 +6,24 @@ type UseFastBurnFeesProps = {
   dstDomain: number | undefined;
 };
 
+export function useFastBurnAllowance() {
+  return useQuery({
+    queryKey: ["fast-burn-allowance"],
+    queryFn: async () => {
+      const res = await fetch(
+        `https://iris-api.circle.com/v2/fastBurn/USDC/allowance`,
+      );
+      const json = (await res.json()) as {
+        allowance: number;
+        lastUpdated: string;
+      };
+      return json;
+    },
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+  });
+}
+
 export function useFastBurnFees({
   srcDomain,
   dstDomain,
