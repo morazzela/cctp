@@ -1,6 +1,6 @@
 import { Chain, mainnet, sonic } from "viem/chains";
 import ChainSelect from "./ui/ChainSelect";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
 import {
   useAccount,
@@ -11,13 +11,14 @@ import {
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { erc20Abi, formatUnits, pad, zeroAddress } from "viem";
+import { erc20Abi, formatUnits, isAddress, pad, zeroAddress } from "viem";
 import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
 import ConnectGuard from "./guard/ConnectGuard";
 import Checkbox from "./ui/Checkbox";
 import moment from "moment";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 
 export default function BurnCard() {
   const isClient = useIsClient();
@@ -27,9 +28,13 @@ export default function BurnCard() {
   const { address } = useAccount();
 
   const [fast, setFast] = useState(true);
+  const [recipientAddressOpen, setRecipientAddressOpen] = useState(false)
+  const [recipientAddress, setRecipientAddress] = useState(address ?? "")
   const [srcChain, setSrcChain] = useState<Chain>(mainnet);
   const [destChain, setDestChain] = useState<Chain>(sonic);
   const [amount, setAmount] = useState(0n);
+
+  const recipientAddressValid = useMemo(() => recipientAddress !== undefined && isAddress(recipientAddress, { strict: false }), [recipientAddress])
 
   const { data: balance } = useReadContract({
     address: CHAINS_CONFIG[srcChain.id].usdc,
@@ -107,6 +112,12 @@ export default function BurnCard() {
     ]);
   };
 
+  useEffect(() => {
+    if (!recipientAddressOpen) {
+      setRecipientAddress(address ?? "")
+    }
+  }, [recipientAddressOpen, address])
+
   if (!isClient) {
     return;
   }
@@ -140,6 +151,26 @@ export default function BurnCard() {
           <div className="text-xl mb-1 md:hidden">Amount</div>
           <TokenInput chainId={srcChain.id} value={amount} onChange={(val) => setAmount(val)} />
         </div>
+        <div onClick={() => setRecipientAddressOpen((val) => !val)} className="flex items-center gap-x-2">
+          <div className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-gradient" : "bg-dark"} border relative`}>
+            {recipientAddressOpen && <CheckIcon className="size-3.5 text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"/>}
+          </div>
+          <div className={`cursor-default ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}>Send USDC to a different address</div>
+        </div>
+        {recipientAddressOpen && (
+          <div className="relative">
+            <input
+              type="text"
+              className="form-control pr-12"
+              value={recipientAddress}
+              onInput={(e) => setRecipientAddress(e.currentTarget.value.trim())}
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              {recipientAddressValid && <CheckIcon className="size-6 text-primary"/>}
+              {!recipientAddressValid && <XMarkIcon className="size-6 text-danger"/>}
+            </div>
+          </div>
+        )}
         <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
           <div className="flex flex-wrap gap-x-3 gap-y-2">
             <div className="bg-primary/20 rounded-lg px-2 py-0.5">
