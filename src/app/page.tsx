@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import BurnCard from "./components/BurnCard";
+import Content from "./components/Content";
 import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
@@ -26,7 +26,7 @@ function App() {
             fees.
           </h2>
           <Link
-            href="https://www.circle.com/fr/cross-chain-transfer-protocol"
+            href="https://www.circle.com/en/cross-chain-transfer-protocol"
             target="_blank"
             className="btn btn-primary mt-8"
           >
@@ -34,7 +34,7 @@ function App() {
           </Link>
         </div>
         <div className="w-full xl:w-1/2 max-xl:mt-12">
-          <BurnCard />
+          <Content />
         </div>
       </div>
       {txs.length > 0 && (

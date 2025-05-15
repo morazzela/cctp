@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Hex } from "viem";
+import { Hex, verifyTypedData } from "viem";
 
 type UseFastBurnFeesProps = {
   srcDomain: number | undefined;
@@ -46,11 +46,13 @@ export function useFastBurnFees({
 type UseMessagesAndAttestationsProps = {
   srcDomain: number;
   txHash: Hex;
+  refetchInterval: number;
 };
 
 export function useMessages({
   srcDomain,
   txHash,
+  refetchInterval,
 }: UseMessagesAndAttestationsProps) {
   return useQuery({
     queryKey: ["messages", srcDomain, txHash],
@@ -69,7 +71,7 @@ export function useMessages({
       };
       return json.messages;
     },
-    staleTime: 60_000,
-    refetchInterval: 60_000,
+    staleTime: refetchInterval,
+    refetchInterval: refetchInterval,
   });
 }

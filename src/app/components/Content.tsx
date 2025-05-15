@@ -20,12 +20,12 @@ import Checkbox from "./ui/Checkbox";
 import moment from "moment";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 
-export default function BurnCard() {
+export default function Content() {
   const isClient = useIsClient();
   const [, setTransactions] = useLocalStorage<BurnTx[]>("transactions", []);
   const chains = useChains();
   const { writeContractAsync } = useWriteContract();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false)
@@ -118,6 +118,12 @@ export default function BurnCard() {
     }
   }, [recipientAddressOpen, address])
 
+  useEffect(() => {
+    if (address !== undefined) {
+      setRecipientAddress(address)
+    }
+  }, [address])
+
   if (!isClient) {
     return;
   }
@@ -148,27 +154,33 @@ export default function BurnCard() {
           </div>
         </div>
         <div>
-          <div className="text-xl mb-1 md:hidden">Amount</div>
+          <div className="text-xl mb-1">Amount</div>
           <TokenInput chainId={srcChain.id} value={amount} onChange={(val) => setAmount(val)} />
         </div>
-        <div onClick={() => setRecipientAddressOpen((val) => !val)} className="flex items-center gap-x-2">
-          <div className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-gradient" : "bg-dark"} border relative`}>
-            {recipientAddressOpen && <CheckIcon className="size-3.5 text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"/>}
-          </div>
-          <div className={`cursor-default ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}>Send USDC to a different address</div>
-        </div>
-        {recipientAddressOpen && (
-          <div className="relative">
-            <input
-              type="text"
-              className="form-control pr-12"
-              value={recipientAddress}
-              onInput={(e) => setRecipientAddress(e.currentTarget.value.trim())}
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              {recipientAddressValid && <CheckIcon className="size-6 text-primary"/>}
-              {!recipientAddressValid && <XMarkIcon className="size-6 text-danger"/>}
+        {isConnected && (
+          <div>
+            <div className="text-xl mb-1">Recipient</div>
+            <div className="relative">
+              <input
+                type="text"
+                className={`form-control pr-12 ${!recipientAddressOpen ? "text-dark" : ""}`}
+                value={recipientAddress}
+                onInput={(e) => setRecipientAddress(e.currentTarget.value.trim())}
+                disabled={!recipientAddressOpen}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                {recipientAddressValid && <CheckIcon className="size-6 text-primary" />}
+                {!recipientAddressValid && <XMarkIcon className="size-6 text-danger" />}
+              </div>
             </div>
+            {address !== undefined && (
+              <div onClick={() => setRecipientAddressOpen((val) => !val)} className="flex items-center justify-end mt-2 gap-x-2">
+                <div className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-gradient" : "bg-dark"} border relative`}>
+                  {recipientAddressOpen && <CheckIcon className="size-3.5 text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
+                </div>
+                <div className={`cursor-default text-base ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}>Send USDC to a different address</div>
+              </div>
+            )}
           </div>
         )}
         <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
@@ -212,14 +224,14 @@ export default function BurnCard() {
           >
             <button
               disabled={
-                amount <= 0n || balance === undefined || balance < amount
+                amount <= 0n || balance === undefined || balance < amount || !recipientAddressValid
               }
               onClick={onBurnClick}
               className="btn btn-xl btn-primary"
             >
               {balance === undefined || (amount > 0n && balance < amount)
                 ? "Insufficient balance"
-                : "Burn"}
+                : recipientAddressValid ? "Burn" : "Invalid Recipient Address"}
             </button>
           </ApproveGuard>
         </ConnectGuard>
