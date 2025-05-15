@@ -12,7 +12,7 @@ import {
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { formatUnits, isAddress, pad } from "viem";
+import { formatUnits, getAddress, isAddress, pad } from "viem";
 import { useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
@@ -20,34 +20,43 @@ import ConnectGuard from "./guard/ConnectGuard";
 import Checkbox from "./ui/Checkbox";
 import moment from "moment";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
-import { track } from "@vercel/analytics"
+import { track } from "@vercel/analytics";
 import { useUSDCBalances } from "../hooks/useUSDCBalances";
 import TxCard from "./TxCard";
+import { useBurn } from "../actions/useBurn";
 
 export default function Content() {
   const isClient = useIsClient();
-  const [txs, setTransactions] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
+  const [txs, setTransactions] = useLocalStorage<BurnTx[]>(
+    LOCAL_STORAGE_TRANSACTIONS_KEY,
+    [],
+  );
   const chains = useChains();
   const { writeContractAsync } = useWriteContract();
   const { address, isConnected } = useAccount();
-  const { data: balances, refetch: refetchBalances } = useUSDCBalances()
-  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx|undefined>()
+  const { data: balances, refetch: refetchBalances } = useUSDCBalances();
+  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
   const [fast, setFast] = useState(true);
-  const [recipientAddressOpen, setRecipientAddressOpen] = useState(false)
-  const [recipientAddress, setRecipientAddress] = useState(address ?? "")
+  const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
+  const [recipientAddress, setRecipientAddress] = useState(address ?? "");
   const [srcChain, setSrcChain] = useState<Chain>(mainnet);
-  const [destChain, setDestChain] = useState<Chain>(sonic);
+  const [dstChain, setDstChain] = useState<Chain>(sonic);
   const [amount, setAmount] = useState(0n);
-  const client = usePublicClient({ chainId: srcChain.id as any })
+  const client = usePublicClient({ chainId: srcChain.id as any });
 
-  const recipientAddressValid = useMemo(() => recipientAddress !== undefined && isAddress(recipientAddress, { strict: false }), [recipientAddress])
+  const recipientAddressValid = useMemo(
+    () =>
+      recipientAddress !== undefined &&
+      isAddress(recipientAddress, { strict: false }),
+    [recipientAddress],
+  );
 
-  const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id])
+  const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id]);
 
   const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: CHAINS_CONFIG[srcChain?.id ?? -1]?.domain,
-    dstDomain: CHAINS_CONFIG[destChain?.id ?? -1]?.domain,
+    dstDomain: CHAINS_CONFIG[dstChain?.id ?? -1]?.domain,
   });
 
   /* const {
@@ -64,81 +73,74 @@ export default function Content() {
       return 0n;
     }
 
-    return (amount * BigInt(fastBurnFee)) / 10000n;
+    return (amount * BigInt(fastBurnFee) * 11n) / 100000n;
   }, [amount, fast, fastBurnFee, srcChain.id]);
 
+  const burn = useBurn({
+    srcChain,
+    dstChain,
+    amount,
+    recipient: recipientAddressValid ? getAddress(recipientAddress) : undefined,
+    fee,
+    minFinalityThreshold:
+      fast && CHAINS_CONFIG[srcChain.id].fastAvailable === true ? 1000 : 2000,
+  });
+
   const onSourceChainChange = (chain: Chain) => {
-    if (destChain.id === chain.id) {
-      setDestChain(srcChain);
+    if (dstChain.id === chain.id) {
+      setDstChain(srcChain);
     }
     setSrcChain(chain);
   };
 
   const onDestChainChange = (chain: Chain) => {
     if (srcChain.id === chain.id) {
-      setSrcChain(destChain);
+      setSrcChain(dstChain);
     }
-    setDestChain(chain);
+    setDstChain(chain);
   };
 
   const onBurnClick = async () => {
-    if (
-      !srcChain ||
-      !destChain ||
-      amount <= 0n ||
-      address === undefined ||
-      fastBurnFeeLoading
-    ) {
+    const res = await burn();
+
+    if (!res) {
       return;
     }
 
-    const res = await writeContractAsync({
-      address: CHAINS_CONFIG[srcChain.id].tokenMessenger,
-      abi: TOKEN_MESSENGER_ABI,
-      functionName: "depositForBurn",
-      args: [
-        amount,
-        CHAINS_CONFIG[destChain.id].domain,
-        pad(address),
-        CHAINS_CONFIG[srcChain.id].usdc,
-        pad("0x"),
-        fee,
-        fast && CHAINS_CONFIG[srcChain.id].fastAvailable === true ? 1000 : 2000,
-      ],
-    });
-
-    track("Burn")
+    track("Burn");
 
     const burnTx: BurnTx = {
       hash: res,
       srcDomain: CHAINS_CONFIG[srcChain.id].domain,
-    }
+    };
 
     setTransactions((txs) => [burnTx, ...txs]);
-    setCurrentBurnTx(burnTx)
-    
-    await client.waitForTransactionReceipt({ hash: res })
-    refetchBalances()
+    setCurrentBurnTx(burnTx);
+
+    await client.waitForTransactionReceipt({ hash: res });
+    refetchBalances();
   };
 
   useEffect(() => {
     if (!recipientAddressOpen) {
-      setRecipientAddress(address ?? "")
+      setRecipientAddress(address ?? "");
     }
-  }, [recipientAddressOpen, address])
+  }, [recipientAddressOpen, address]);
 
   useEffect(() => {
     if (address !== undefined) {
-      setRecipientAddress(address)
+      setRecipientAddress(address);
     }
-  }, [address])
+  }, [address]);
 
   if (!isClient) {
     return;
   }
 
   if (currentBurnTx !== undefined) {
-    return <TxCard tx={currentBurnTx} clearTx={() => setCurrentBurnTx(undefined)}/>
+    return (
+      <TxCard tx={currentBurnTx} clearTx={() => setCurrentBurnTx(undefined)} />
+    );
   }
 
   return (
@@ -161,14 +163,18 @@ export default function Content() {
             <div className="text-xl mb-1">Destination Chain</div>
             <ChainSelect
               chains={chains.map((c) => c)}
-              value={destChain}
+              value={dstChain}
               onChange={onDestChainChange}
             />
           </div>
         </div>
         <div>
           <div className="text-xl mb-1">Amount</div>
-          <TokenInput chainId={srcChain.id} value={amount} onChange={(val) => setAmount(val)} />
+          <TokenInput
+            chainId={srcChain.id}
+            value={amount}
+            onChange={(val) => setAmount(val)}
+          />
         </div>
         {isConnected && (
           <div>
@@ -178,20 +184,37 @@ export default function Content() {
                 type="text"
                 className={`form-control pr-12 ${!recipientAddressOpen ? "text-dark" : ""}`}
                 value={recipientAddress}
-                onInput={(e) => setRecipientAddress(e.currentTarget.value.trim())}
+                onInput={(e) =>
+                  setRecipientAddress(e.currentTarget.value.trim())
+                }
                 disabled={!recipientAddressOpen}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                {recipientAddressValid && <CheckIcon className="size-6 text-primary" />}
-                {!recipientAddressValid && <XMarkIcon className="size-6 text-danger" />}
+                {recipientAddressValid && (
+                  <CheckIcon className="size-6 text-primary" />
+                )}
+                {!recipientAddressValid && (
+                  <XMarkIcon className="size-6 text-danger" />
+                )}
               </div>
             </div>
             {address !== undefined && (
-              <div onClick={() => setRecipientAddressOpen((val) => !val)} className="flex items-center justify-end mt-2 gap-x-2">
-                <div className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-gradient" : "bg-dark"} border relative`}>
-                  {recipientAddressOpen && <CheckIcon className="size-3.5 text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />}
+              <div
+                onClick={() => setRecipientAddressOpen((val) => !val)}
+                className="flex items-center justify-end mt-2 gap-x-2"
+              >
+                <div
+                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-gradient" : "bg-dark"} border relative`}
+                >
+                  {recipientAddressOpen && (
+                    <CheckIcon className="size-3.5 text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  )}
                 </div>
-                <div className={`cursor-default text-base ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}>Send USDC to a different address</div>
+                <div
+                  className={`cursor-default text-base ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
+                >
+                  Send USDC to a different address
+                </div>
               </div>
             )}
           </div>
@@ -237,14 +260,19 @@ export default function Content() {
           >
             <button
               disabled={
-                amount <= 0n || balance === undefined || balance < amount || !recipientAddressValid
+                amount <= 0n ||
+                balance === undefined ||
+                balance < amount ||
+                !recipientAddressValid
               }
               onClick={onBurnClick}
               className="btn btn-xl btn-primary"
             >
               {balance === undefined || (amount > 0n && balance < amount)
                 ? "Insufficient balance"
-                : recipientAddressValid ? "Burn" : "Invalid Recipient Address"}
+                : recipientAddressValid
+                  ? "Burn"
+                  : "Invalid Recipient Address"}
             </button>
           </ApproveGuard>
         </ConnectGuard>

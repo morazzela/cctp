@@ -1,13 +1,22 @@
 import { BurnTx } from "../types";
 import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import moment from "moment";
-import { useAccount, usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  usePublicClient,
+  useSwitchChain,
+  useWriteContract,
+} from "wagmi";
 import { CHAINS_CONFIG, USDC_ICON } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
 import Loader from "./ui/Loader";
-import { ArrowPathIcon, BoltIcon, CheckCircleIcon } from "@heroicons/react/16/solid";
+import {
+  ArrowPathIcon,
+  BoltIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/16/solid";
 import { useMemo } from "react";
 import { useTime } from "../hooks/useUtils";
 import Link from "next/link";
@@ -38,36 +47,40 @@ export default function History({ transactions }: HistoryProps) {
 
 function Row({ tx }: { tx: BurnTx }) {
   const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
-  const client = usePublicClient({ chainId: data?.dstChain?.id as any })
-  const eta = useETA(data)
-  const receive = useReceive(data)
+  const client = usePublicClient({ chainId: data?.dstChain?.id as any });
+  const eta = useETA(data);
+  const receive = useReceive(data);
 
   const onMintClick = async () => {
     if (!receive) {
-      return
+      return;
     }
-    
-    const hash = await receive()
+
+    const hash = await receive();
 
     if (!hash) {
-      return
+      return;
     }
 
-    await client.waitForTransactionReceipt({ hash })
-    await refetchNonceUsed()
+    await client.waitForTransactionReceipt({ hash });
+    await refetchNonceUsed();
   };
 
   if (isLoading || data === undefined) {
-    return
+    return;
   }
 
   return (
     <div className="relative h-16 flex items-center px-3">
       <div className="w-1/5 flex items-center">
         <div className="size-4 mr-2 shrink-0">
-          {data.isFast && <BoltIcon title="Fast Transfer" className="size-4 text-primary" />}
+          {data.isFast && (
+            <BoltIcon title="Fast Transfer" className="size-4 text-primary" />
+          )}
         </div>
-        <span className="text-dark">{moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}</span>
+        <span className="text-dark">
+          {moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
+        </span>
       </div>
       <div className="w-1/5 flex items-center gap-x-2">
         <ChainIcon chainId={data.srcChain.id} className="size-4" />
@@ -81,10 +94,7 @@ function Row({ tx }: { tx: BurnTx }) {
       </div>
       <div className="w-1/5 flex items-center gap-x-1.5">
         <span>{formatUnits(data.amount, 6)}</span>
-        <img
-          className="size-4"
-          src={USDC_ICON}
-        />
+        <img className="size-4" src={USDC_ICON} />
       </div>
       <div className="w-1/5 flex items-center">
         {data.isMinted && (
@@ -114,7 +124,13 @@ function Row({ tx }: { tx: BurnTx }) {
               Claim
             </button>
           )}
-          <Link href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`} target="_blank" className="btn btn-sm btn-secondary">View Tx</Link>
+          <Link
+            href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`}
+            target="_blank"
+            className="btn btn-sm btn-secondary"
+          >
+            View Tx
+          </Link>
         </div>
       </div>
     </div>

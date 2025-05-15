@@ -7,15 +7,17 @@ import { useAccount, useReadContract } from "wagmi";
 type Props = {
   value: bigint;
   onChange: { (value: bigint): void };
-  chainId: number
+  chainId: number;
 };
 
 export default function TokenInput({ chainId, value, onChange }: Props) {
   const { address } = useAccount();
-  const [inputValue, setInputValue] = useState(value === 0n ? "" : formatUnits(value, 6));
-  const { data: balances } = useUSDCBalances()
+  const [inputValue, setInputValue] = useState(
+    value === 0n ? "" : formatUnits(value, 6),
+  );
+  const { data: balances } = useUSDCBalances();
 
-  const balance = useMemo(() => balances[chainId] ?? 0n, [balances, chainId])
+  const balance = useMemo(() => balances[chainId] ?? 0n, [balances, chainId]);
 
   const onInput = (event: FormEvent<HTMLInputElement>) => {
     const val = event.currentTarget.value

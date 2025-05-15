@@ -10,7 +10,7 @@ import { LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
 function App() {
   const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const isClient = useIsClient();
-  
+
   if (!isClient) {
     return;
   }

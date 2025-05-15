@@ -14,23 +14,27 @@ type Props = {
 };
 
 export default function ChainSelect({ value, onChange, chains }: Props) {
-  const { data: balances, isLoading: balancesLoading } = useUSDCBalances()
-  const ref = useRef<HTMLDivElement>(null)
+  const { data: balances, isLoading: balancesLoading } = useUSDCBalances();
+  const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    function onClick (event: MouseEvent) {
-      if (event.target && ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false)
+    function onClick(event: MouseEvent) {
+      if (
+        event.target &&
+        ref.current &&
+        !ref.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
       }
     }
 
-    window.addEventListener("mousedown", onClick)
-    
+    window.addEventListener("mousedown", onClick);
+
     return () => {
-      window.removeEventListener("mousedown", onClick)
-    }
-  }, [])
+      window.removeEventListener("mousedown", onClick);
+    };
+  }, []);
 
   return (
     <div className="relative" ref={ref}>
@@ -47,7 +51,9 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           {value === undefined ? "Select a chain..." : value.name}
         </span>
         {value !== undefined && !balancesLoading && (
-          <span className="ml-auto text-dark text-base mr-4">{formatUnits(balances[value.id], 6)} USDC</span>
+          <span className="ml-auto text-dark text-base mr-4">
+            {formatUnits(balances[value.id], 6)} USDC
+          </span>
         )}
         <ChevronDownIcon
           className={`size-6 text-dark ${open ? "" : "-rotate-90"}`}
@@ -66,7 +72,11 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
             >
               <ChainIcon chainId={chain.id} className="size-4" />
               <span>{chain.name}</span>
-              {!balancesLoading && <span className="ml-auto text-dark text-base">{formatUnits(balances[chain.id], 6)} USDC</span>}
+              {!balancesLoading && (
+                <span className="ml-auto text-dark text-base">
+                  {formatUnits(balances[chain.id], 6)} USDC
+                </span>
+              )}
             </div>
           ))}
         </div>

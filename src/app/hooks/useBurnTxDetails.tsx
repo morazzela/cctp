@@ -1,5 +1,10 @@
 import { BurnTx } from "../types";
-import { useBlock, useChains, useReadContract, useWaitForTransactionReceipt } from "wagmi";
+import {
+  useBlock,
+  useChains,
+  useReadContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
 import { getChainIdFromDomainId } from "../utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Chain, decodeEventLog, Hex } from "viem";
@@ -11,20 +16,20 @@ import { useTime } from "./useUtils";
 import moment from "moment";
 
 export type UseBurnTxDetailsType = {
-  time: number,
-  srcChain: Chain,
-  dstChain?: Chain,
-  attestation: Hex,
-  message: Hex,
-  nonce: Hex,
-  isPending: boolean,
-  isComplete: boolean,
-  isMinted: boolean,
-  amount: bigint,
-  minFinalityThreshold: number,
-  isFast: boolean
-  hash: Hex
-}
+  time: number;
+  srcChain: Chain;
+  dstChain?: Chain;
+  attestation: Hex;
+  message: Hex;
+  nonce: Hex;
+  isPending: boolean;
+  isComplete: boolean;
+  isMinted: boolean;
+  amount: bigint;
+  minFinalityThreshold: number;
+  isFast: boolean;
+  hash: Hex;
+};
 
 export function useBurnTxDetails(tx: BurnTx) {
   const [needsRefresh, setNeedsRefresh] = useState(true);
@@ -76,7 +81,7 @@ export function useBurnTxDetails(tx: BurnTx) {
       (c) => c.id === getChainIdFromDomainId(decodedLog.args.destinationDomain),
     );
 
-    const hasMessages = messages !== undefined && messages.length > 0
+    const hasMessages = messages !== undefined && messages.length > 0;
 
     const res: UseBurnTxDetailsType = {
       time: Number(block.timestamp),
@@ -94,7 +99,7 @@ export function useBurnTxDetails(tx: BurnTx) {
       hash: tx.hash,
     };
 
-    return res
+    return res;
   }, [block, messages, receipt]);
 
   const { data: nonceUsed, refetch: refetchNonceUsed } = useReadContract({
@@ -104,9 +109,10 @@ export function useBurnTxDetails(tx: BurnTx) {
     args: [res?.nonce ?? "0x"],
     chainId: res?.dstChain?.id as any,
     query: {
-      enabled: res !== undefined && res.nonce !== "0x" && res.dstChain !== undefined
-    }
-  })
+      enabled:
+        res !== undefined && res.nonce !== "0x" && res.dstChain !== undefined,
+    },
+  });
 
   const isLoading = useMemo(
     () => receiptLoading || blockLoading,
@@ -114,17 +120,21 @@ export function useBurnTxDetails(tx: BurnTx) {
   );
 
   const resWithNonceUsed = useMemo(() => {
-    if (res === undefined) { return }
-    const minted = nonceUsed === 1n
-    if (!minted) { return res }
-    return { ...res, isMinted: minted, isPending: false, isComplete: false }
-  }, [res, nonceUsed])
+    if (res === undefined) {
+      return;
+    }
+    const minted = nonceUsed === 1n;
+    if (!minted) {
+      return res;
+    }
+    return { ...res, isMinted: minted, isPending: false, isComplete: false };
+  }, [res, nonceUsed]);
 
   useEffect(() => {
     if (resWithNonceUsed && resWithNonceUsed.isMinted) {
-      setNeedsRefresh(false)
+      setNeedsRefresh(false);
     }
-  }, [resWithNonceUsed])
+  }, [resWithNonceUsed]);
 
   return {
     data: resWithNonceUsed,
@@ -134,19 +144,25 @@ export function useBurnTxDetails(tx: BurnTx) {
 }
 
 export function useETA(data?: UseBurnTxDetailsType) {
-  const time = useTime()
+  const time = useTime();
 
   return useMemo(() => {
     if (data === undefined || !data.isPending) {
-      return
+      return;
     }
 
-    const eta = data.isFast ? CHAINS_CONFIG[data.srcChain.id].fastEta : CHAINS_CONFIG[data.srcChain.id].eta
+    const eta = data.isFast
+      ? CHAINS_CONFIG[data.srcChain.id].fastEta
+      : CHAINS_CONFIG[data.srcChain.id].eta;
 
     if (data.time + eta < time) {
-      return "now"
+      return "now";
     }
 
-    return moment.utc(data.time * 1000).add().add(eta, "seconds").fromNow(true)
-  }, [time, data])
+    return moment
+      .utc(data.time * 1000)
+      .add()
+      .add(eta, "seconds")
+      .fromNow(true);
+  }, [time, data]);
 }

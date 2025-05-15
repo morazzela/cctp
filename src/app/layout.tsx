@@ -6,7 +6,7 @@ import localFont from "next/font/local";
 import { headers } from "next/headers";
 import { type ReactNode } from "react";
 import { cookieToInitialState } from "wagmi";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 import { getConfig } from "../wagmi";
 import { Providers } from "./providers";
 
@@ -20,7 +20,8 @@ const satoshi = localFont({
 
 export const metadata: Metadata = {
   title: "CCTP Bridge",
-  description: "Bridge your USDC using Circle's CCTP bridge directly without any fees.",
+  description:
+    "Bridge your USDC using Circle's CCTP bridge directly without any fees.",
 };
 
 export default function RootLayout(props: { children: ReactNode }) {
@@ -31,7 +32,7 @@ export default function RootLayout(props: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={`${inter.className} ${satoshi.className}`}>
-        <Analytics/>
+        <Analytics />
         <Providers initialState={initialState}>{props.children}</Providers>
       </body>
     </html>
