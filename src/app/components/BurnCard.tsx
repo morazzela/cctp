@@ -112,13 +112,13 @@ export default function BurnCard() {
   }
 
   return (
-    <div className="card card-body card-transparent">
+    <div className="card card-body rounded-2xl card-transparent">
       <h2 className="font-bold text-3xl">Start Bridging</h2>
       <h3 className="text-xl text-dark">
         Burn your USDC and claim it on the destination chain
       </h3>
       <div className="mt-6 flex flex-col gap-4">
-        <div className="gap-2 flex max-md:flex-wrap">
+        <div className="gap-4 flex max-md:flex-wrap">
           <div className="w-full md:w-1/2">
             <div className="text-xl mb-1">Source Chain</div>
             <ChainSelect
@@ -136,7 +136,10 @@ export default function BurnCard() {
             />
           </div>
         </div>
-        <TokenInput value={amount} onChange={(val) => setAmount(val)} />
+        <div>
+          <div className="text-xl mb-1 md:hidden">Amount</div>
+          <TokenInput value={amount} onChange={(val) => setAmount(val)} />
+        </div>
         <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
           <div className="flex flex-wrap gap-x-3 gap-y-2">
             <div className="bg-primary/20 rounded-lg px-2 py-0.5">

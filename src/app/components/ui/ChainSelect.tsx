@@ -19,7 +19,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
     <div className="relative">
       <button
         onClick={() => setOpen(true)}
-        className="form-control flex items-center justify-between"
+        className="form-control flex items-center justify-between rounded-xl"
       >
         <span
           className={`flex items-center gap-x-2 ${value === undefined ? "text-dark" : ""}`}
@@ -34,7 +34,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         />
       </button>
       {open && (
-        <div className="z-10 absolute top-full translate-y-1 left-0 w-full bg-darker rounded-lg border border-dark overflow-hidden">
+        <div className="z-10 absolute top-full translate-y-1 left-0 w-full bg-darker rounded-xl border border-dark overflow-hidden">
           {chains.map((chain) => (
             <div
               onClick={() => {
