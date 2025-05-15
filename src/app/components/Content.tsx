@@ -178,30 +178,10 @@ export default function Content() {
         </div>
         {isConnected && (
           <div>
-            <div className="text-xl mb-1">Recipient</div>
-            <div className="relative">
-              <input
-                type="text"
-                className={`form-control pr-12 ${!recipientAddressOpen ? "text-dark" : ""}`}
-                value={recipientAddress}
-                onInput={(e) =>
-                  setRecipientAddress(e.currentTarget.value.trim())
-                }
-                disabled={!recipientAddressOpen}
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                {recipientAddressValid && (
-                  <CheckIcon className="size-6 text-primary" />
-                )}
-                {!recipientAddressValid && (
-                  <XMarkIcon className="size-6 text-danger" />
-                )}
-              </div>
-            </div>
             {address !== undefined && (
               <div
                 onClick={() => setRecipientAddressOpen((val) => !val)}
-                className="flex items-center justify-end mt-2 gap-x-2"
+                className="flex items-center justify-end gap-x-2"
               >
                 <div
                   className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-gradient" : "bg-dark"} border relative`}
@@ -214,6 +194,30 @@ export default function Content() {
                   className={`cursor-default text-base ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
                 >
                   Send USDC to a different address
+                </div>
+              </div>
+            )}
+            {recipientAddressOpen && (
+              <div>
+                <div className="text-xl mb-1">Recipient</div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    className={`form-control pr-12 ${!recipientAddressOpen ? "text-dark" : ""}`}
+                    value={recipientAddress}
+                    onInput={(e) =>
+                      setRecipientAddress(e.currentTarget.value.trim())
+                    }
+                    disabled={!recipientAddressOpen}
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    {recipientAddressValid && (
+                      <CheckIcon className="size-6 text-primary" />
+                    )}
+                    {!recipientAddressValid && (
+                      <XMarkIcon className="size-6 text-danger" />
+                    )}
+                  </div>
                 </div>
               </div>
             )}
