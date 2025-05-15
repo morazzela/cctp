@@ -1,7 +1,7 @@
 import { CHAINS_CONFIG } from "@/app/constants";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Chain } from "viem";
 import { useChains } from "wagmi";
 import ChainIcon from "../ChainIcon";
@@ -13,10 +13,25 @@ type Props = {
 };
 
 export default function ChainSelect({ value, onChange, chains }: Props) {
+  const ref = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    function onClick (event: MouseEvent) {
+      if (event.target && ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    window.addEventListener("mousedown", onClick)
+    
+    return () => {
+      window.removeEventListener("mousedown", onClick)
+    }
+  }, [])
+
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(true)}
         className="form-control flex items-center justify-between rounded-xl"

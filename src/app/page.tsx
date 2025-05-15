@@ -19,7 +19,7 @@ function App() {
       <div className="flex flex-wrap items-start">
         <div className="w-full xl:w-1/2 xl:pr-12 xl:pt-12">
           <h1 className="font-bold text-4xl xl:text-7xl">
-            Bridge USDC across all eligble chains, without fees.
+            Bridge USDC across all eligible chains, without fees.
           </h1>
           <h2 className="text-dark mt-2 xl:mt-4 text-xl xl:text-2xl">
             Bridge your USDC using Circle's CCTP bridge directly without any

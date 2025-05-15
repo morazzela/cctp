@@ -138,7 +138,7 @@ export default function BurnCard() {
         </div>
         <div>
           <div className="text-xl mb-1 md:hidden">Amount</div>
-          <TokenInput value={amount} onChange={(val) => setAmount(val)} />
+          <TokenInput chainId={srcChain.id} value={amount} onChange={(val) => setAmount(val)} />
         </div>
         <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
           <div className="flex flex-wrap gap-x-3 gap-y-2">

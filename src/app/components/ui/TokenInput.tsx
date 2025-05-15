@@ -6,10 +6,11 @@ import { useAccount, useReadContract } from "wagmi";
 type Props = {
   value: bigint;
   onChange: { (value: bigint): void };
+  chainId: number
 };
 
-export default function TokenInput({ value, onChange }: Props) {
-  const { chainId, address } = useAccount();
+export default function TokenInput({ chainId, value, onChange }: Props) {
+  const { address } = useAccount();
   const [inputValue, setInputValue] = useState(value === 0n ? "" : formatUnits(value, 6));
 
   const { data: balance } = useReadContract({
@@ -17,8 +18,9 @@ export default function TokenInput({ value, onChange }: Props) {
     abi: erc20Abi,
     functionName: "balanceOf",
     args: [address ?? zeroAddress],
+    chainId: chainId as any,
     query: {
-      enabled: address !== undefined && chainId !== undefined,
+      enabled: address !== undefined,
     },
   });
 
