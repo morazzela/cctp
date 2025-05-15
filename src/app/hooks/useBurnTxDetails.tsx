@@ -7,8 +7,10 @@ import { useMessages } from "./useApi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { CHAINS_CONFIG } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
+import { useTime } from "./useUtils";
+import moment from "moment";
 
-type UseBurnTxDetailsType = {
+export type UseBurnTxDetailsType = {
   time: number,
   srcChain: Chain,
   dstChain?: Chain,
@@ -129,4 +131,22 @@ export function useBurnTxDetails(tx: BurnTx) {
     isLoading,
     refetchNonceUsed,
   };
+}
+
+export function useETA(data?: UseBurnTxDetailsType) {
+  const time = useTime()
+
+  return useMemo(() => {
+    if (data === undefined || !data.isPending) {
+      return
+    }
+
+    const eta = data.isFast ? CHAINS_CONFIG[data.srcChain.id].fastEta : CHAINS_CONFIG[data.srcChain.id].eta
+
+    if (data.time + eta < time) {
+      return "now"
+    }
+
+    return moment.utc(data.time * 1000).add().add(eta, "seconds").fromNow(true)
+  }, [time, data])
 }

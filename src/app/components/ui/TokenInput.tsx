@@ -1,5 +1,6 @@
-import { CHAINS_CONFIG } from "@/app/constants";
-import { FormEvent, useEffect, useState } from "react";
+import { CHAINS_CONFIG, USDC_ICON } from "@/app/constants";
+import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { erc20Abi, formatUnits, parseUnits, zeroAddress } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 
@@ -12,17 +13,9 @@ type Props = {
 export default function TokenInput({ chainId, value, onChange }: Props) {
   const { address } = useAccount();
   const [inputValue, setInputValue] = useState(value === 0n ? "" : formatUnits(value, 6));
+  const { data: balances } = useUSDCBalances()
 
-  const { data: balance } = useReadContract({
-    address: CHAINS_CONFIG[chainId ?? 1].usdc,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: [address ?? zeroAddress],
-    chainId: chainId as any,
-    query: {
-      enabled: address !== undefined,
-    },
-  });
+  const balance = useMemo(() => balances[chainId] ?? 0n, [balances, chainId])
 
   const onInput = (event: FormEvent<HTMLInputElement>) => {
     const val = event.currentTarget.value
@@ -54,7 +47,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
               decoding="async"
               data-nimg="1"
               className="rounded-full size-6"
-              src="https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo.png"
+              src={USDC_ICON}
             />
           </div>
           <div className="whitespace-break-spaces pl-0 pr-2.5 text-left text-xl font-bold">
@@ -72,7 +65,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
                 decoding="async"
                 data-nimg="1"
                 className="rounded-full size- md:size-12"
-                src="https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo.png"
+                src={USDC_ICON}
               />
             </div>
             <div className="ml-2">
@@ -91,7 +84,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
           </div>
           <div className="flex w-full items-center text-base md:mt-1 justify-end gap-x-3">
             <span>Balance: {formatUnits(balance ?? 0n, 6)}</span>
-            {balance !== undefined && balance > 0n && (
+            {balance > 0n && (
               <>
                 <div
                   onClick={() => onChange(balance / 2n)}

@@ -1,8 +1,8 @@
 import { BurnTx } from "../types";
-import { useBurnTxDetails } from "../hooks/useBurnTxDetails";
+import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import moment from "moment";
 import { useAccount, usePublicClient, useSwitchChain, useWriteContract } from "wagmi";
-import { CHAINS_CONFIG } from "../constants";
+import { CHAINS_CONFIG, USDC_ICON } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
@@ -11,6 +11,7 @@ import { ArrowPathIcon, BoltIcon, CheckCircleIcon } from "@heroicons/react/16/so
 import { useMemo } from "react";
 import { useTime } from "../hooks/useUtils";
 import Link from "next/link";
+import { useReceive } from "../actions/useReceive";
 
 type HistoryProps = {
   transactions: BurnTx[];
@@ -36,110 +37,86 @@ export default function History({ transactions }: HistoryProps) {
 }
 
 function Row({ tx }: { tx: BurnTx }) {
-  const { writeContractAsync } = useWriteContract();
-  const { switchChainAsync } = useSwitchChain();
   const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
-  const { chainId } = useAccount();
   const client = usePublicClient({ chainId: data?.dstChain?.id as any })
-  const time = useTime()
+  const eta = useETA(data)
+  const receive = useReceive(data)
 
   const onMintClick = async () => {
-    if (!data || !data.dstChain) {
-      return;
+    if (!receive) {
+      return
     }
+    
+    const hash = await receive()
 
-    if (chainId !== data.dstChain.id) {
-      await switchChainAsync({ chainId: data.dstChain.id as any });
+    if (!hash) {
+      return
     }
-
-    const hash = await writeContractAsync({
-      address: CHAINS_CONFIG[data.dstChain.id].messageTransmitter,
-      abi: MESSAGE_TRANSMITTER_ABI,
-      functionName: "receiveMessage",
-      args: [data.message, data.attestation],
-      chainId: data.dstChain.id as any,
-    });
 
     await client.waitForTransactionReceipt({ hash })
     await refetchNonceUsed()
   };
 
-  const eta = useMemo(() => {
-    if (data === undefined || !data.isPending) {
-      return
-    }
-
-    const eta = data.isFast ? CHAINS_CONFIG[data.srcChain.id].fastEta : CHAINS_CONFIG[data.srcChain.id].eta
-
-    if (data.time + eta < time) {
-      return
-    }
-
-    return moment.utc(data.time * 1000).add().add(eta, "seconds").fromNow(true)
-  }, [time, data])
+  if (isLoading || data === undefined) {
+    return
+  }
 
   return (
     <div className="relative h-16 flex items-center px-3">
-      {(isLoading || data === undefined) && (
-        <div className="absolute inset-0 bg-darker flex items-center justify-center">
-          <Loader size="sm" />
+      <div className="w-1/5 flex items-center">
+        <div className="size-4 mr-2 shrink-0">
+          {data.isFast && <BoltIcon title="Fast Transfer" className="size-4 text-primary" />}
         </div>
-      )}
-      {!isLoading && data !== undefined && (
-        <>
-          <div className="w-1/5 flex items-center">
-            <div className="size-4 mr-2 shrink-0">
-              {data.isFast && <BoltIcon title="Fast Transfer" className="size-4 text-primary" />}
+        <span className="text-dark">{moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}</span>
+      </div>
+      <div className="w-1/5 flex items-center gap-x-2">
+        <ChainIcon chainId={data.srcChain.id} className="size-4" />
+        <span>{data.srcChain.name}</span>
+      </div>
+      <div className="w-1/5 flex items-center gap-x-2">
+        {data.dstChain && (
+          <ChainIcon chainId={data.dstChain.id} className="size-4" />
+        )}
+        <span>{data.dstChain?.name}</span>
+      </div>
+      <div className="w-1/5 flex items-center gap-x-1.5">
+        <span>{formatUnits(data.amount, 6)}</span>
+        <img
+          className="size-4"
+          src={USDC_ICON}
+        />
+      </div>
+      <div className="w-1/5 flex items-center">
+        {data.isMinted && (
+          <div className="flex items-center gap-x-3">
+            <span className="text-primary-gradient">Fulfilled</span>
+            <CheckCircleIcon className="size-4 text-primary" />
+          </div>
+        )}
+        {data.isComplete && (
+          <div className="flex items-center gap-x-3">
+            <span className="text-primary-gradient">Received</span>
+            <CheckCircleIcon className="size-4 text-primary" />
+          </div>
+        )}
+        {data.isPending && (
+          <div>
+            <div className="flex items-center gap-x-2">
+              <span className="text-primary-gradient">Pending</span>
+              <ArrowPathIcon className="size-4 text-primary animate-spin" />
             </div>
-            <span className="text-dark">{moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}</span>
+            <div className="text-dark text-sm">ETA: {eta ?? "now"}</div>
           </div>
-          <div className="w-1/5 flex items-center gap-x-2">
-            <ChainIcon chainId={data.srcChain.id} className="size-4" />
-            <span>{data.srcChain.name}</span>
-          </div>
-          <div className="w-1/5 flex items-center gap-x-2">
-            {data.dstChain && (
-              <ChainIcon chainId={data.dstChain.id} className="size-4" />
-            )}
-            <span>{data.dstChain?.name}</span>
-          </div>
-          <div className="w-1/5 flex items-center gap-x-1.5">
-            <span>{formatUnits(data.amount, 6)}</span>
-            <img
-              className="size-4"
-              src="https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo.png"
-            />
-          </div>
-          <div className="w-1/5 flex items-center">
-            {data.isMinted && (
-              <div className="flex items-center gap-x-3">
-                <span className="text-primary-gradient">Fulfilled</span>
-                <CheckCircleIcon className="size-4 text-primary" />
-              </div>
-            )}
-            {data.isComplete && (
-              <div className="flex items-center gap-x-3">
-                <span className="text-primary-gradient">Received</span>
-                <CheckCircleIcon className="size-4 text-primary" />
-              </div>
-            )}
-            {data.isPending && (
-              <div className="flex items-center gap-x-2">
-                <span className="text-primary-gradient">Pending: {eta ?? "now"}</span>
-                <ArrowPathIcon className="size-4 text-primary animate-spin" />
-              </div>
-            )}
-            <div className="ml-auto flex gap-x-2">
-              {data.isComplete && (
-                <button onClick={onMintClick} className="btn btn-sm btn-primary">
-                  Mint
-                </button>
-              )}
-              <Link href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`} target="_blank" className="btn btn-sm btn-secondary">View Tx</Link>
-            </div>
-          </div>
-        </>
-      )}
+        )}
+        <div className="ml-auto flex gap-x-2">
+          {data.isComplete && (
+            <button onClick={onMintClick} className="btn btn-sm btn-primary">
+              Claim
+            </button>
+          )}
+          <Link href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`} target="_blank" className="btn btn-sm btn-secondary">View Tx</Link>
+        </div>
+      </div>
     </div>
   );
 }

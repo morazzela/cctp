@@ -5,14 +5,15 @@ import TokenInput from "./ui/TokenInput";
 import {
   useAccount,
   useChains,
+  usePublicClient,
   useReadContract,
   useWriteContract,
 } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { erc20Abi, formatUnits, isAddress, pad, zeroAddress } from "viem";
-import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
+import { formatUnits, isAddress, pad } from "viem";
+import { useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
 import ConnectGuard from "./guard/ConnectGuard";
@@ -20,13 +21,17 @@ import Checkbox from "./ui/Checkbox";
 import moment from "moment";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { track } from "@vercel/analytics"
+import { useUSDCBalances } from "../hooks/useUSDCBalances";
+import TxCard from "./TxCard";
 
 export default function Content() {
   const isClient = useIsClient();
-  const [, setTransactions] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
+  const [txs, setTransactions] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const chains = useChains();
   const { writeContractAsync } = useWriteContract();
   const { address, isConnected } = useAccount();
+  const { data: balances, refetch: refetchBalances } = useUSDCBalances()
+  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx|undefined>(txs[0])
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false)
@@ -34,25 +39,21 @@ export default function Content() {
   const [srcChain, setSrcChain] = useState<Chain>(mainnet);
   const [destChain, setDestChain] = useState<Chain>(sonic);
   const [amount, setAmount] = useState(0n);
+  const client = usePublicClient({ chainId: srcChain.id as any })
 
   const recipientAddressValid = useMemo(() => recipientAddress !== undefined && isAddress(recipientAddress, { strict: false }), [recipientAddress])
 
-  const { data: balance } = useReadContract({
-    address: CHAINS_CONFIG[srcChain.id].usdc,
-    abi: erc20Abi,
-    functionName: "balanceOf",
-    args: [address ?? zeroAddress],
-    chainId: srcChain.id as any,
-    query: { enabled: address !== undefined },
-  });
+  const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id])
 
   const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: CHAINS_CONFIG[srcChain?.id ?? -1]?.domain,
     dstDomain: CHAINS_CONFIG[destChain?.id ?? -1]?.domain,
   });
 
-  const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
-    useFastBurnAllowance();
+  /* const {
+    data: fastBurnAllowance,
+    isLoading: fastBurnAllowanceLoading
+  } = useFastBurnAllowance(); */
 
   const fee = useMemo(() => {
     if (
@@ -86,8 +87,7 @@ export default function Content() {
       !destChain ||
       amount <= 0n ||
       address === undefined ||
-      fastBurnFeeLoading ||
-      fastBurnAllowanceLoading
+      fastBurnFeeLoading
     ) {
       return;
     }
@@ -109,14 +109,16 @@ export default function Content() {
 
     track("Burn")
 
-    setTransactions((txs) => [
-      {
-        hash: res,
-        srcDomain: CHAINS_CONFIG[srcChain.id].domain,
-        srcAddress: address
-      },
-      ...txs,
-    ]);
+    const burnTx: BurnTx = {
+      hash: res,
+      srcDomain: CHAINS_CONFIG[srcChain.id].domain,
+    }
+
+    setTransactions((txs) => [burnTx, ...txs]);
+    setCurrentBurnTx(burnTx)
+    
+    await client.waitForTransactionReceipt({ hash: res })
+    refetchBalances()
   };
 
   useEffect(() => {
@@ -133,6 +135,10 @@ export default function Content() {
 
   if (!isClient) {
     return;
+  }
+
+  if (currentBurnTx !== undefined) {
+    return <TxCard tx={currentBurnTx} clearTx={() => setCurrentBurnTx(undefined)}/>
   }
 
   return (

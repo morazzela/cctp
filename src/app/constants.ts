@@ -2,6 +2,7 @@ import { Address } from "viem";
 import { arbitrum, avalanche, base, linea, mainnet, sonic } from "viem/chains";
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions"
+export const USDC_ICON = "https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo.png"
 
 type ChainsConfigType = {
   domain: number;
@@ -25,7 +26,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     iconUri:
       "https://tokens.debridge.finance/Logo/1/0x0000000000000000000000000000000000000000/small/token-logo.svg",
     fastAvailable: true,
-    eta: 15 * 60,
+    eta: 20 * 60,
     fastEta: 20,
   },
   [sonic.id]: {
@@ -61,7 +62,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     iconUri:
       "https://tokens.debridge.finance/Logo/8453/0x0000000000000000000000000000000000000000/small/token-logo.svg",
     fastAvailable: true,
-    eta: 15 * 60,
+    eta: 20 * 60,
     fastEta: 8,
   },
   [linea.id]: {
@@ -73,7 +74,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     iconUri:
       "https://tokens.debridge.finance/Logo/59144/0x0000000000000000000000000000000000000000/small/token-logo.svg",
     fastAvailable: true,
-    eta: 12 * 60 * 60,
+    eta: 24 * 60 * 60,
     fastEta: 8,
   },
   [arbitrum.id]: {
@@ -85,7 +86,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     iconUri:
       "https://tokens.debridge.finance/Logo/42161/0x0000000000000000000000000000000000000000/small/token-logo.svg",
     fastAvailable: true,
-    eta: 15 * 60,
+    eta: 20 * 60,
     fastEta: 8,
   },
 };
