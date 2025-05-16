@@ -116,6 +116,7 @@ export default function Content() {
 
     setTransactions((txs) => [burnTx, ...txs]);
     setCurrentBurnTx(burnTx);
+    setAmount(0n)
 
     await client.waitForTransactionReceipt({ hash: res });
     refetchBalances();
