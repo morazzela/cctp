@@ -74,7 +74,7 @@ export default function Content() {
     }
 
     // we add 5% to the min fee
-    return (amount * BigInt(fastBurnFee) * 105n) / 1000000n;
+    return (amount * BigInt(fastBurnFee)) / 10000n;
   }, [amount, fast, fastBurnFee, srcChain.id]);
 
   const burn = useBurn({
@@ -117,7 +117,7 @@ export default function Content() {
 
     setTransactions((txs) => [burnTx, ...txs]);
     setCurrentBurnTx(burnTx);
-    setAmount(0n)
+    setAmount(0n);
 
     await client.waitForTransactionReceipt({ hash: res });
     refetchBalances();

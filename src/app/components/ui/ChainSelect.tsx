@@ -3,7 +3,7 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Chain, formatUnits } from "viem";
-import { useChains } from "wagmi";
+import { useAccount, useChains } from "wagmi";
 import ChainIcon from "../ChainIcon";
 import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
 
@@ -17,6 +17,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
   const { data: balances, isLoading: balancesLoading } = useUSDCBalances();
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const { isConnected } = useAccount();
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -50,7 +51,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           )}
           {value === undefined ? "Select a chain..." : value.name}
         </span>
-        {value !== undefined && !balancesLoading && (
+        {value !== undefined && !balancesLoading && isConnected && (
           <span className="ml-auto text-dark text-base mr-4">
             {formatUnits(balances[value.id], 6)} USDC
           </span>
@@ -72,7 +73,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
             >
               <ChainIcon chainId={chain.id} className="size-4" />
               <span>{chain.name}</span>
-              {!balancesLoading && (
+              {!balancesLoading && isConnected && (
                 <span className="ml-auto text-dark text-base">
                   {formatUnits(balances[chain.id], 6)} USDC
                 </span>

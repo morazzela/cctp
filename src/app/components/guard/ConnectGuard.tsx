@@ -29,9 +29,7 @@ export default function ConnectGuard({ chain, children }: Props) {
   return (
     <div>
       <button onClick={onClick} className="btn btn-xl btn-primary w-full">
-        {isConnected && chain.id !== requiredChainId
-          ? `Connect to ${chain.name}`
-          : "Connect wallet"}
+        Connect to {chain.name}
       </button>
       <Modal chainId={chain.id} open={open} setOpen={setOpen} />
     </div>
@@ -70,7 +68,7 @@ function Modal({ chainId, open, setOpen }: ModalProps) {
           {connectors.map((connector) => (
             <button
               onClick={() => onConnectorClick(connector)}
-              className="card hover:bg-darker px-3 py-2 flex items-center gap-x-2"
+              className="card hover:bg-darker px-4 py-3 flex items-center gap-x-2"
             >
               {connector.icon && (
                 <img src={connector.icon} className="size-6" />
