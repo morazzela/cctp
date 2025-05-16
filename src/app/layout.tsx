@@ -1,7 +1,7 @@
 import "supports-color";
 import "./styles/index.scss";
 import "@rainbow-me/rainbowkit/styles.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { type ReactNode } from "react";
@@ -22,6 +22,12 @@ export const metadata: Metadata = {
   title: "CCTP Bridge",
   description:
     "Bridge your USDC using Circle's CCTP bridge directly without any fees.",
+};
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 1,
+  minimumScale: 1,
 };
 
 export default function RootLayout(props: { children: ReactNode }) {

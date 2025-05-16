@@ -128,7 +128,7 @@ export default function TxCard({ tx, clearTx }: Props) {
   }, [claimed]);
 
   return (
-    <div className="relative card card-transparent card-body min-h-96">
+    <div className="relative card bg-darker card-body min-h-96 max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
       <div
         onClick={clearTx}
         className="absolute top-4 right-4 rounded-lg bg-dark border border-dark cursor-pointer hover:bg-darker"

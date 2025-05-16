@@ -1,6 +1,6 @@
 import { Chain, mainnet, sonic } from "viem/chains";
 import ChainSelect from "./ui/ChainSelect";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
 import { useAccount, useChains, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
@@ -25,7 +25,7 @@ export default function Content() {
     [],
   );
   const chains = useChains();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
@@ -79,12 +79,15 @@ export default function Content() {
       fast && CHAINS_CONFIG[srcChain.id].fastAvailable === true ? 1000 : 2000,
   });
 
-  const onSourceChainChange = (chain: Chain) => {
-    if (dstChain.id === chain.id) {
-      setDstChain(srcChain);
-    }
-    setSrcChain(chain);
-  };
+  const onSourceChainChange = useCallback(
+    (chain: Chain) => {
+      if (dstChain.id === chain.id) {
+        setDstChain(srcChain);
+      }
+      setSrcChain(chain);
+    },
+    [dstChain.id, srcChain],
+  );
 
   const onDestChainChange = (chain: Chain) => {
     if (srcChain.id === chain.id) {
@@ -126,6 +129,12 @@ export default function Content() {
       setRecipientAddress(address);
     }
   }, [address]);
+
+  useEffect(() => {
+    if (chain !== undefined && srcChain.id !== chain.id) {
+      onSourceChainChange(chain);
+    }
+  }, [chain, onSourceChainChange, srcChain.id]);
 
   if (!isClient) {
     return;

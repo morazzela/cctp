@@ -58,7 +58,7 @@ function App() {
           </div>
         </div>
         {txs.length > 0 && (
-          <div className="flex mt-32">
+          <div className="hidden lg:flex mt-32">
             <History transactions={txs} />
           </div>
         )}
