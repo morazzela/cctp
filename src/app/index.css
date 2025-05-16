@@ -75,6 +75,6 @@ body {
   }
 
   .form-control {
-    @apply bg-lighter p-3 w-full rounded-2xl;
+    @apply bg-lighter p-3 w-full rounded-2xl border border-darklight;
   }
 }

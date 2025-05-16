@@ -61,7 +61,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         />
       </button>
       {open && (
-        <div className="z-10 absolute top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden divide-y divide-light">
+        <div className="z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden divide-y divide-light">
           {chains.map((chain) => (
             <div
               onClick={() => {
