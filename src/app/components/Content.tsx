@@ -269,7 +269,7 @@ export default function Content() {
               {balance === undefined || (amount > 0n && balance < amount)
                 ? "Insufficient balance"
                 : recipientAddressValid
-                  ? "Burn"
+                  ? "Bridge"
                   : "Invalid Recipient Address"}
             </button>
           </ApproveGuard>
