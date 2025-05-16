@@ -2,16 +2,9 @@ import { Chain, mainnet, sonic } from "viem/chains";
 import ChainSelect from "./ui/ChainSelect";
 import { useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
-import {
-  useAccount,
-  useChains,
-  usePublicClient,
-  useReadContract,
-  useWriteContract,
-} from "wagmi";
+import { useAccount, useChains, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
-import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { formatUnits, getAddress, isAddress, pad } from "viem";
 import { useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
@@ -27,12 +20,11 @@ import { useBurn } from "../actions/useBurn";
 
 export default function Content() {
   const isClient = useIsClient();
-  const [txs, setTransactions] = useLocalStorage<BurnTx[]>(
+  const [, setTransactions] = useLocalStorage<BurnTx[]>(
     LOCAL_STORAGE_TRANSACTIONS_KEY,
     [],
   );
   const chains = useChains();
-  const { writeContractAsync } = useWriteContract();
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
@@ -73,8 +65,8 @@ export default function Content() {
       return 0n;
     }
 
-    // we add 5% to the min fee
-    return (amount * BigInt(fastBurnFee)) / 10000n;
+    // we add 1% to the min fee
+    return (amount * BigInt(fastBurnFee) * 101n) / 1000000n;
   }, [amount, fast, fastBurnFee, srcChain.id]);
 
   const burn = useBurn({

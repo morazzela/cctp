@@ -46,7 +46,7 @@ export default function ApproveGuard({
 
     refetch();
     setHash(undefined);
-  }, [txReceipt]);
+  }, [txReceipt, refetch]);
 
   if (
     bypass === true ||

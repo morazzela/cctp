@@ -37,8 +37,8 @@ function App() {
               Bridge USDC across all eligible chains, without fees.
             </h1>
             <h2 className="text-dark mt-2 xl:mt-4 text-xl xl:text-2xl">
-              Bridge your USDC using Circle's CCTP bridge directly without any
-              fees.
+              Bridge your USDC using Circle{"'"}s CCTP bridge directly without
+              any fees.
             </h2>
             <Link
               href="https://www.circle.com/en/cross-chain-transfer-protocol"

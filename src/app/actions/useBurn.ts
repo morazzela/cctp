@@ -42,5 +42,13 @@ export function useBurn({
         minFinalityThreshold,
       ],
     });
-  }, [recipient, srcChain, dstChain, amount, fee, minFinalityThreshold]);
+  }, [
+    recipient,
+    srcChain,
+    dstChain,
+    amount,
+    fee,
+    minFinalityThreshold,
+    writeContractAsync,
+  ]);
 }

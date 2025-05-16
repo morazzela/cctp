@@ -100,7 +100,7 @@ export function useBurnTxDetails(tx: BurnTx) {
     };
 
     return res;
-  }, [block, messages, receipt]);
+  }, [block, messages, receipt, chainId, chains, tx.hash]);
 
   const { data: nonceUsed, refetch: refetchNonceUsed } = useReadContract({
     address: CHAINS_CONFIG[res?.dstChain?.id ?? 1].messageTransmitter,

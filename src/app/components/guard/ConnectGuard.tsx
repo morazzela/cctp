@@ -67,6 +67,7 @@ function Modal({ chainId, open, setOpen }: ModalProps) {
         <div className="flex flex-col gap-y-2 mt-6">
           {connectors.map((connector) => (
             <button
+              key={connector.id}
               onClick={() => onConnectorClick(connector)}
               className="card hover:bg-darker px-4 py-3 flex items-center gap-x-2"
             >

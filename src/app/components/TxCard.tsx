@@ -41,7 +41,6 @@ export default function TxCard({ tx, clearTx }: Props) {
     await client.waitForTransactionReceipt({ hash });
     await refetchNonceUsed();
     setConfirmationPending(false);
-    clearTx();
   };
 
   return (
@@ -63,12 +62,13 @@ export default function TxCard({ tx, clearTx }: Props) {
                 <ArrowPathIcon className="size-8 animate-spin mt-1.5 mr-4 text-primary" />
               )}
               {data.isMinted && (
-                <CheckCircleIcon className="size-8 mt-1.5 mr-4 text-primary" />
+                <CheckCircleIcon className="size-8 mt-0.5 mr-4 text-primary" />
               )}
               <div>
                 <h2 className="font-bold text-3xl">
                   Transfer {formatUnits(data.amount, 6)}{" "}
                   <img
+                    alt="usdc icon"
                     src={USDC_ICON}
                     className="size-6 -translate-y-[3px] inline-block"
                   />{" "}
@@ -83,6 +83,8 @@ export default function TxCard({ tx, clearTx }: Props) {
                     `Wait for your USDC to arrive on the destination chain.`}
                   {data.isComplete &&
                     `Claim your USDC on ${data.dstChain?.name} to complete the transfer`}
+                  {data.isMinted &&
+                    `Transfer complete. Your USDC are now available.`}
                 </h3>
               </div>
             </div>
@@ -98,6 +100,11 @@ export default function TxCard({ tx, clearTx }: Props) {
                     : data.isPending
                       ? "ETA: " + eta
                       : "Claim"}
+                </button>
+              )}
+              {data.isMinted && (
+                <button onClick={() => clearTx()} className="btn btn-primary">
+                  Close
                 </button>
               )}
               <Link

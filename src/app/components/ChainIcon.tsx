@@ -10,5 +10,11 @@ export default function ChainIcon({ chainId, className }: Props) {
     return;
   }
 
-  return <img className={className} src={CHAINS_CONFIG[chainId].iconUri} />;
+  return (
+    <img
+      alt={chainId.toFixed()}
+      className={className}
+      src={CHAINS_CONFIG[chainId].iconUri}
+    />
+  );
 }

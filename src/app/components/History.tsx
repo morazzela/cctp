@@ -94,7 +94,7 @@ function Row({ tx }: { tx: BurnTx }) {
       </div>
       <div className="w-1/5 flex items-center gap-x-1.5">
         <span>{formatUnits(data.amount, 6)}</span>
-        <img className="size-4" src={USDC_ICON} />
+        <img alt="usdc icon" className="size-4" src={USDC_ICON} />
       </div>
       <div className="w-1/5 flex items-center">
         {data.isMinted && (
