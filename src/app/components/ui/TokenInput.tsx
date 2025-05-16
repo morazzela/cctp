@@ -35,7 +35,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
   }, [value]);
 
   return (
-    <div className="flex w-full flex-col rounded-2xl border border-dark bg-darker md:flex-row">
+    <div className="flex w-full flex-col rounded-3xl border bg-lighter md:flex-row">
       <div className="flex w-full items-center justify-between p-2 flex-col md:flex-row">
         <button className="flex shrink-0 items-center self-start rounded-xl bg-dark md:hidden">
           <div className="relative flex size-9 items-center justify-center">
@@ -55,7 +55,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
           </div>
         </button>
         <div className="w-[28rem] max-md:hidden">
-          <div className="whitespace inline-flex h-full w-full items-center rounded-lg p-3 border-dark  bg-dark font-work-sans font-medium">
+          <div className="whitespace inline-flex h-full w-full items-center rounded-2xl p-3 border-dark  bg-light font-work-sans font-medium">
             <div className="relative flex size-8 items-center justify-center md:size-14">
               <img
                 alt="USDC"
@@ -64,7 +64,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
                 height="40"
                 decoding="async"
                 data-nimg="1"
-                className="rounded-full size- md:size-12"
+                className="rounded-full size- md:size-14"
                 src={USDC_ICON}
               />
             </div>
@@ -78,23 +78,25 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
             <input
               onInput={onInput}
               placeholder="0.0"
-              className="w-full bg-transparent text-3xl font-semibold text-light outline-none placeholder:text-dark md:text-4xl text-right"
+              className="w-full bg-transparent text-3xl font-semibold text-darker outline-none placeholder:text-dark md:text-4xl text-right"
               value={inputValue}
             />
           </div>
-          <div className="flex w-full items-center text-base md:mt-1 justify-end gap-x-3">
-            <span>Balance: {formatUnits(balance ?? 0n, 6)}</span>
+          <div className="flex w-full items-center text-xs md:mt-1 justify-end gap-x-3 translate-y-0.5">
+            <span className="font-medium">
+              Balance: {formatUnits(balance ?? 0n, 6)}
+            </span>
             {balance > 0n && (
               <>
                 <div
                   onClick={() => onChange(balance / 2n)}
-                  className="font-semibold text-primary-gradient cursor-pointer hover:bg-none hover:text-primary-light"
+                  className="font-semibold text-primary-light cursor-pointer"
                 >
                   Half
                 </div>
                 <div
                   onClick={() => onChange(balance)}
-                  className="font-semibold text-primary-gradient cursor-pointer hover:bg-none hover:text-primary-light"
+                  className="font-semibold text-primary-light cursor-pointer"
                 >
                   Max
                 </div>

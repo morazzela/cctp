@@ -27,7 +27,7 @@ export default function History({ transactions }: HistoryProps) {
         <div className="w-1/5 pb-2 text-dark">Amount</div>
         <div className="w-1/5 pb-2 text-dark">Status</div>
       </div>
-      <div className="card card-transparent divide-y divide-dark w-full">
+      <div className="w-full flex flex-col gap-y-2">
         {transactions.slice(0, 10).map((tx) => (
           <Row key={tx.hash + "-" + tx.srcDomain} tx={tx} />
         ))}
@@ -62,14 +62,14 @@ function Row({ tx }: { tx: BurnTx }) {
   }
 
   return (
-    <div className="relative h-16 flex items-center px-3">
+    <div className="card rounded-xl relative flex items-center px-3 py-5">
       <div className="w-1/5 flex items-center">
         <div className="size-4 mr-2 shrink-0">
           {data.isFast && (
             <BoltIcon title="Fast Transfer" className="size-4 text-primary" />
           )}
         </div>
-        <span className="text-dark">
+        <span>
           {moment(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
         </span>
       </div>
@@ -89,22 +89,22 @@ function Row({ tx }: { tx: BurnTx }) {
       </div>
       <div className="w-1/5 flex items-center">
         {data.isMinted && (
-          <div className="flex items-center gap-x-3">
+          <div className="flex items-center gap-x-2">
             <span className="text-primary-gradient">Fulfilled</span>
-            <CheckCircleIcon className="size-4 text-primary" />
+            <CheckCircleIcon className="size-6 text-green-600" />
           </div>
         )}
         {data.isComplete && (
-          <div className="flex items-center gap-x-3">
+          <div className="flex items-center gap-x-2">
             <span className="text-primary-gradient">Received</span>
-            <CheckCircleIcon className="size-4 text-primary" />
+            <CheckCircleIcon className="size-6 text-orange-600" />
           </div>
         )}
         {data.isPending && (
           <div>
             <div className="flex items-center gap-x-2">
               <span className="text-primary-gradient">Pending</span>
-              <ArrowPathIcon className="size-4 text-primary animate-spin" />
+              <ArrowPathIcon className="size-6 text-purple-600 animate-spin" />
             </div>
             <div className="text-dark text-sm">ETA: {eta ?? "now"}</div>
           </div>
@@ -118,7 +118,7 @@ function Row({ tx }: { tx: BurnTx }) {
           <Link
             href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`}
             target="_blank"
-            className="btn btn-sm btn-secondary"
+            className="btn rounded-xl btn-primary"
           >
             View Tx
           </Link>

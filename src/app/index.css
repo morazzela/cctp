@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --font-satoshi: "Satoshi";
+
+  --color-border: rgb(219, 222, 236);
+  --color-border-muted: rgb(43, 35, 34);
+  --color-primary-light: rgb(39, 117, 202);
+  --color-primary: rgb(41, 35, 59);
+  --color-secondary: rgb(134, 86, 239);
+  --color-dark: rgb(169, 165, 182);
+  --color-darker: rgb(13, 2, 0);
+  --color-lighter: rgb(248, 249, 255);
+  --color-light: rgb(238, 239, 247);
+  --color-darklight: rgb(219, 222, 236);
+  --color-muted: rgb(88, 45, 36);
+  --color-muted-dark: rgb(34, 11, 5);
+  --color-text-dark: rgb(102, 78, 77);
+  --color-card-dark: rgb(17, 8, 7);
+  --color-danger: rgb(230, 81, 0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-lighter bg-cover text-darker font-satoshi;
+}
+
+@layer base {
+  .border {
+    @apply border-darklight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-4xl bg-light border border-darklight;
+  }
+
+  .card-body {
+    @apply p-6;
+  }
+
+  .btn {
+    @apply px-3 py-2 text-light border rounded-2xl cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-light;
+
+    &:disabled {
+      @apply bg-primary/60 cursor-not-allowed;
+    }
+  }
+
+  .btn-xl {
+    @apply py-5 text-xl;
+  }
+
+  .form-control {
+    @apply bg-lighter p-3 w-full rounded-2xl;
+  }
+}

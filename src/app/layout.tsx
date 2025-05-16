@@ -1,5 +1,5 @@
 import "supports-color";
-import "./styles/index.scss";
+import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";

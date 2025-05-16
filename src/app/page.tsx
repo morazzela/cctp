@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Content from "./components/Content";
 import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
@@ -26,7 +25,7 @@ function App() {
         {address && (
           <button
             onClick={openAccountModal}
-            className="btn btn-secondary flex items-center gap-x-2"
+            className="btn btn-primary flex items-center gap-x-2"
           >
             <ChainIcon chainId={chainId ?? 1} className="size-4" />
             <span>
@@ -35,34 +34,16 @@ function App() {
           </button>
         )}
       </div>
-      <div className="py-12 xl:py-24">
-        <div className="flex flex-wrap items-start">
-          <div className="w-full xl:w-1/2 xl:pr-12 xl:pt-12">
-            <h1 className="font-bold text-4xl xl:text-7xl">
-              Bridge USDC across all eligible chains with zero extra fees.
-            </h1>
-            <h2 className="text-dark mt-2 xl:mt-4 text-xl xl:text-2xl">
-              Bridge your USDC using Circle{"'"}s CCTP bridge directly with zero
-              extra fees.
-            </h2>
-            <Link
-              href="https://www.circle.com/en/cross-chain-transfer-protocol"
-              target="_blank"
-              className="btn btn-secondary mt-8"
-            >
-              Learn More
-            </Link>
-          </div>
-          <div className="w-full xl:w-1/2 max-xl:mt-12">
-            <Content />
-          </div>
-        </div>
+      <div className="py-12 xl:py-24 flex flex-col items-center">
+        <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-full top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter to-secondary"></div>
+        <Content />
         {txs.length > 0 && (
-          <div className="hidden lg:flex mt-32">
+          <div className="hidden lg:flex mt-32 w-full">
             <History transactions={txs} />
           </div>
         )}
       </div>
+      <div className="bg-white h-96 rounded-t-2xl"></div>
     </div>
   );
 }
