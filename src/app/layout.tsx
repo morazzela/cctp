@@ -33,7 +33,7 @@ export const viewport: Viewport = {
 export default function RootLayout(props: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${satoshi.className}`}>
+      <body className={`${inter.className} ${satoshi.variable}`}>
         <Analytics />
         <Providers>{props.children}</Providers>
       </body>

@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { arbitrum, avalanche, base, linea, mainnet, sonic } from "viem/chains";
+import sonicLogo from "@/images/sonic.svg";
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions";
 export const USDC_ICON =
@@ -36,8 +37,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
     tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
-    iconUri:
-      "https://tokens.debridge.finance/Logo/100000014/0x0000000000000000000000000000000000000000/small/token-logo.svg",
+    iconUri: sonicLogo,
     fastAvailable: false,
     eta: 8,
     fastEta: 8,

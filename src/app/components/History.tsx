@@ -62,7 +62,7 @@ function Row({ tx }: { tx: BurnTx }) {
   }
 
   return (
-    <div className="card rounded-xl relative flex items-center px-3 py-5">
+    <div className="card rounded-xl relative flex items-center px-3 py-5 font-medium">
       <div className="w-1/5 flex items-center">
         <div className="size-4 mr-2 shrink-0">
           {data.isFast && (
@@ -97,7 +97,7 @@ function Row({ tx }: { tx: BurnTx }) {
         {data.isComplete && (
           <div className="flex items-center gap-x-2">
             <span className="text-primary-gradient">Received</span>
-            <CheckCircleIcon className="size-6 text-orange-600" />
+            <CheckCircleIcon className="size-6 text-green-600" />
           </div>
         )}
         {data.isPending && (

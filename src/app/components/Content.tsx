@@ -24,14 +24,16 @@ import { useBurn } from "../actions/useBurn";
 
 export default function Content() {
   const isClient = useIsClient();
-  const [, setTransactions] = useLocalStorage<BurnTx[]>(
+  const [txs, setTransactions] = useLocalStorage<BurnTx[]>(
     LOCAL_STORAGE_TRANSACTIONS_KEY,
     [],
   );
   const chains = useChains();
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
-  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
+  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>(
+    txs[0],
+  );
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
@@ -40,6 +42,7 @@ export default function Content() {
   const [dstChain, setDstChain] = useState<Chain>(sonic);
   const [amount, setAmount] = useState(0n);
   const client = usePublicClient({ chainId: srcChain.id });
+  const [bridging, setBridging] = useState(false);
 
   const recipientAddressValid = useMemo(
     () =>
@@ -101,7 +104,10 @@ export default function Content() {
   };
 
   const onBurnClick = async () => {
-    const res = await burn();
+    setBridging(true);
+
+    const res = await burn().catch(() => setBridging(false));
+    setBridging(false);
 
     if (!res) {
       return;
@@ -315,7 +321,8 @@ export default function Content() {
                 amount <= 0n ||
                 balance === undefined ||
                 balance < amount ||
-                !recipientAddressValid
+                !recipientAddressValid ||
+                bridging
               }
               onClick={onBurnClick}
               className="btn btn-xl btn-primary"
@@ -323,7 +330,9 @@ export default function Content() {
               {balance === undefined || (amount > 0n && balance < amount)
                 ? "Insufficient balance"
                 : recipientAddressValid
-                  ? "Bridge"
+                  ? bridging
+                    ? "Bridging..."
+                    : "Bridge"
                   : "Invalid Recipient Address"}
             </button>
           </ApproveGuard>
