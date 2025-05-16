@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Hex, verifyTypedData } from "viem";
+import { Hex } from "viem";
 
 type UseFastBurnFeesProps = {
   srcDomain: number | undefined;

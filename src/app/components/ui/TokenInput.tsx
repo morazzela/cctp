@@ -1,8 +1,7 @@
-import { CHAINS_CONFIG, USDC_ICON } from "@/app/constants";
+import { USDC_ICON } from "@/app/constants";
 import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { erc20Abi, formatUnits, parseUnits, zeroAddress } from "viem";
-import { useAccount, useReadContract } from "wagmi";
+import { formatUnits, parseUnits } from "viem";
 
 type Props = {
   value: bigint;
@@ -11,7 +10,6 @@ type Props = {
 };
 
 export default function TokenInput({ chainId, value, onChange }: Props) {
-  const { address } = useAccount();
   const [inputValue, setInputValue] = useState(
     value === 0n ? "" : formatUnits(value, 6),
   );

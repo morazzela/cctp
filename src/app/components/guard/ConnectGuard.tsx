@@ -26,7 +26,7 @@ export default function ConnectGuard({ chain, children }: Props) {
             className="btn btn-xl btn-primary w-full"
             onClick={async () => {
               if (isConnected) {
-                await switchChainAsync({ chainId: chain.id as any });
+                await switchChainAsync({ chainId: chain.id });
                 setOpen(false);
               } else {
                 openConnectModal();
@@ -78,7 +78,11 @@ function Modal({ chainId, open, setOpen }: ModalProps) {
               className="card hover:bg-darker px-4 py-3 flex items-center gap-x-2"
             >
               {connector.icon && (
-                <img src={connector.icon} className="size-6" />
+                <img
+                  alt={connector.name}
+                  src={connector.icon}
+                  className="size-6"
+                />
               )}
               <span>{connector.name}</span>
             </button>

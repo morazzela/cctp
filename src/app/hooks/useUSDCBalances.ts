@@ -14,7 +14,7 @@ export function useUSDCBalances() {
         abi: erc20Abi,
         functionName: "balanceOf",
         args: [address ?? zeroAddress],
-        chainId: chain.id as any,
+        chainId: chain.id,
       } as const;
     }),
     query: {

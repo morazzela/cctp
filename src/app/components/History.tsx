@@ -1,24 +1,15 @@
 import { BurnTx } from "../types";
 import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import moment from "moment";
-import {
-  useAccount,
-  usePublicClient,
-  useSwitchChain,
-  useWriteContract,
-} from "wagmi";
-import { CHAINS_CONFIG, USDC_ICON } from "../constants";
-import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
+import { usePublicClient } from "wagmi";
+import { USDC_ICON } from "../constants";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
-import Loader from "./ui/Loader";
 import {
   ArrowPathIcon,
   BoltIcon,
   CheckCircleIcon,
 } from "@heroicons/react/16/solid";
-import { useMemo } from "react";
-import { useTime } from "../hooks/useUtils";
 import Link from "next/link";
 import { useReceive } from "../actions/useReceive";
 
@@ -47,7 +38,7 @@ export default function History({ transactions }: HistoryProps) {
 
 function Row({ tx }: { tx: BurnTx }) {
   const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
-  const client = usePublicClient({ chainId: data?.dstChain?.id as any });
+  const client = usePublicClient({ chainId: data?.dstChain?.id });
   const eta = useETA(data);
   const receive = useReceive(data);
 
@@ -62,7 +53,7 @@ function Row({ tx }: { tx: BurnTx }) {
       return;
     }
 
-    await client.waitForTransactionReceipt({ hash });
+    await client?.waitForTransactionReceipt({ hash });
     await refetchNonceUsed();
   };
 

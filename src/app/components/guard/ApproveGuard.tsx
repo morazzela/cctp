@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { Address, erc20Abi, Hex, zeroAddress } from "viem";
 import {
   useAccount,
-  useClient,
   useReadContract,
   useWaitForTransactionReceipt,
   useWriteContract,

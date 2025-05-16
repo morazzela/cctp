@@ -15,7 +15,7 @@ export function useReceive(data?: UseBurnTxDetailsType) {
     }
 
     if (chainId !== data.dstChain.id) {
-      await switchChainAsync({ chainId: data.dstChain.id as any });
+      await switchChainAsync({ chainId: data.dstChain.id });
     }
 
     return await writeContractAsync({
@@ -23,7 +23,7 @@ export function useReceive(data?: UseBurnTxDetailsType) {
       abi: MESSAGE_TRANSMITTER_ABI,
       functionName: "receiveMessage",
       args: [data.message, data.attestation],
-      chainId: data.dstChain.id as any,
+      chainId: data.dstChain.id,
     });
   }, [switchChainAsync, writeContractAsync, data, chainId]);
 }

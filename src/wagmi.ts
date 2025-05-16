@@ -46,7 +46,7 @@ export const config = createConfig({
     storage: window.localStorage,
   }),
   chains: [mainnet, sonic, avalanche, linea, base, arbitrum],
-  ssr: false,
+  ssr: true,
   transports: {
     [mainnet.id]: http(),
     [sonic.id]: http(),

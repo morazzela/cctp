@@ -1,9 +1,9 @@
-import { CHAINS_CONFIG } from "@/app/constants";
+"use client";
+
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Chain, formatUnits } from "viem";
-import { useAccount, useChains } from "wagmi";
+import { useAccount } from "wagmi";
 import ChainIcon from "../ChainIcon";
 import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
 

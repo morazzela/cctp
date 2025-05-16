@@ -4,7 +4,7 @@ import { BurnTx } from "../types";
 import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
 import ChainIcon from "./ChainIcon";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ArrowPathIcon,
   CheckCircleIcon,
@@ -24,7 +24,7 @@ export default function TxCard({ tx, clearTx }: Props) {
   const eta = useETA(data);
   const receive = useReceive(data);
   const [confirmationPending, setConfirmationPending] = useState(false);
-  const client = usePublicClient({ chainId: data?.dstChain?.id ?? (1 as any) });
+  const client = usePublicClient({ chainId: data?.dstChain?.id ?? 1 });
 
   const onClaim = async () => {
     if (!receive || !client) {

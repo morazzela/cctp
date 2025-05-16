@@ -6,7 +6,7 @@ import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
 import { LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount } from "wagmi";
 import ChainIcon from "./components/ChainIcon";
 import { useAccountModal } from "@rainbow-me/rainbowkit";
 

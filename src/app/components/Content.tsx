@@ -5,7 +5,7 @@ import TokenInput from "./ui/TokenInput";
 import { useAccount, useChains, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
-import { formatUnits, getAddress, isAddress, pad } from "viem";
+import { formatUnits, getAddress, isAddress } from "viem";
 import { useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
@@ -35,7 +35,7 @@ export default function Content() {
   const [srcChain, setSrcChain] = useState<Chain>(mainnet);
   const [dstChain, setDstChain] = useState<Chain>(sonic);
   const [amount, setAmount] = useState(0n);
-  const client = usePublicClient({ chainId: srcChain.id as any });
+  const client = usePublicClient({ chainId: srcChain.id });
 
   const recipientAddressValid = useMemo(
     () =>
@@ -46,7 +46,7 @@ export default function Content() {
 
   const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id]);
 
-  const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
+  const { data: fastBurnFee } = useFastBurnFees({
     srcDomain: CHAINS_CONFIG[srcChain?.id ?? -1]?.domain,
     dstDomain: CHAINS_CONFIG[dstChain?.id ?? -1]?.domain,
   });
@@ -111,7 +111,7 @@ export default function Content() {
     setCurrentBurnTx(burnTx);
     setAmount(0n);
 
-    await client.waitForTransactionReceipt({ hash: res });
+    await client?.waitForTransactionReceipt({ hash: res });
     refetchBalances();
   };
 

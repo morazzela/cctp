@@ -6,7 +6,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { getChainIdFromDomainId } from "../utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Chain, decodeEventLog, Hex } from "viem";
 import { useMessages } from "./useApi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
@@ -42,7 +42,7 @@ export function useBurnTxDetails(tx: BurnTx) {
   );
 
   const { data: receipt, isLoading: receiptLoading } =
-    useWaitForTransactionReceipt({ hash: tx.hash, chainId: chainId as any });
+    useWaitForTransactionReceipt({ hash: tx.hash, chainId: chainId });
 
   const { data: messages } = useMessages({
     srcDomain: tx.srcDomain,
@@ -52,7 +52,7 @@ export function useBurnTxDetails(tx: BurnTx) {
 
   const { data: block, isLoading: blockLoading } = useBlock({
     blockHash: receipt?.blockHash,
-    chainId: chainId as any,
+    chainId: chainId,
   });
 
   const res = useMemo(() => {
@@ -107,7 +107,7 @@ export function useBurnTxDetails(tx: BurnTx) {
     abi: MESSAGE_TRANSMITTER_ABI,
     functionName: "usedNonces",
     args: [res?.nonce ?? "0x"],
-    chainId: res?.dstChain?.id as any,
+    chainId: res?.dstChain?.id,
     query: {
       enabled:
         res !== undefined && res.nonce !== "0x" && res.dstChain !== undefined,
