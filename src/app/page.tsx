@@ -8,11 +8,13 @@ import { BurnTx } from "./types";
 import { LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import ChainIcon from "./components/ChainIcon";
+import { useAccountModal } from "@rainbow-me/rainbowkit";
 
 function App() {
   const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const isClient = useIsClient();
   const { address, chainId } = useAccount();
+  const { openAccountModal } = useAccountModal();
 
   if (!isClient) {
     return;
@@ -22,7 +24,10 @@ function App() {
     <div className="container mx-auto min-h-dvh flex flex-col justify-center px-4">
       <div className="flex justify-end mt-6">
         {address && (
-          <button className="btn btn-secondary cursor-default flex items-center gap-x-2">
+          <button
+            onClick={openAccountModal}
+            className="btn btn-secondary flex items-center gap-x-2"
+          >
             <ChainIcon chainId={chainId ?? 1} className="size-4" />
             <span>
               {`${address.substring(0, 6) + ".." + address.substring(37)}`.toLowerCase()}

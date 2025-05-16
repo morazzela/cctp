@@ -1,40 +1,64 @@
-import { http, cookieStorage, createConfig, createStorage } from "wagmi";
-import {
-  arbitrum,
-  avalanche,
-  base,
-  linea,
-  mainnet,
-  sepolia,
-  sonic,
-} from "wagmi/chains";
-import { coinbaseWallet, injected, walletConnect } from "wagmi/connectors";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { http, createConfig, createStorage } from "wagmi";
+import { arbitrum, avalanche, base, linea, mainnet, sonic } from "wagmi/chains";
 
-export function getConfig() {
-  return createConfig({
-    chains: [mainnet, sonic, avalanche, linea, base, arbitrum],
-    connectors: [
-      injected(),
-      coinbaseWallet(),
-      walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID ?? "" }),
-    ],
-    storage: createStorage({
-      storage: cookieStorage,
-    }),
-    ssr: true,
-    transports: {
-      [mainnet.id]: http(),
-      [sonic.id]: http(),
-      [avalanche.id]: http(),
-      [linea.id]: http(),
-      [base.id]: http(),
-      [arbitrum.id]: http(),
+import {
+  binanceWallet,
+  bitgetWallet,
+  bybitWallet,
+  coinbaseWallet,
+  frameWallet,
+  metaMaskWallet,
+  okxWallet,
+  rabbyWallet,
+  safeWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
+
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: "Recommended",
+      wallets: [
+        binanceWallet,
+        metaMaskWallet,
+        rabbyWallet,
+        bybitWallet,
+        coinbaseWallet,
+        bitgetWallet,
+        okxWallet,
+        walletConnectWallet,
+        safeWallet,
+        frameWallet,
+      ],
     },
-  });
-}
+  ],
+  {
+    appName: "CCTP",
+    projectId:
+      process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
+  },
+);
+
+export const config = createConfig({
+  connectors,
+  storage: createStorage({
+    storage: window.localStorage,
+  }),
+  chains: [mainnet, sonic, avalanche, linea, base, arbitrum],
+  ssr: false,
+  transports: {
+    [mainnet.id]: http(),
+    [sonic.id]: http(),
+    [avalanche.id]: http(),
+    [linea.id]: http(),
+    [base.id]: http(),
+    [arbitrum.id]: http(),
+  },
+});
 
 declare module "wagmi" {
   interface Register {
-    config: ReturnType<typeof getConfig>;
+    config: ReturnType<typeof createConfig>;
   }
 }

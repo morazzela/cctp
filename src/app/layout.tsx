@@ -1,5 +1,6 @@
 import "supports-color";
 import "./styles/index.scss";
+import "@rainbow-me/rainbowkit/styles.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
@@ -7,8 +8,12 @@ import { headers } from "next/headers";
 import { type ReactNode } from "react";
 import { cookieToInitialState } from "wagmi";
 import { Analytics } from "@vercel/analytics/next";
-import { getConfig } from "../wagmi";
-import { Providers } from "./providers";
+import { config } from "../wagmi";
+import dynamic from "next/dynamic";
+
+const Providers = dynamic(() => import("./providers"));
+
+// const Providers = dynamic(() => import("./providers"), { ssr: false })
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,15 +30,11 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout(props: { children: ReactNode }) {
-  const initialState = cookieToInitialState(
-    getConfig(),
-    headers().get("cookie"),
-  );
   return (
     <html lang="en">
       <body className={`${inter.className} ${satoshi.className}`}>
         <Analytics />
-        <Providers initialState={initialState}>{props.children}</Providers>
+        <Providers>{props.children}</Providers>
       </body>
     </html>
   );

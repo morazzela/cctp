@@ -1,3 +1,4 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { createPortal } from "react-dom";
 import { Chain } from "viem";
@@ -13,24 +14,29 @@ export default function ConnectGuard({ chain, children }: Props) {
   const { switchChainAsync } = useSwitchChain();
   const { isConnected, chainId: requiredChainId } = useAccount();
 
-  const onClick = () => {
-    if (isConnected) {
-      switchChainAsync({ chainId: chain.id as any });
-      return;
-    }
-
-    setOpen(true);
-  };
-
   if (isConnected && chain.id === requiredChainId) {
     return children;
   }
 
   return (
     <div>
-      <button onClick={onClick} className="btn btn-xl btn-primary w-full">
-        Connect to {chain.name}
-      </button>
+      <ConnectButton.Custom>
+        {({ openConnectModal }) => (
+          <button
+            className="btn btn-xl btn-primary w-full"
+            onClick={async () => {
+              if (isConnected) {
+                await switchChainAsync({ chainId: chain.id as any });
+                setOpen(false);
+              } else {
+                openConnectModal();
+              }
+            }}
+          >
+            {isConnected ? `Connect to ${chain.name}` : "Connect wallet"}
+          </button>
+        )}
+      </ConnectButton.Custom>
       <Modal chainId={chain.id} open={open} setOpen={setOpen} />
     </div>
   );
