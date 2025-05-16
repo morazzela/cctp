@@ -73,7 +73,8 @@ export default function Content() {
       return 0n;
     }
 
-    return (amount * BigInt(fastBurnFee) * 11n) / 100000n;
+    // we add 5% to the min fee
+    return (amount * BigInt(fastBurnFee) * 105n) / 1000000n;
   }, [amount, fast, fastBurnFee, srcChain.id]);
 
   const burn = useBurn({
