@@ -24,16 +24,14 @@ import { useBurn } from "../actions/useBurn";
 
 export default function Content() {
   const isClient = useIsClient();
-  const [txs, setTransactions] = useLocalStorage<BurnTx[]>(
+  const [, setTransactions] = useLocalStorage<BurnTx[]>(
     LOCAL_STORAGE_TRANSACTIONS_KEY,
     [],
   );
   const chains = useChains();
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
-  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>(
-    txs[0],
-  );
+  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
