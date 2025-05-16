@@ -35,8 +35,10 @@ function App() {
         )}
       </div>
       <div className="py-12 xl:py-24 flex flex-col items-center">
-        <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-full top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter to-secondary"></div>
-        <Content />
+        <div className="relative w-full flex justify-center">
+          <Content />
+          <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-screen top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter to-secondary"></div>
+        </div>
         {txs.length > 0 && (
           <div className="hidden lg:flex mt-32 w-full">
             <History transactions={txs} />

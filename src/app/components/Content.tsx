@@ -236,16 +236,16 @@ export default function Content() {
                 className="flex items-center justify-end gap-x-2"
               >
                 <div
-                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light" : "bg-light"} border relative`}
+                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light" : "bg-lighter"} border relative`}
                 >
                   {recipientAddressOpen && (
                     <CheckIcon className="size-3.5 text-lighter absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                   )}
                 </div>
                 <div
-                  className={`cursor-default text-base ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
+                  className={`cursor-default text-sm ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
                 >
-                  Send USDC to a different address
+                  Send to a different address
                 </div>
               </div>
             )}
