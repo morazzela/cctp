@@ -25,7 +25,7 @@ export default function Content() {
     [],
   );
   const chains = useChains();
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
@@ -129,12 +129,6 @@ export default function Content() {
       setRecipientAddress(address);
     }
   }, [address]);
-
-  useEffect(() => {
-    if (chain !== undefined && srcChain.id !== chain.id) {
-      onSourceChainChange(chain);
-    }
-  }, [chain, onSourceChainChange, srcChain.id]);
 
   if (!isClient) {
     return;
