@@ -70,7 +70,7 @@ function Row({ tx }: { tx: BurnTx }) {
           )}
         </div>
         <span className="text-dark">
-          {moment.utc(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
+          {moment(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
         </span>
       </div>
       <div className="w-1/5 flex items-center gap-x-2">

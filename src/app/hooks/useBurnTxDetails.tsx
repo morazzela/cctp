@@ -156,11 +156,10 @@ export function useETA(data?: UseBurnTxDetailsType) {
       : CHAINS_CONFIG[data.srcChain.id].eta;
 
     if (data.time + eta < time) {
-      return "now";
+      return "a few seconds";
     }
 
-    return moment
-      .utc(data.time * 1000)
+    return moment(data.time * 1000)
       .add()
       .add(eta, "seconds")
       .fromNow(true);
