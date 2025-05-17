@@ -52,7 +52,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
 
     setTimeout(() => {
       setClaimed(false);
-    }, 3000);
+    }, 1500);
   }, [claimed]);
 
   return (
