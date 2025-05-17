@@ -12,12 +12,18 @@ import {
 } from "@heroicons/react/16/solid";
 import Link from "next/link";
 import { useReceive } from "../actions/useReceive";
+import { useMemo } from "react";
 
 type HistoryProps = {
   transactions: BurnTx[];
 };
 
 export default function History({ transactions }: HistoryProps) {
+  const sortedTxs = useMemo(() => {
+    const txs = [...transactions];
+    return txs.sort((a, b) => (a.time > b.time ? -1 : 1));
+  }, [transactions]);
+
   return (
     <div className="w-full">
       <div className="flex px-3">
@@ -28,7 +34,7 @@ export default function History({ transactions }: HistoryProps) {
         <div className="w-1/5 pb-2 text-dark">Status</div>
       </div>
       <div className="w-full flex flex-col gap-y-2">
-        {transactions.slice(0, 10).map((tx) => (
+        {sortedTxs.slice(0, 10).map((tx) => (
           <Row key={tx.hash + "-" + tx.srcDomain} tx={tx} />
         ))}
       </div>
@@ -74,18 +80,18 @@ function Row({ tx }: { tx: BurnTx }) {
         </span>
       </div>
       <div className="w-1/5 flex items-center gap-x-2">
-        <ChainIcon chainId={data.srcChain.id} className="size-4" />
+        <ChainIcon chainId={data.srcChain.id} className="size-6" />
         <span>{data.srcChain.name}</span>
       </div>
       <div className="w-1/5 flex items-center gap-x-2">
         {data.dstChain && (
-          <ChainIcon chainId={data.dstChain.id} className="size-4" />
+          <ChainIcon chainId={data.dstChain.id} className="size-6" />
         )}
         <span>{data.dstChain?.name}</span>
       </div>
       <div className="w-1/5 flex items-center gap-x-1.5">
         <span>{formatUnits(data.amount, 6)}</span>
-        <img alt="usdc icon" className="size-4" src={USDC_ICON} />
+        <img alt="usdc icon" className="size-6" src={USDC_ICON} />
       </div>
       <div className="w-1/5 flex items-center">
         {data.isMinted && (

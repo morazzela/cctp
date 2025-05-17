@@ -89,7 +89,7 @@ export default function TxCard({ tx, clearTx }: Props) {
                   />
                 </h2>
               </div>
-              <div className="flex justify-center py-12">
+              <div className="flex justify-center py-8">
                 <div className="relative bg-primary-light/20 rounded-full p-6 border border-primary-light/10 shadow-[0px_0px_100px_var(--color-primary-light-transparent)]">
                   {data.isMinted && (
                     <CheckIcon className="z-10 size-16 text-primary-light" />
@@ -163,9 +163,14 @@ export default function TxCard({ tx, clearTx }: Props) {
                   </svg>
                 </div>
               </div>
-              <div className="font-light text-dark text-2xl mb-8 text-center">
-                {!data.isMinted &&
-                  "Claim your USDC on Base once available to complete the transfer."}
+              <div className="font-light text-dark text-lg mb-8 text-center">
+                {!data.isMinted && (
+                  <span>
+                    Claim your USDC on Base once available to
+                    <br />
+                    complete the transfer.
+                  </span>
+                )}
                 {data.isMinted &&
                   `You successfully claimed ${formatUnits(data.amount, 6)} USDC on ${data.dstChain?.name}`}
               </div>

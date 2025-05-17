@@ -18,6 +18,19 @@
   --color-text-dark: rgb(102, 78, 77);
   --color-card-dark: rgb(17, 8, 7);
   --color-danger: rgb(230, 81, 0);
+
+  --animate-fade-in-scale: fade-in-scale 0.1s ease-out;
+
+  @keyframes fade-in-scale {
+    0% {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @layer base {
@@ -79,6 +92,6 @@
   }
 
   .form-control {
-    @apply bg-lighter p-3 w-full rounded-2xl border;
+    @apply bg-lighter p-3 text-xl w-full rounded-2xl border outline-none;
   }
 }

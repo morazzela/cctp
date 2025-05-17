@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { CHAINS_CONFIG } from "../constants";
 
 type Props = {
@@ -11,9 +12,12 @@ export default function ChainIcon({ chainId, className }: Props) {
   }
 
   return (
-    <img
+    <Image
       alt={chainId.toFixed()}
       className={className}
+      quality={100}
+      width={500}
+      height={500}
       src={CHAINS_CONFIG[chainId].iconUri}
     />
   );

@@ -47,7 +47,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           className={`flex items-center font-medium  gap-x-2 ${value === undefined ? "text-dark" : ""}`}
         >
           {value !== undefined && (
-            <ChainIcon chainId={value.id} className="size-4" />
+            <ChainIcon chainId={value.id} className="size-6" />
           )}
           {value === undefined ? "Select a chain..." : value.name}
         </span>
@@ -61,7 +61,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         />
       </button>
       {open && (
-        <div className="z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden divide-y divide-light">
+        <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden divide-y divide-light">
           {chains.map((chain) => (
             <div
               onClick={() => {
@@ -71,7 +71,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
               key={chain.id}
               className="border-none rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter p-4 hover:bg-light"
             >
-              <ChainIcon chainId={chain.id} className="size-4" />
+              <ChainIcon chainId={chain.id} className="size-6" />
               <span className="font-medium">{chain.name}</span>
               {!balancesLoading && isConnected && (
                 <span className="ml-auto text-dark text-base">

@@ -38,7 +38,7 @@ function App() {
       </div>
       <div className="py-12 xl:py-24 flex flex-col items-center">
         <div className="relative w-full flex flex-col items-center">
-          <div className="mb-4 flex items-center gap-x-2 text-lg">
+          <div className="mb-4 flex items-center gap-x-2 text-sm ">
             <span>A Public Good by</span>
             <Link
               href="https://shadow.so/"

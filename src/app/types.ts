@@ -7,10 +7,10 @@ export interface Chain {
   usdcAddress: Address;
   tokenMessengerAddress: Address;
   messageTransmitterAddress: Address;
-  tokenMinterAddress: Address;
 }
 
 export interface BurnTx {
   srcDomain: number;
   hash: Hex;
+  time: number;
 }
