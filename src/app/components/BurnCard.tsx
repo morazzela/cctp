@@ -23,7 +23,7 @@ import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
 import ManualClaimCard from "./ManualClaimCard";
 
-export default function Content() {
+export default function BurnCard() {
   const isClient = useIsClient();
   const [, setTransactions] = useLocalStorage<BurnTx[]>(
     LOCAL_STORAGE_TRANSACTIONS_KEY,
@@ -232,7 +232,7 @@ export default function Content() {
             Burn your USDC and claim it on the destination chain.
           </h3>
         </div>
-        <button onClick={() => setManualClaim(true)} className="btn text-dark">
+        <button onClick={() => setManualClaim(true)} className="btn">
           Manually Claim
         </button>
       </div>

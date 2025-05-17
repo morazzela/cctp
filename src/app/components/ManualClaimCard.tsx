@@ -6,7 +6,6 @@ import { Chain, Hash, isHash } from "viem";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
 import { BurnTx } from "../types";
-import ConnectGuard from "./guard/ConnectGuard";
 
 type Props = {
   onClose: { (): void };
@@ -14,8 +13,6 @@ type Props = {
 };
 
 export default function ManualClaimCard({ onClose, onLoaded }: Props) {
-  const client = usePublicClient();
-
   const [txs, setTxs] = useLocalStorage<BurnTx[]>(
     LOCAL_STORAGE_TRANSACTIONS_KEY,
     [],
@@ -23,6 +20,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
 
   const chains = useChains();
   const [chain, setChain] = useState<Chain>(chains[0]);
+  const client = usePublicClient({ chainId: chain.id });
   const [checking, setChecking] = useState(false);
   const [hash, setHash] = useState("");
   const [notFound, setNotFound] = useState(false);
@@ -40,7 +38,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
   }, [txs, hash, isValidHash]);
 
   const onCheck = async () => {
-    if (!isValidHash || !chain || !client) {
+    if (!isValidHash || !chain || !client || client.chain.id !== chain.id) {
       return;
     }
 
@@ -92,10 +90,10 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
   }, [notFound]);
 
   return (
-    <div className="relative card card-transparent max-lg:rounded-none card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
+    <div className="relative card card-transparent max-lg:rounded-none card-body min-h-96 w-full lg:max-w-lg max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
       <div
         onClick={onClose}
-        className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 max-lg:-translate-x-1/2 max-lg:translate-y-1/2 p-2 lg:p-1 rounded-xl bg-lighter dark:bg-darker dark:hover:bg-darker border border-dark cursor-pointer hover:bg-light"
+        className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 max-lg:-translate-x-1/2 max-lg:translate-y-1/2 p-2 lg:p-1 rounded-xl bg-lighter dark:bg-darker dark:hover:bg-darker border cursor-pointer hover:bg-light"
       >
         <XMarkIcon className="size-8 lg:size-7 text-dark" />
       </div>
@@ -126,18 +124,16 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
           />
         </div>
       </div>
-      <ConnectGuard chain={chain}>
-        <button
-          disabled={!isValidHash || checking}
-          className="btn btn-xl btn-primary w-full"
-          onClick={onCheck}
-        >
-          {!isValidHash && "Invalid Hash"}
-          {!checking && notFound && "Transaction not found"}
-          {!checking && isValidHash && !notFound && "Check Transaction"}
-          {checking && "Checking Transaction..."}
-        </button>
-      </ConnectGuard>
+      <button
+        disabled={!isValidHash || checking}
+        className="btn btn-xl btn-primary w-full"
+        onClick={onCheck}
+      >
+        {!isValidHash && "Invalid Hash"}
+        {!checking && notFound && "Transaction not found"}
+        {!checking && isValidHash && !notFound && "Check Transaction"}
+        {checking && "Checking Transaction..."}
+      </button>
     </div>
   );
 }

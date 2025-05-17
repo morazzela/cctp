@@ -3,7 +3,7 @@ import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import { BurnTx } from "../types";
 import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
-import ChainIcon from "./ChainIcon";
+import ChainIcon from "./ui/ChainIcon";
 import { useEffect, useState } from "react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";

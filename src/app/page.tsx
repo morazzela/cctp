@@ -1,12 +1,12 @@
 "use client";
 
-import Content from "./components/Content";
+import BurnCard from "./components/BurnCard";
 import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
 import { LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
 import { useAccount } from "wagmi";
-import ChainIcon from "./components/ChainIcon";
+import ChainIcon from "./components/ui/ChainIcon";
 import { useAccountModal } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import ShadowLogo from "./components/ui/ShadowLogo";
@@ -75,7 +75,7 @@ function App() {
               <span className="ml-2">SHADOW</span>
             </Link>
           </div>
-          <Content />
+          <BurnCard />
           <div className="absolute h-40 min-w-5xl left-1/2 -translate-x-1/2 top-2/5 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
           <div className="absolute h-40 min-w-5xl left-1/2 -translate-x-1/2 top-2/5 w-screen -z-1 border-y-2 border-primary-light"></div>
         </div>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CHAINS_CONFIG } from "../constants";
+import { CHAINS_CONFIG } from "../../constants";
 
 type Props = {
   chainId: number;

@@ -4,7 +4,7 @@ import moment from "moment";
 import { usePublicClient } from "wagmi";
 import { USDC_ICON } from "../constants";
 import { formatUnits } from "viem";
-import ChainIcon from "./ChainIcon";
+import ChainIcon from "./ui/ChainIcon";
 import {
   ArrowPathIcon,
   BoltIcon,
@@ -124,7 +124,7 @@ function Row({ tx }: { tx: BurnTx }) {
           <Link
             href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`}
             target="_blank"
-            className="btn btn-primary"
+            className="btn btn-sm btn-primary"
           >
             View Tx
           </Link>

@@ -4,7 +4,7 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chain, formatUnits } from "viem";
 import { useAccount } from "wagmi";
-import ChainIcon from "../ChainIcon";
+import ChainIcon from "./ChainIcon";
 import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
 
 type Props = {
@@ -52,7 +52,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         className="form-control flex items-center justify-between w-full rounded-xl cursor-pointer"
       >
         <span
-          className={`flex items-center font-medium text-base gap-x-2 ${value === undefined ? "text-dark" : ""}`}
+          className={`flex items-center font-medium text-sm gap-x-2 ${value === undefined ? "text-dark" : ""}`}
         >
           {value !== undefined && (
             <ChainIcon chainId={value.id} className="size-6" />
@@ -60,7 +60,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           {value === undefined ? "Select a chain..." : value.name}
         </span>
         {value !== undefined && !balancesLoading && isConnected && (
-          <span className="ml-auto text-dark text-base mr-4">
+          <span className="ml-auto text-dark text-sm mr-4">
             {formatUnits(balances[value.id], 6)} USDC
           </span>
         )}
@@ -80,9 +80,9 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
               className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darker dark:hover:bg-dark px-4 py-3 hover:bg-light"
             >
               <ChainIcon chainId={chain.id} className="size-6" />
-              <span className="font-medium text-base">{chain.name}</span>
+              <span className="font-medium text-sm">{chain.name}</span>
               {!balancesLoading && isConnected && (
-                <span className="ml-auto text-dark text-base">
+                <span className="ml-auto text-dark text-sm">
                   {formatUnits(balances[chain.id], 6)} USDC
                 </span>
               )}

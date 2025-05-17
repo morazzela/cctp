@@ -68,6 +68,7 @@
   }
 
   .text-dark {
+    color: var(--color-text-dark);
     @variant dark {
       color: var(--color-text-dark);
     }
@@ -76,28 +77,10 @@
 
 @layer components {
   .card {
-    @apply rounded-4xl bg-lighter border;
+    @apply rounded-4xl bg-light border;
 
     @variant dark {
       @apply bg-darker;
-    }
-  }
-
-  .card-transparent {
-    @apply backdrop-blur-xl bg-lighter/70;
-
-    @variant dark {
-      @apply bg-darker/70;
-    }
-  }
-
-  @media screen and (max-width: 64rem) {
-    .card-transparent {
-      @apply backdrop-blur-none bg-light;
-
-      @variant dark {
-        @apply bg-darker;
-      }
     }
   }
 
@@ -106,19 +89,49 @@
   }
 
   .btn {
-    @apply px-3 py-2 text-light border rounded-2xl cursor-pointer;
+    @apply px-3 py-2 text-darker bg-lighter border rounded-2xl cursor-pointer;
+
+    &:hover {
+      @apply bg-light;
+    }
+
+    &:disabled {
+      @apply cursor-not-allowed;
+    }
+
+    @variant dark {
+      @apply bg-dark text-text-dark;
+
+      &:hover {
+        @apply bg-darker;
+      }
+    }
   }
 
   .btn-primary {
     @apply bg-primary text-light;
 
+    &:hover {
+      @apply bg-primary;
+    }
+
     &:disabled {
-      @apply bg-primary/50 cursor-not-allowed;
+      @apply bg-primary/50;
+    }
+
+    @variant dark {
+      &:disabled {
+        @apply bg-primary/20;
+      }
     }
   }
 
   .btn-xl {
     @apply py-5 text-xl;
+  }
+
+  .btn-sm {
+    @apply rounded-xl;
   }
 
   .form-control {
