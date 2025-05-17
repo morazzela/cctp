@@ -76,8 +76,8 @@ function App() {
             </Link>
           </div>
           <BurnCard />
-          <div className="absolute h-40 left-1/2 -translate-x-1/2 top-2/5 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
-          <div className="absolute h-40 left-1/2 -translate-x-1/2 top-2/5 w-screen -z-1 border-y-2 border-primary-light"></div>
+          <div className="absolute h-40 left-1/2 -translate-x-1/2 top-56 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
+          <div className="absolute h-40 left-1/2 -translate-x-1/2 top-56 w-screen -z-1 border-y-2 border-primary-light"></div>
         </div>
         {validTxs.length > 0 && (
           <div className="hidden lg:flex w-full">
