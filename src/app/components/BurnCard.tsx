@@ -179,7 +179,7 @@ export default function BurnCard() {
   }
 
   return (
-    <div className="card card-body rounded-2xl card-transparent w-full lg:max-w-3xl">
+    <div className="relative card card-body rounded-2xl card-transparent w-full lg:max-w-3xl">
       <div className="flex justify-between items-start">
         <div>
           <div className="flex items-center gap-x-4">
@@ -229,7 +229,8 @@ export default function BurnCard() {
             <h2 className="font-semibold text-3xl">Start Bridging</h2>
           </div>
           <h3 className="text-base text-dark dark:text-light mt-4">
-            Burn your USDC and claim it on the destination chain.
+            Burn your USDC and claim it on the destination chain with zero added
+            fees.
           </h3>
         </div>
         <button onClick={() => setManualClaim(true)} className="btn">
@@ -379,6 +380,9 @@ export default function BurnCard() {
             </button>
           </ApproveGuard>
         </ConnectGuard>
+      </div>
+      <div className="absolute top-full translate-y-2 left-1/2 -translate-x-1/2 text-dark/50 dark:text-text-dark/70 text-xs">
+        This website does not charge you any extra fees.
       </div>
     </div>
   );

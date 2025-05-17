@@ -86,10 +86,14 @@ function App() {
         )}
       </div>
       <div className="bg-white dark:bg-darker h-96 rounded-t-2xl p-6">
-        <div className="flex items-center gap-x-2">
+        <Link
+          href="https://shadow.so/"
+          target="_blank"
+          className="flex items-center gap-x-2"
+        >
           <ShadowLogo className="size-6" />
           <span className="text-2xl">SHADOW</span>
-        </div>
+        </Link>
         <div className="text-base mt-2 text-dark">
           Sonic-native concentrated liquidity layer
         </div>
