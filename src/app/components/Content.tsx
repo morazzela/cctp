@@ -220,14 +220,11 @@ export default function Content() {
             </svg>
             <h2 className="font-semibold text-3xl">Start Bridging</h2>
           </div>
-          <h3 className="text-base text-dark mt-4">
+          <h3 className="text-base text-dark dark:text-light mt-4">
             Burn your USDC and claim it on the destination chain.
           </h3>
         </div>
-        <button
-          onClick={() => setManualClaim(true)}
-          className="btn text-dark hover:text-lighter hover:bg-primary"
-        >
+        <button onClick={() => setManualClaim(true)} className="btn text-dark">
           Manually Claim
         </button>
       </div>
@@ -266,7 +263,7 @@ export default function Content() {
                 className="flex items-center justify-end gap-x-2"
               >
                 <div
-                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light" : "bg-lighter"} border relative`}
+                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light" : "bg-lighter dark:bg-dark"} border relative`}
                 >
                   {recipientAddressOpen && (
                     <CheckIcon className="size-3.5 text-lighter absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />

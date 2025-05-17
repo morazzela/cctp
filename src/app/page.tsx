@@ -10,13 +10,15 @@ import ChainIcon from "./components/ChainIcon";
 import { useAccountModal } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import ShadowLogo from "./components/ui/ShadowLogo";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { MoonIcon, SunIcon } from "@heroicons/react/16/solid";
 
 function App() {
   const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const isClient = useIsClient();
   const { address, chainId } = useAccount();
   const { openAccountModal } = useAccountModal();
+  const [dark, setDark] = useLocalStorage("dark-mode", false);
 
   const validTxs = useMemo(() => {
     if (!address) {
@@ -26,13 +28,21 @@ function App() {
     return txs.filter((tx) => tx.fromAddress === address);
   }, [txs, address]);
 
+  useEffect(() => {
+    if (dark) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [dark]);
+
   if (!isClient) {
     return;
   }
 
   return (
     <div className="container mx-auto min-h-dvh flex flex-col justify-center px-4">
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end mt-6 gap-x-2">
         {address && (
           <button
             onClick={openAccountModal}
@@ -44,6 +54,13 @@ function App() {
             </span>
           </button>
         )}
+        <button
+          onClick={() => setDark((val) => !val)}
+          className="btn text-darker dark:text-lighter dark:bg-darker"
+        >
+          {dark && <SunIcon className="size-4" />}
+          {!dark && <MoonIcon className="size-4" />}
+        </button>
       </div>
       <div className="py-12 xl:py-24 flex flex-col items-center">
         <div className="relative w-full flex flex-col items-center">
@@ -59,7 +76,7 @@ function App() {
             </Link>
           </div>
           <Content />
-          <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-screen top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter to-secondary"></div>
+          <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-screen top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter dark:via-darker to-secondary"></div>
         </div>
         {validTxs.length > 0 && (
           <div className="hidden lg:flex mt-32 w-full">
@@ -67,7 +84,7 @@ function App() {
           </div>
         )}
       </div>
-      <div className="bg-white h-96 rounded-t-2xl p-6">
+      <div className="bg-white dark:bg-darker h-96 rounded-t-2xl p-6">
         <div className="flex items-center gap-x-2">
           <ShadowLogo className="size-6" />
           <span className="text-2xl">SHADOW</span>

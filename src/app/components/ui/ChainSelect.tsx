@@ -60,16 +60,16 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           {value === undefined ? "Select a chain..." : value.name}
         </span>
         {value !== undefined && !balancesLoading && isConnected && (
-          <span className="ml-auto text-dark text-base mr-4">
+          <span className="ml-auto text-dark dark:text-light text-base mr-4">
             {formatUnits(balances[value.id], 6)} USDC
           </span>
         )}
         <ChevronDownIcon
-          className={`size-6 text-dark ${open ? "" : "-rotate-90"}`}
+          className={`size-6 text-dark dark:text-light transition-transform duration-100 ${open ? "" : "-rotate-90"}`}
         />
       </button>
       {open && (
-        <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden">
+        <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full rounded-xl overflow-hidden">
           {chainsWithoutValue.map((chain) => (
             <div
               onClick={() => {
@@ -77,12 +77,12 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
                 onChange(chain);
               }}
               key={chain.id}
-              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter p-4 hover:bg-light"
+              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darker dark:hover:bg-dark p-4 hover:bg-light"
             >
               <ChainIcon chainId={chain.id} className="size-6" />
               <span className="font-medium text-base">{chain.name}</span>
               {!balancesLoading && isConnected && (
-                <span className="ml-auto text-dark text-base">
+                <span className="ml-auto text-dark dark:text-light text-base">
                   {formatUnits(balances[chain.id], 6)} USDC
                 </span>
               )}

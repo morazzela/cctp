@@ -1,7 +1,7 @@
 import { Address } from "viem";
 import { arbitrum, avalanche, base, linea, mainnet, sonic } from "viem/chains";
 
-export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions";
+export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions_v2";
 export const USDC_ICON =
   "https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo.png";
 
