@@ -76,7 +76,8 @@ function App() {
             </Link>
           </div>
           <Content />
-          <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-screen top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter dark:via-darker to-secondary"></div>
+          <div className="absolute h-40 min-w-5xl left-1/2 -translate-x-1/2 top-2/5 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
+          <div className="absolute h-40 min-w-5xl left-1/2 -translate-x-1/2 top-2/5 w-screen -z-1 border-y-2 border-primary-light"></div>
         </div>
         {validTxs.length > 0 && (
           <div className="hidden lg:flex mt-32 w-full">
