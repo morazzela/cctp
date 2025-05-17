@@ -180,8 +180,8 @@ export default function BurnCard() {
 
   return (
     <div className="relative card card-body rounded-2xl card-transparent w-full lg:max-w-3xl">
-      <div className="flex justify-between items-start">
-        <div>
+      <div className="flex justify-between items-start max-lg:flex-col-reverse max-lg:gap-y-4 max-lg:items-end">
+        <div className="w-full">
           <div className="flex items-center gap-x-4">
             <svg
               width="39"
@@ -233,7 +233,10 @@ export default function BurnCard() {
             fees.
           </h3>
         </div>
-        <button onClick={() => setManualClaim(true)} className="btn">
+        <button
+          onClick={() => setManualClaim(true)}
+          className="btn whitespace-nowrap"
+        >
           Manually Claim
         </button>
       </div>

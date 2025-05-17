@@ -109,7 +109,7 @@
   }
 
   .btn-primary {
-    @apply bg-primary text-light;
+    @apply bg-primary text-light border-transparent;
 
     &:hover {
       @apply bg-primary;

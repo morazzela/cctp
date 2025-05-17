@@ -56,7 +56,7 @@ function App() {
         )}
         <button
           onClick={() => setDark((val) => !val)}
-          className="btn text-darker dark:text-lighter dark:bg-darker"
+          className="btn btn-primary"
         >
           {dark && <SunIcon className="size-4" />}
           {!dark && <MoonIcon className="size-4" />}
