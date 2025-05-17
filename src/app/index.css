@@ -75,6 +75,12 @@
     @apply backdrop-blur-xl bg-lighter/70;
   }
 
+  @media screen and (max-width: 64rem) {
+    .card-transparent {
+      @apply backdrop-blur-none bg-light;
+    }
+  }
+
   .card-body {
     @apply p-6;
   }

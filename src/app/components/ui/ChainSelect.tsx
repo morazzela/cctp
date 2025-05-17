@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Chain, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import ChainIcon from "../ChainIcon";
@@ -37,6 +37,14 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
     };
   }, []);
 
+  const chainsWithoutValue = useMemo(() => {
+    if (value === undefined) {
+      return chains;
+    }
+
+    return chains.filter((c) => c.id !== value.id);
+  }, [chains, value]);
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -44,7 +52,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         className="form-control flex items-center justify-between w-full rounded-xl cursor-pointer"
       >
         <span
-          className={`flex items-center font-medium  gap-x-2 ${value === undefined ? "text-dark" : ""}`}
+          className={`flex items-center font-medium text-base gap-x-2 ${value === undefined ? "text-dark" : ""}`}
         >
           {value !== undefined && (
             <ChainIcon chainId={value.id} className="size-6" />
@@ -62,7 +70,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
       </button>
       {open && (
         <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden">
-          {chains.map((chain) => (
+          {chainsWithoutValue.map((chain) => (
             <div
               onClick={() => {
                 setOpen(false);
@@ -72,7 +80,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
               className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter p-4 hover:bg-light"
             >
               <ChainIcon chainId={chain.id} className="size-6" />
-              <span className="font-medium">{chain.name}</span>
+              <span className="font-medium text-base">{chain.name}</span>
               {!balancesLoading && isConnected && (
                 <span className="ml-auto text-dark text-base">
                   {formatUnits(balances[chain.id], 6)} USDC
