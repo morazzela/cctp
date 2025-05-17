@@ -4,17 +4,10 @@ import { BurnTx } from "../types";
 import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
 import ChainIcon from "./ChainIcon";
-import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowPathIcon,
-  CheckCircleIcon,
-  CheckIcon,
-  XMarkIcon,
-} from "@heroicons/react/16/solid";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
-import moment from "moment";
 
 type Props = {
   tx: BurnTx;
@@ -50,77 +43,6 @@ export default function TxCard({ tx, clearTx }: Props) {
     setClaimed(true);
   };
 
-  const infos = useMemo(() => {
-    if (data === undefined) {
-      return;
-    }
-
-    return [
-      {
-        label: "Time",
-        value: moment(data.time * 1000).format("DD/MM/YY HH:mm"),
-      },
-      {
-        label: "Source",
-        value: (
-          <div className="flex items-center gap-x-2">
-            <span>{data.srcChain.name}</span>
-            <ChainIcon chainId={data.srcChain.id} className="size-4" />
-          </div>
-        ),
-      },
-      {
-        label: "Destination",
-        value: (
-          <div className="flex items-center gap-x-2">
-            <span>{data.dstChain?.name}</span>
-            <ChainIcon chainId={data.dstChain?.id ?? 1} className="size-4" />
-          </div>
-        ),
-      },
-      {
-        label: "Amount",
-        value: (
-          <div className="flex items-center gap-x-2">
-            <span>{formatUnits(data.amount, 6)}</span>
-            <img alt="usdc-icon" src={USDC_ICON} className="size-4" />
-          </div>
-        ),
-      },
-      {
-        label: "Status",
-        value: (
-          <div className="flex items-center gap-x-2">
-            {data.isPending && (
-              <ArrowPathIcon className="size-4 animate-spin text-danger" />
-            )}
-            {data.isMinted && (
-              <CheckCircleIcon className="size-4 text-primary" />
-            )}
-
-            {data.isPending && <span className="text-danger">Pending</span>}
-            {data.isComplete && <span className="text-danger">Received</span>}
-            {data.isMinted && (
-              <span className="text-primary-gradient">Fulfilled</span>
-            )}
-          </div>
-        ),
-      },
-      {
-        label: "Transaction",
-        value: (
-          <Link
-            href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`}
-            target="_blank"
-            className="text-primary"
-          >
-            {data.hash.substring(0, 6) + ".." + data.hash.substring(62)}
-          </Link>
-        ),
-      },
-    ];
-  }, [data]);
-
   useEffect(() => {
     if (!claimed) {
       return;
@@ -132,7 +54,7 @@ export default function TxCard({ tx, clearTx }: Props) {
   }, [claimed]);
 
   return (
-    <div className="relative card bg-light card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
+    <div className="relative card max-lg:rounded-none bg-light card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
       <div
         onClick={clearTx}
         className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 max-lg:-translate-x-1/2 max-lg:translate-y-1/2 p-2 lg:p-1 rounded-xl bg-lighter border border-dark cursor-pointer hover:bg-light"
@@ -140,18 +62,18 @@ export default function TxCard({ tx, clearTx }: Props) {
         <XMarkIcon className="size-8 lg:size-7 text-dark" />
       </div>
       <div>
-        {(isLoading || !infos || !data) && (
+        {(isLoading || !data) && (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader text="Fetching transaction data..." />
           </div>
         )}
-        {!isLoading && infos && data && (
+        {!isLoading && data && (
           <>
             <div className="flex flex-col items-center">
               <div className="text-center w-full mt-8">
-                <h2 className="font-normal text-4xl/13 text-center">
+                <h2 className="font-normal max-lg:text-3xl/13 text-4xl/13 text-center">
                   Transfering{" "}
-                  <span className="font-bold">
+                  <span className="font-bold whitespace-nowrap">
                     {formatUnits(data.amount, 6)}{" "}
                     <img
                       alt="usdc icon"
@@ -168,19 +90,19 @@ export default function TxCard({ tx, clearTx }: Props) {
                 </h2>
               </div>
               <div className="flex justify-center py-12">
-                <div className="bg-primary-light/20 rounded-full p-6 border border-primary-light/10 shadow-[0px_0px_100px_var(--color-primary-light-transparent)]">
+                <div className="relative bg-primary-light/20 rounded-full p-6 border border-primary-light/10 shadow-[0px_0px_100px_var(--color-primary-light-transparent)]">
                   {data.isMinted && (
-                    <CheckIcon className="size-16 text-primary-light" />
+                    <CheckIcon className="z-10 size-16 text-primary-light" />
                   )}
                   {!data.isMinted && (
                     <svg
-                      width="39"
-                      height="39"
+                      width="70"
+                      height="70"
                       viewBox="0 0 39 39"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlnsXlink="http://www.w3.org/1999/xlink"
-                      className="size-16"
+                      className="z-50"
                     >
                       <mask
                         id="mask0_2953_2413"
@@ -222,11 +144,28 @@ export default function TxCard({ tx, clearTx }: Props) {
                       </defs>
                     </svg>
                   )}
+                  <svg
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                    width={140}
+                    height={140}
+                    viewBox="0 0 100 100"
+                  >
+                    <circle
+                      cx={50}
+                      cy={50}
+                      r={46}
+                      fill="none"
+                      strokeDasharray={data.isMinted ? "" : "100 1000"}
+                      strokeWidth={3}
+                      className={`origin-center ${data.isMinted ? "" : "animate-spin"}`}
+                      stroke="var(--color-primary-light-transparent)"
+                    />
+                  </svg>
                 </div>
               </div>
               <div className="font-light text-dark text-2xl mb-8 text-center">
                 {!data.isMinted &&
-                  "Claim your USDC on Base once available to<br />complete the transfer."}
+                  "Claim your USDC on Base once available to complete the transfer."}
                 {data.isMinted &&
                   `You successfully claimed ${formatUnits(data.amount, 6)} USDC on ${data.dstChain?.name}`}
               </div>

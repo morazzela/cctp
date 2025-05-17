@@ -37,7 +37,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
   return (
     <div className="flex w-full flex-col rounded-3xl border bg-lighter md:flex-row">
       <div className="flex w-full items-center justify-between p-2 flex-col md:flex-row">
-        <button className="flex shrink-0 items-center self-start rounded-xl bg-dark md:hidden">
+        <button className="flex shrink-0 items-center self-start rounded-2xl bg-light md:hidden">
           <div className="relative flex size-9 items-center justify-center">
             <img
               alt="USDC"

@@ -276,7 +276,7 @@ export default function Content() {
           </div>
         )}
         <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
-          <div className="flex flex-wrap gap-x-3 gap-y-2">
+          <div className="flex flex-wrap gap-x-3 gap-y-2 max-lg:order-2">
             <div className="bg-primary-light/20 rounded-lg px-3 py-1">
               <div className="text-primary-light font-medium">
                 Fee: {formatUnits(fee, 6)} USDC
@@ -297,7 +297,7 @@ export default function Content() {
             </div>
           </div>
           {CHAINS_CONFIG[srcChain.id].fastAvailable && (
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-2 max-lg:order-1 max-lg:ml-auto max-lg:mb-6">
               <div
                 className={`font-medium ${fast ? "text-primary-gradient" : ""}`}
               >

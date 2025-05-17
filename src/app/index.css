@@ -20,14 +20,6 @@
   --color-danger: rgb(230, 81, 0);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  @apply bg-lighter bg-cover text-darker font-satoshi overflow-x-hidden;
-}
-
 @layer base {
   *,
   ::after,
@@ -35,7 +27,14 @@ body {
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-border);
-    @apply text-sm;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-sm bg-lighter bg-cover text-darker font-satoshi overflow-x-hidden;
   }
 }
 
