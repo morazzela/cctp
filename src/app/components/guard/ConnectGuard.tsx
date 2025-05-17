@@ -7,14 +7,15 @@ import { Connector, useAccount, useConnectors, useSwitchChain } from "wagmi";
 type Props = {
   chain: Chain;
   children: ReactNode;
+  skip?: boolean
 };
 
-export default function ConnectGuard({ chain, children }: Props) {
+export default function ConnectGuard({ chain, children, skip }: Props) {
   const [open, setOpen] = useState(false);
   const { switchChainAsync } = useSwitchChain();
   const { isConnected, chainId: requiredChainId } = useAccount();
 
-  if (isConnected && chain.id === requiredChainId) {
+  if (skip === true || (isConnected && chain.id === requiredChainId)) {
     return children;
   }
 
