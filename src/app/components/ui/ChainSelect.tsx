@@ -61,7 +61,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
         />
       </button>
       {open && (
-        <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden divide-y divide-light">
+        <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full bg-dark rounded-xl overflow-hidden">
           {chains.map((chain) => (
             <div
               onClick={() => {
@@ -69,7 +69,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
                 onChange(chain);
               }}
               key={chain.id}
-              className="border-none rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter p-4 hover:bg-light"
+              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter p-4 hover:bg-light"
             >
               <ChainIcon chainId={chain.id} className="size-6" />
               <span className="font-medium">{chain.name}</span>

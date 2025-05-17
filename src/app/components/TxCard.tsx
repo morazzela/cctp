@@ -54,7 +54,7 @@ export default function TxCard({ tx, clearTx }: Props) {
   }, [claimed]);
 
   return (
-    <div className="relative card max-lg:rounded-none bg-light card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
+    <div className="relative card max-lg:rounded-none card-transparent card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
       <div
         onClick={clearTx}
         className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 max-lg:-translate-x-1/2 max-lg:translate-y-1/2 p-2 lg:p-1 rounded-xl bg-lighter border border-dark cursor-pointer hover:bg-light"

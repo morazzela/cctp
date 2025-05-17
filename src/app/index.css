@@ -19,16 +19,16 @@
   --color-card-dark: rgb(17, 8, 7);
   --color-danger: rgb(230, 81, 0);
 
-  --animate-fade-in-scale: fade-in-scale 0.1s ease-out;
+  --animate-fade-in-scale: fade-in-scale 0.125s ease-out;
 
   @keyframes fade-in-scale {
     0% {
       opacity: 0;
-      transform: translateY(-5px);
+      transform: translateY(-5px) scale(0.95);
     }
     100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
 }
@@ -68,7 +68,11 @@
 
 @layer components {
   .card {
-    @apply rounded-4xl bg-light border;
+    @apply rounded-4xl bg-lighter border;
+  }
+
+  .card-transparent {
+    @apply backdrop-blur-lg bg-lighter/60;
   }
 
   .card-body {
