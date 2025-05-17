@@ -35,6 +35,7 @@ body {
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-border);
+    @apply text-sm;
   }
 }
 
