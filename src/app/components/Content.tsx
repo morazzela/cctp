@@ -45,9 +45,7 @@ export default function Content() {
   const [manualClaim, setManualClaim] = useState(false);
 
   const recipientAddressValid = useMemo(
-    () =>
-      recipientAddress !== undefined &&
-      isAddress(recipientAddress, { strict: false }),
+    () => recipientAddress !== undefined && isAddress(recipientAddress),
     [recipientAddress],
   );
 
@@ -284,9 +282,15 @@ export default function Content() {
                     type="text"
                     className={`form-control pr-12 ${!recipientAddressOpen ? "text-dark" : ""}`}
                     value={recipientAddress}
-                    onInput={(e) =>
-                      setRecipientAddress(e.currentTarget.value.trim())
-                    }
+                    onInput={(e) => {
+                      const val = e.currentTarget.value.trim();
+
+                      try {
+                        setRecipientAddress(getAddress(val));
+                      } catch (_) {
+                        setRecipientAddress(val);
+                      }
+                    }}
                     disabled={!recipientAddressOpen}
                   />
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">

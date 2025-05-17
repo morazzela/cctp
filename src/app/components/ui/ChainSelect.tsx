@@ -60,7 +60,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           {value === undefined ? "Select a chain..." : value.name}
         </span>
         {value !== undefined && !balancesLoading && isConnected && (
-          <span className="ml-auto text-dark dark:text-light text-base mr-4">
+          <span className="ml-auto text-dark text-base mr-4">
             {formatUnits(balances[value.id], 6)} USDC
           </span>
         )}
@@ -77,12 +77,12 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
                 onChange(chain);
               }}
               key={chain.id}
-              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darker dark:hover:bg-dark p-4 hover:bg-light"
+              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darker dark:hover:bg-dark px-4 py-3 hover:bg-light"
             >
               <ChainIcon chainId={chain.id} className="size-6" />
               <span className="font-medium text-base">{chain.name}</span>
               {!balancesLoading && isConnected && (
-                <span className="ml-auto text-dark dark:text-light text-base">
+                <span className="ml-auto text-dark text-base">
                   {formatUnits(balances[chain.id], 6)} USDC
                 </span>
               )}

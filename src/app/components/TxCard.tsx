@@ -150,9 +150,9 @@ export default function TxCard({ tx, clearTx }: Props) {
                       cy={50}
                       r={46}
                       fill="none"
-                      strokeDasharray={data.isMinted ? "" : "100 1000"}
+                      strokeDasharray={!data.isPending ? "" : "100 1000"}
                       strokeWidth={3}
-                      className={`origin-center ${data.isMinted ? "" : "animate-spin"}`}
+                      className={`origin-center ${!data.isPending ? "" : "animate-spin"}`}
                       stroke="var(--color-primary-light-transparent)"
                     />
                   </svg>
