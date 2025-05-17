@@ -196,7 +196,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                   Close
                 </button>
               ) : (
-                <ConnectGuard chain={data.dstChain as Chain}>
+                <ConnectGuard skip={data.isPending} chain={data.dstChain as Chain}>
                   <button
                     onClick={onClaim}
                     disabled={
