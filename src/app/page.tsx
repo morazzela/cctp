@@ -63,8 +63,8 @@ function App() {
         </button>
       </div>
       <div className="py-12 xl:py-24 flex flex-col items-center">
-        <div className="relative w-full flex flex-col items-center">
-          <div className="mb-4 flex items-center gap-x-2 text-sm ">
+        <div className="relative w-full flex flex-col items-center mb-32">
+          <div className="mb-4 flex items-center gap-x-2 text-sm">
             <span>A Public Good by</span>
             <Link
               href="https://shadow.so/"
@@ -76,11 +76,11 @@ function App() {
             </Link>
           </div>
           <BurnCard />
-          <div className="absolute h-40 min-w-5xl left-1/2 -translate-x-1/2 top-2/5 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
-          <div className="absolute h-40 min-w-5xl left-1/2 -translate-x-1/2 top-2/5 w-screen -z-1 border-y-2 border-primary-light"></div>
+          <div className="absolute h-40 left-1/2 -translate-x-1/2 top-2/5 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
+          <div className="absolute h-40 left-1/2 -translate-x-1/2 top-2/5 w-screen -z-1 border-y-2 border-primary-light"></div>
         </div>
         {validTxs.length > 0 && (
-          <div className="hidden lg:flex mt-32 w-full">
+          <div className="hidden lg:flex w-full">
             <History transactions={validTxs} />
           </div>
         )}
