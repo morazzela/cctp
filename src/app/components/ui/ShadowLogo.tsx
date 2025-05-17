@@ -20,8 +20,8 @@ export default function ShadowLogo({ className }: Props) {
           href="#P"
           gradientTransform="matrix(-474.016,314.86,-373.027,-561.585,96.705,-221.692)"
         >
-          <stop stop-color="#fbc67e" />
-          <stop offset=".52" stop-color="#ff9401" />
+          <stop stopColor="#fbc67e" />
+          <stop offset=".52" stopColor="#ff9401" />
         </linearGradient>
         <linearGradient
           id="g2"
@@ -29,8 +29,8 @@ export default function ShadowLogo({ className }: Props) {
           href="#P"
           gradientTransform="matrix(-474.016,314.86,-371.639,-559.496,96.705,-221.692)"
         >
-          <stop stop-color="#fbc67e" />
-          <stop offset=".52" stop-color="#ff9401" />
+          <stop stopColor="#fbc67e" />
+          <stop offset=".52" stopColor="#ff9401" />
         </linearGradient>
       </defs>
       <path
@@ -42,7 +42,7 @@ export default function ShadowLogo({ className }: Props) {
         d="m79.8 189.5c-19.4 0-38.1-7.7-51.9-21.5-13.7-13.8-21.5-32.5-21.5-51.9 0-19.5 7.8-38.2 21.5-52 13.8-13.8 32.5-21.5 51.9-21.5 0 0-26.4 29-26.4 73.5 0 44.5 26.4 73.4 26.4 73.4z"
       />
       <path
-        fill-rule="evenodd"
+        fillRule="evenodd"
         className="c"
         d="m81.4 189.9c19-0.4 37.1-8.2 50.6-21.6 13.8-13.9 21.6-32.7 21.6-52.2 0-19.6-7.8-38.4-21.6-52.3-13.5-13.4-31.6-21.2-50.6-21.6l0.4-0.5h-0.2l34.4-34.3c6.3-6.4 15.9-8.5 23.8-4.4 11.1 5.9 21.4 13.5 30.4 22.6 24 24 37.5 56.5 37.5 90.5 0 33.9-13.5 66.4-37.5 90.4-9 9-19.2 16.6-30.2 22.4-7.8 4.2-17.4 2.1-23.8-4.3zm-52.9-125.1c13.1-13.2 30.8-20.8 49.3-21.2-0.7 0.8-1.7 2.1-2.9 3.7-2.5 3.5-5.8 8.5-9.2 15-6.6 12.9-13.3 31.4-13.3 53.8 0 22.4 6.7 40.9 13.3 53.8 3.4 6.5 6.7 11.5 9.2 14.9 1.2 1.7 2.2 2.9 2.9 3.8-18.5-0.5-36.2-8-49.3-21.2-13.6-13.6-21.3-32.1-21.3-51.3 0-19.3 7.7-37.7 21.3-51.3z"
       />
