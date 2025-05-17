@@ -55,7 +55,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
           </div>
         </button>
         <div className="w-[28rem] max-md:hidden">
-          <div className="whitespace inline-flex h-full w-full items-center rounded-2xl p-3 border-dark  bg-light font-work-sans font-medium">
+          <div className="whitespace inline-flex h-full w-full items-center rounded-2xl p-3  bg-light font-work-sans font-medium">
             <div className="relative flex size-8 items-center justify-center md:size-14">
               <img
                 alt="USDC"
