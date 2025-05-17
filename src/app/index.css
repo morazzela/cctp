@@ -84,10 +84,10 @@
   }
 
   .card-transparent {
-    @apply backdrop-blur-xl bg-lighter/50;
+    @apply backdrop-blur-xl bg-lighter/70;
 
     @variant dark {
-      @apply bg-darker/50;
+      @apply bg-darker/70;
     }
   }
 

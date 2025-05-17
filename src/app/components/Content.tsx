@@ -33,6 +33,7 @@ export default function Content() {
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
+  const [isBurnTxFromManualClaim, setIsBurnTxFromManualClaim] = useState(false);
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
@@ -128,6 +129,7 @@ export default function Content() {
 
     setBridging(false);
     setTransactions((txs) => [burnTx, ...txs]);
+    setIsBurnTxFromManualClaim(false);
     setCurrentBurnTx(burnTx);
     setAmount(0n);
 
@@ -152,7 +154,14 @@ export default function Content() {
 
   if (currentBurnTx !== undefined) {
     return (
-      <TxCard tx={currentBurnTx} clearTx={() => setCurrentBurnTx(undefined)} />
+      <TxCard
+        isManual={isBurnTxFromManualClaim}
+        tx={currentBurnTx}
+        clearTx={() => {
+          setCurrentBurnTx(undefined);
+          setIsBurnTxFromManualClaim(false);
+        }}
+      />
     );
   }
 
@@ -163,6 +172,7 @@ export default function Content() {
         onLoaded={(tx) => {
           setManualClaim(false);
           setCurrentBurnTx(tx);
+          setIsBurnTxFromManualClaim(true);
         }}
       />
     );
@@ -287,7 +297,8 @@ export default function Content() {
 
                       try {
                         setRecipientAddress(getAddress(val));
-                      } catch (_) {
+                      } catch (err) {
+                        console.error(err);
                         setRecipientAddress(val);
                       }
                     }}
