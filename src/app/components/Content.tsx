@@ -111,7 +111,6 @@ export default function Content() {
     setBridging(true);
 
     const res = await burn().catch(() => setBridging(false));
-    setBridging(false);
 
     if (!res) {
       return;
@@ -129,6 +128,7 @@ export default function Content() {
       fromAddress: address,
     };
 
+    setBridging(false);
     setTransactions((txs) => [burnTx, ...txs]);
     setCurrentBurnTx(burnTx);
     setAmount(0n);
