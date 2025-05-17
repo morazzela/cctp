@@ -3,7 +3,11 @@ import { CHAINS_CONFIG } from "../constants";
 import { erc20Abi, zeroAddress } from "viem";
 import { useMemo } from "react";
 
-export function useUSDCBalances() {
+type UseUSDCBalancesProps = {
+  enabled?: boolean;
+};
+
+export function useUSDCBalances(props?: UseUSDCBalancesProps) {
   const chains = useChains();
   const { address } = useAccount();
 
@@ -18,7 +22,7 @@ export function useUSDCBalances() {
       } as const;
     }),
     query: {
-      enabled: address !== undefined,
+      enabled: props?.enabled !== false && address !== undefined,
     },
   });
 

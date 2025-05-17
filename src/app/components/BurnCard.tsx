@@ -248,6 +248,7 @@ export default function BurnCard() {
               chains={chains.map((c) => c)}
               value={srcChain}
               onChange={onSourceChainChange}
+              withBalances
             />
           </div>
           <div className="w-full md:w-1/2">
@@ -256,6 +257,7 @@ export default function BurnCard() {
               chains={chains.map((c) => c)}
               value={dstChain}
               onChange={onDestChainChange}
+              withBalances
             />
           </div>
         </div>

@@ -11,10 +11,18 @@ type Props = {
   chains: Chain[];
   value: Chain | undefined;
   onChange: { (value: Chain): void };
+  withBalances?: boolean;
 };
 
-export default function ChainSelect({ value, onChange, chains }: Props) {
-  const { data: balances, isLoading: balancesLoading } = useUSDCBalances();
+export default function ChainSelect({
+  value,
+  onChange,
+  chains,
+  withBalances,
+}: Props) {
+  const { data: balances, isLoading: balancesLoading } = useUSDCBalances({
+    enabled: withBalances === true,
+  });
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { isConnected } = useAccount();
@@ -59,11 +67,14 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
           )}
           {value === undefined ? "Select a chain..." : value.name}
         </span>
-        {value !== undefined && !balancesLoading && isConnected && (
-          <span className="ml-auto text-dark text-sm mr-4">
-            {formatUnits(balances[value.id], 6)} USDC
-          </span>
-        )}
+        {withBalances === true &&
+          value !== undefined &&
+          !balancesLoading &&
+          isConnected && (
+            <span className="ml-auto text-dark text-sm mr-4">
+              {formatUnits(balances[value.id], 6)} USDC
+            </span>
+          )}
         <ChevronDownIcon
           className={`size-6 text-dark dark:text-light transition-transform duration-100 ${open ? "" : "-rotate-90"}`}
         />
@@ -81,7 +92,7 @@ export default function ChainSelect({ value, onChange, chains }: Props) {
             >
               <ChainIcon chainId={chain.id} className="size-6" />
               <span className="font-medium text-sm">{chain.name}</span>
-              {!balancesLoading && isConnected && (
+              {withBalances === true && !balancesLoading && isConnected && (
                 <span className="ml-auto text-dark text-sm">
                   {formatUnits(balances[chain.id], 6)} USDC
                 </span>

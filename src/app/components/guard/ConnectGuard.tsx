@@ -7,7 +7,7 @@ import { Connector, useAccount, useConnectors, useSwitchChain } from "wagmi";
 type Props = {
   chain: Chain;
   children: ReactNode;
-  skip?: boolean
+  skip?: boolean;
 };
 
 export default function ConnectGuard({ chain, children, skip }: Props) {
