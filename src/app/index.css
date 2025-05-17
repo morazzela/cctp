@@ -24,11 +24,11 @@
   @keyframes fade-in-scale {
     0% {
       opacity: 0;
-      transform: translateY(-5px) scale(0.95);
+      transform: translateY(-5px);
     }
     100% {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
   }
 }
@@ -72,7 +72,7 @@
   }
 
   .card-transparent {
-    @apply backdrop-blur-lg bg-lighter/60;
+    @apply backdrop-blur-xl bg-lighter/70;
   }
 
   .card-body {

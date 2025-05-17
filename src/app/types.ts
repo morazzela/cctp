@@ -13,4 +13,5 @@ export interface BurnTx {
   srcDomain: number;
   hash: Hex;
   time: number;
+  fromAddress: Address;
 }

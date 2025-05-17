@@ -104,6 +104,10 @@ export default function Content() {
   };
 
   const onBurnClick = async () => {
+    if (!address) {
+      return;
+    }
+
     setBridging(true);
 
     const res = await burn().catch(() => setBridging(false));
@@ -122,6 +126,7 @@ export default function Content() {
       hash: res,
       srcDomain: CHAINS_CONFIG[srcChain.id].domain,
       time: Number(block?.timestamp ?? 0),
+      fromAddress: address,
     };
 
     setTransactions((txs) => [burnTx, ...txs]);

@@ -1,4 +1,4 @@
-import { formatUnits } from "viem";
+import { Chain, formatUnits } from "viem";
 import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import { BurnTx } from "../types";
 import Loader from "./ui/Loader";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
+import ConnectGuard from "./guard/ConnectGuard";
 
 type Props = {
   tx: BurnTx;
@@ -183,7 +184,7 @@ export default function TxCard({ tx, clearTx }: Props) {
                 {data.isMinted && "Claimed"}
               </div>
             </div>
-            <div className="flex justify-end gap-x-2">
+            <div className="w-full">
               {data.isMinted && !claimed ? (
                 <button
                   onClick={() => clearTx()}
@@ -192,21 +193,25 @@ export default function TxCard({ tx, clearTx }: Props) {
                   Close
                 </button>
               ) : (
-                <button
-                  onClick={onClaim}
-                  disabled={!data.isComplete || confirmationPending || claiming}
-                  className={`btn btn-xl w-full btn-primary`}
-                >
-                  {confirmationPending
-                    ? "Claiming..."
-                    : data.isPending
-                      ? "ETA: " + eta
-                      : !data.isMinted
-                        ? claiming
-                          ? "Claiming..."
-                          : "Claim"
-                        : "Claimed !"}
-                </button>
+                <ConnectGuard chain={data.dstChain as Chain}>
+                  <button
+                    onClick={onClaim}
+                    disabled={
+                      !data.isComplete || confirmationPending || claiming
+                    }
+                    className={`btn btn-xl w-full btn-primary`}
+                  >
+                    {confirmationPending
+                      ? "Claiming..."
+                      : data.isPending
+                        ? "ETA: " + eta
+                        : !data.isMinted
+                          ? claiming
+                            ? "Claiming..."
+                            : "Claim"
+                          : "Claimed !"}
+                  </button>
+                </ConnectGuard>
               )}
             </div>
           </>

@@ -10,12 +10,21 @@ import ChainIcon from "./components/ChainIcon";
 import { useAccountModal } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import ShadowLogo from "./components/ui/ShadowLogo";
+import { useMemo } from "react";
 
 function App() {
   const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const isClient = useIsClient();
   const { address, chainId } = useAccount();
   const { openAccountModal } = useAccountModal();
+
+  const validTxs = useMemo(() => {
+    if (!address) {
+      return [];
+    }
+
+    return txs.filter((tx) => tx.fromAddress === address);
+  }, [txs, address]);
 
   if (!isClient) {
     return;
@@ -52,9 +61,9 @@ function App() {
           <Content />
           <div className="absolute h-48 min-w-5xl left-1/2 -translate-x-1/2 w-screen top-1/4 -z-1 bg-linear-to-r from-primary-light via-lighter to-secondary"></div>
         </div>
-        {txs.length > 0 && (
+        {validTxs.length > 0 && (
           <div className="hidden lg:flex mt-32 w-full">
-            <History transactions={txs} />
+            <History transactions={validTxs} />
           </div>
         )}
       </div>

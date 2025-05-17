@@ -6,6 +6,7 @@ import { Chain, Hash, isHash } from "viem";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
 import { BurnTx } from "../types";
+import ConnectGuard from "./guard/ConnectGuard";
 
 type Props = {
   onClose: { (): void };
@@ -21,7 +22,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
   );
 
   const chains = useChains();
-  const [chain, setChain] = useState<Chain>();
+  const [chain, setChain] = useState<Chain>(chains[0]);
   const [checking, setChecking] = useState(false);
   const [hash, setHash] = useState("");
   const [notFound, setNotFound] = useState(false);
@@ -67,10 +68,11 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
 
     setNotFound(false);
 
-    const burnTx = {
+    const burnTx: BurnTx = {
       hash: hash as Hash,
       srcDomain: CHAINS_CONFIG[chain.id].domain,
       time: Number(block.timestamp),
+      fromAddress: tx.from,
     };
 
     if (!alreadyExists) {
@@ -103,7 +105,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
           Burn your USDC and claim it on the destination chain.
         </h3>
       </div>
-      <div className="mt-6 flex flex-col gap-y-4">
+      <div className="mt-6 flex flex-col gap-y-4 mb-6">
         <div>
           <div className="text-lg mb-1">Source Chain</div>
           <ChainSelect
@@ -124,16 +126,18 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
           />
         </div>
       </div>
-      <button
-        disabled={!isValidHash || checking}
-        className="btn btn-xl btn-primary w-full mt-6"
-        onClick={onCheck}
-      >
-        {!isValidHash && "Invalid Hash"}
-        {!checking && notFound && "Transaction not found"}
-        {!checking && isValidHash && !notFound && "Check Transaction"}
-        {checking && "Checking Transaction..."}
-      </button>
+      <ConnectGuard chain={chain}>
+        <button
+          disabled={!isValidHash || checking}
+          className="btn btn-xl btn-primary w-full"
+          onClick={onCheck}
+        >
+          {!isValidHash && "Invalid Hash"}
+          {!checking && notFound && "Transaction not found"}
+          {!checking && isValidHash && !notFound && "Check Transaction"}
+          {checking && "Checking Transaction..."}
+        </button>
+      </ConnectGuard>
     </div>
   );
 }
