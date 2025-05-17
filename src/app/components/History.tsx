@@ -124,7 +124,7 @@ function Row({ tx }: { tx: BurnTx }) {
           <Link
             href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`}
             target="_blank"
-            className="btn rounded-xl btn-primary"
+            className="btn btn-primary"
           >
             View Tx
           </Link>
