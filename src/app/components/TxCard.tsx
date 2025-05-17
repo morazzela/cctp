@@ -56,7 +56,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
   }, [claimed]);
 
   return (
-    <div className="relative card max-lg:rounded-none card-transparent card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:min-h-dvh max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
+    <div className="relative card max-lg:rounded-none card-transparent card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:h-dvh max-lg:overflow-y-auto max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
       {isManual && (
         <div
           onClick={clearTx}
@@ -75,7 +75,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
           <>
             <div className="flex flex-col items-center">
               <div className="text-center w-full mt-8">
-                <h2 className="font-normal max-lg:text-3xl/13 text-4xl/13 text-center">
+                <h2 className="font-normal max-lg:text-2xl/13 text-4xl/13 text-center">
                   Transfering{" "}
                   <span className="font-bold whitespace-nowrap">
                     {formatUnits(data.amount, 6)}{" "}
