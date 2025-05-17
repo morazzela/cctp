@@ -14,7 +14,7 @@ export default function ChainIcon({ chainId, className }: Props) {
   return (
     <Image
       alt={chainId.toFixed()}
-      className={className}
+      className={"rounded-lg " + className}
       quality={100}
       width={500}
       height={500}
