@@ -89,8 +89,10 @@ export default function BurnCard() {
       return 0n;
     }
 
-    // we add 1% to the min fee
-    return (amount * BigInt(fastBurnFee)) / 10000n;
+    let fee = amount * BigInt(fastBurnFee) / 10000n;
+    const remainder = amount * BigInt(fastBurnFee) % 10000n
+
+    return remainder === 0n ? fee : fee + 1n
   }, [amount, fast, fastBurnFee, isFastTransferAvailable]);
 
   const buttonText = useMemo(() => {
