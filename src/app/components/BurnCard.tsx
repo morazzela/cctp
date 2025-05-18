@@ -101,7 +101,7 @@ export default function BurnCard() {
     }
 
     if (exceedsBurnAllowance) {
-      return `Exceeds Circle's burn allowance`;
+      return `Exceeds Circle's allowance`;
     }
 
     if (balance === undefined || (amount > 0n && balance < amount)) {
