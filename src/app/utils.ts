@@ -1,15 +1,41 @@
-import { CHAINS_CONFIG } from "./constants";
+import { Address, Chain as ViemChain } from "viem";
+import { Chain } from "./types";
+import { CHAINS } from "./constants";
 
-export function getChainIdFromDomainId(domainId: number) {
-  for (const chainId in CHAINS_CONFIG) {
-    if (CHAINS_CONFIG[chainId].domain === domainId) {
-      return Number(chainId);
-    }
+export function findChainByDomainId(domain: number): Chain {
+  const res = CHAINS.find((c) => c.domain === domain);
+
+  if (res === undefined) {
+    throw new Error("Could not find chain by domain id: " + domain);
   }
 
-  return 1;
+  return res;
 }
 
 export function formatNumber(val: number | bigint) {
   return new Intl.NumberFormat("en-US").format(val);
+}
+
+type CreateChainFromViemChainProps = {
+  domain: number;
+  usdcAddress: Address;
+  tokenMessengerAddress: Address;
+  messageTransmitterAddress: Address;
+  tokenMinterAddress: Address;
+  standardETA: number;
+  fastETA?: number;
+  icon: string;
+};
+
+export function createChainFromViemChain(
+  viemChain: ViemChain,
+  props: CreateChainFromViemChainProps,
+): Chain {
+  return {
+    isEVM: true,
+    id: viemChain.id,
+    name: viemChain.name,
+    getTxUri: (hash) => `${viemChain.blockExplorers?.default.url}/tx/${hash}`,
+    ...props,
+  };
 }

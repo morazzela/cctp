@@ -1,14 +1,13 @@
-import { Chain, mainnet, sonic } from "viem/chains";
 import ChainSelect from "./ui/ChainSelect";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
-import { useAccount, useChains, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
-import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
+import { ETHEREUM, LOCAL_STORAGE_TRANSACTIONS_KEY, SONIC } from "../constants";
 import { formatUnits, getAddress, isAddress, parseUnits } from "viem";
 import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
-import { BurnTx } from "../types";
+import { BurnTx, Chain } from "../types";
 import ConnectGuard from "./guard/ConnectGuard";
 import Checkbox from "./ui/Checkbox";
 import moment from "moment";
@@ -30,7 +29,6 @@ export default function BurnCard() {
     LOCAL_STORAGE_TRANSACTIONS_KEY,
     [],
   );
-  const chains = useChains();
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
@@ -39,15 +37,11 @@ export default function BurnCard() {
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
   const [isBurnTxFromManualClaim, setIsBurnTxFromManualClaim] = useState(false);
 
-  const isLoading = useMemo(() => {
-    return fastBurnAllowanceLoading || burnLimitsLoading;
-  }, [fastBurnAllowanceLoading, burnLimitsLoading]);
-
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState(address ?? "");
-  const [srcChain, setSrcChain] = useState<Chain>(mainnet);
-  const [dstChain, setDstChain] = useState<Chain>(sonic);
+  const [srcChain, setSrcChain] = useState<Chain>(ETHEREUM);
+  const [dstChain, setDstChain] = useState<Chain>(SONIC);
   const [amount, setAmount] = useState(0n);
   const client = usePublicClient({ chainId: srcChain.id });
   const [bridging, setBridging] = useState(false);
@@ -61,8 +55,8 @@ export default function BurnCard() {
   const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id]);
 
   const { data: fastBurnFee } = useFastBurnFees({
-    srcDomain: CHAINS_CONFIG[srcChain?.id ?? -1]?.domain,
-    dstDomain: CHAINS_CONFIG[dstChain?.id ?? -1]?.domain,
+    srcDomain: srcChain.domain,
+    dstDomain: dstChain.domain,
   });
 
   const isFastTransferAvailable = useMemo(() => {
@@ -71,14 +65,18 @@ export default function BurnCard() {
     }
 
     return (
-      CHAINS_CONFIG[srcChain.id].fastAvailable &&
+      srcChain.fastETA !== undefined &&
       amount <= BigInt(parseUnits(fastBurnAllowance.allowance.toFixed(), 6))
     );
-  }, [fastBurnAllowance, fastBurnAllowanceLoading, srcChain.id, amount]);
+  }, [fastBurnAllowance, fastBurnAllowanceLoading, srcChain.fastETA, amount]);
 
   const exceedsBurnAllowance = useMemo(() => {
-    return amount > burnLimits[srcChain.id];
-  }, [burnLimits, amount, srcChain.id]);
+    return (
+      !burnLimitsLoading &&
+      burnLimits[srcChain.id] > 0n &&
+      amount > burnLimits[srcChain.id]
+    );
+  }, [burnLimits, amount, srcChain.id, burnLimitsLoading]);
 
   const fee = useMemo(() => {
     if (
@@ -96,10 +94,6 @@ export default function BurnCard() {
   }, [amount, fast, fastBurnFee, isFastTransferAvailable]);
 
   const buttonText = useMemo(() => {
-    if (isLoading) {
-      return "Loading...";
-    }
-
     if (exceedsBurnAllowance) {
       return `Exceeds Circle's allowance`;
     }
@@ -116,25 +110,20 @@ export default function BurnCard() {
       return "Bridging...";
     }
 
-    if (
-      CHAINS_CONFIG[srcChain.id].fastAvailable &&
-      fast &&
-      !isFastTransferAvailable
-    ) {
+    if (srcChain.fastETA !== undefined && fast && !isFastTransferAvailable) {
       return "Fast Transfer not Available";
     }
 
     return "Bridge";
   }, [
-    isLoading,
     balance,
     amount,
     recipientAddressValid,
     bridging,
-    srcChain.id,
     exceedsBurnAllowance,
     fast,
     isFastTransferAvailable,
+    srcChain.fastETA,
   ]);
 
   const burn = useBurn({
@@ -183,7 +172,7 @@ export default function BurnCard() {
 
     const burnTx: BurnTx = {
       hash: res,
-      srcDomain: CHAINS_CONFIG[srcChain.id].domain,
+      srcDomain: srcChain.domain,
       time: Number(block?.timestamp ?? 0),
       fromAddress: address,
     };
@@ -306,7 +295,6 @@ export default function BurnCard() {
           <div className="w-full md:w-1/2">
             <div className="text-lg mb-1">Source Chain</div>
             <ChainSelect
-              chains={chains.map((c) => c)}
               value={srcChain}
               onChange={onSourceChainChange}
               withBalances
@@ -315,7 +303,6 @@ export default function BurnCard() {
           <div className="w-full md:w-1/2">
             <div className="text-lg mb-1">Destination Chain</div>
             <ChainSelect
-              chains={chains.map((c) => c)}
               value={dstChain}
               onChange={onDestChainChange}
               withBalances
@@ -399,8 +386,8 @@ export default function BurnCard() {
                 {moment
                   .duration(
                     fast && isFastTransferAvailable
-                      ? CHAINS_CONFIG[srcChain.id].fastEta
-                      : CHAINS_CONFIG[srcChain.id].eta,
+                      ? srcChain.fastETA
+                      : srcChain.standardETA,
                     "seconds",
                   )
                   .humanize()}
@@ -423,9 +410,9 @@ export default function BurnCard() {
         </div>
         <ConnectGuard chain={srcChain}>
           <ApproveGuard
-            tokenAddress={CHAINS_CONFIG[srcChain?.id ?? 1].usdc}
+            tokenAddress={srcChain.usdcAddress}
             amount={amount}
-            spender={CHAINS_CONFIG[srcChain?.id ?? 1].tokenMessenger}
+            spender={srcChain.tokenMessengerAddress}
             bypass={balance !== undefined && amount > balance}
           >
             <button
@@ -434,8 +421,7 @@ export default function BurnCard() {
                 balance === undefined ||
                 balance < amount ||
                 !recipientAddressValid ||
-                bridging ||
-                isLoading
+                bridging
               }
               onClick={onBurnClick}
               className="btn btn-xl btn-primary"

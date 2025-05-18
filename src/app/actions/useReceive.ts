@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { UseBurnTxDetailsType } from "../hooks/useBurnTxDetails";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { CHAINS_CONFIG } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 
 export function useReceive(data?: UseBurnTxDetailsType) {
@@ -19,7 +18,7 @@ export function useReceive(data?: UseBurnTxDetailsType) {
     }
 
     return await writeContractAsync({
-      address: CHAINS_CONFIG[data.dstChain.id].messageTransmitter,
+      address: data.dstChain.messageTransmitterAddress,
       abi: MESSAGE_TRANSMITTER_ABI,
       functionName: "receiveMessage",
       args: [data.message, data.attestation],

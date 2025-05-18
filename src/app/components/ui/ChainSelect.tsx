@@ -2,24 +2,20 @@
 
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Chain, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import ChainIcon from "./ChainIcon";
 import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
+import { Chain } from "@/app/types";
+import { CHAINS } from "@/app/constants";
 
 type Props = {
-  chains: Chain[];
   value: Chain | undefined;
   onChange: { (value: Chain): void };
   withBalances?: boolean;
 };
 
-export default function ChainSelect({
-  value,
-  onChange,
-  chains,
-  withBalances,
-}: Props) {
+export default function ChainSelect({ value, onChange, withBalances }: Props) {
   const { data: balances, isLoading: balancesLoading } = useUSDCBalances({
     enabled: withBalances === true,
   });
@@ -47,11 +43,11 @@ export default function ChainSelect({
 
   const chainsWithoutValue = useMemo(() => {
     if (value === undefined) {
-      return chains;
+      return CHAINS;
     }
 
-    return chains.filter((c) => c.id !== value.id);
-  }, [chains, value]);
+    return CHAINS.filter((c) => c.id !== value.id);
+  }, [value]);
 
   return (
     <div className="relative" ref={ref}>
@@ -63,7 +59,7 @@ export default function ChainSelect({
           className={`flex items-center font-medium text-sm gap-x-2 ${value === undefined ? "text-dark" : ""}`}
         >
           {value !== undefined && (
-            <ChainIcon chainId={value.id} className="size-6" />
+            <ChainIcon chain={value} className="size-6" />
           )}
           {value === undefined ? "Select a chain..." : value.name}
         </span>
@@ -90,7 +86,7 @@ export default function ChainSelect({
               key={chain.id}
               className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
             >
-              <ChainIcon chainId={chain.id} className="size-6" />
+              <ChainIcon chain={chain} className="size-6" />
               <span className="font-medium text-sm">{chain.name}</span>
               {withBalances === true && !balancesLoading && isConnected && (
                 <span className="ml-auto text-dark text-sm">

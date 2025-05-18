@@ -1,24 +1,24 @@
+import { Chain } from "@/app/types";
 import Image from "next/image";
-import { CHAINS_CONFIG } from "../../constants";
 
 type Props = {
-  chainId: number;
+  chain?: Chain;
   className?: string;
 };
 
-export default function ChainIcon({ chainId, className }: Props) {
-  if (CHAINS_CONFIG[chainId].iconUri === undefined) {
+export default function ChainIcon({ chain, className }: Props) {
+  if (!chain) {
     return;
   }
 
   return (
     <Image
-      alt={chainId.toFixed()}
+      alt={chain.id.toFixed()}
       className={"rounded-lg " + className}
       quality={100}
       width={500}
       height={500}
-      src={CHAINS_CONFIG[chainId].iconUri}
+      src={chain.icon}
       loading="eager"
     />
   );

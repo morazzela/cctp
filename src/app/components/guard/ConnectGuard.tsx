@@ -1,7 +1,7 @@
+import { Chain } from "@/app/types";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { createPortal } from "react-dom";
-import { Chain } from "viem";
 import { Connector, useAccount, useConnectors, useSwitchChain } from "wagmi";
 
 type Props = {

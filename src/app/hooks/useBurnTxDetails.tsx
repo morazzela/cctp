@@ -1,19 +1,14 @@
-import { BurnTx } from "../types";
-import {
-  useBlock,
-  useChains,
-  useReadContract,
-  useWaitForTransactionReceipt,
-} from "wagmi";
-import { getChainIdFromDomainId } from "../utils";
+import { BurnTx, Chain } from "../types";
+import { useBlock, useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
-import { Chain, decodeEventLog, Hex } from "viem";
+import { decodeEventLog, Hex } from "viem";
 import { useMessages } from "./useApi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { CHAINS_CONFIG } from "../constants";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { useTime } from "./useUtils";
 import moment from "moment";
+import { CHAINS } from "../constants";
+import { findChainByDomainId } from "../utils";
 
 export type UseBurnTxDetailsType = {
   time: number;
@@ -34,15 +29,13 @@ export type UseBurnTxDetailsType = {
 export function useBurnTxDetails(tx: BurnTx) {
   const [needsRefresh, setNeedsRefresh] = useState(true);
 
-  const chains = useChains();
-
-  const chainId = useMemo(
-    () => getChainIdFromDomainId(tx.srcDomain),
+  const srcChain = useMemo(
+    () => findChainByDomainId(tx.srcDomain),
     [tx.srcDomain],
   );
 
   const { data: receipt, isLoading: receiptLoading } =
-    useWaitForTransactionReceipt({ hash: tx.hash, chainId: chainId });
+    useWaitForTransactionReceipt({ hash: tx.hash, chainId: srcChain.id });
 
   const { data: messages } = useMessages({
     srcDomain: tx.srcDomain,
@@ -52,7 +45,7 @@ export function useBurnTxDetails(tx: BurnTx) {
 
   const { data: block, isLoading: blockLoading } = useBlock({
     blockHash: receipt?.blockHash,
-    chainId: chainId,
+    chainId: srcChain.id,
   });
 
   const res = useMemo(() => {
@@ -77,15 +70,15 @@ export function useBurnTxDetails(tx: BurnTx) {
       data: log.data,
     });
 
-    const dstChain = chains.find(
-      (c) => c.id === getChainIdFromDomainId(decodedLog.args.destinationDomain),
+    const dstChain = CHAINS.find(
+      (c) => c.domain === decodedLog.args.destinationDomain,
     );
 
     const hasMessages = messages !== undefined && messages.length > 0;
 
     const res: UseBurnTxDetailsType = {
       time: Number(block.timestamp),
-      srcChain: chains.find((c) => c.id === chainId) as Chain,
+      srcChain,
       dstChain,
       attestation: hasMessages ? messages[0].attestation : "0x",
       message: hasMessages ? messages[0].message : "0x",
@@ -100,10 +93,10 @@ export function useBurnTxDetails(tx: BurnTx) {
     };
 
     return res;
-  }, [block, messages, receipt, chainId, chains, tx.hash]);
+  }, [block, messages, receipt, srcChain, tx.hash]);
 
   const { data: nonceUsed, refetch: refetchNonceUsed } = useReadContract({
-    address: CHAINS_CONFIG[res?.dstChain?.id ?? 1].messageTransmitter,
+    address: res?.dstChain?.messageTransmitterAddress,
     abi: MESSAGE_TRANSMITTER_ABI,
     functionName: "usedNonces",
     args: [res?.nonce ?? "0x"],
@@ -151,9 +144,10 @@ export function useETA(data?: UseBurnTxDetailsType) {
       return;
     }
 
-    const eta = data.isFast
-      ? CHAINS_CONFIG[data.srcChain.id].fastEta
-      : CHAINS_CONFIG[data.srcChain.id].eta;
+    const eta =
+      data.isFast && data.srcChain.fastETA
+        ? data.srcChain.fastETA
+        : data.srcChain.standardETA;
 
     if (data.time + eta < time) {
       return "a few seconds";

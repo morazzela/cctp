@@ -48,7 +48,7 @@ function Row({ tx }: { tx: BurnTx }) {
   const client = usePublicClient({ chainId: data?.dstChain?.id });
   const eta = useETA(data);
   const receive = useReceive(data);
-  const { refetch: refetchBalances } = useUSDCBalances()
+  const { refetch: refetchBalances } = useUSDCBalances();
 
   const onMintClick = async () => {
     if (!receive) {
@@ -83,12 +83,12 @@ function Row({ tx }: { tx: BurnTx }) {
         </span>
       </div>
       <div className="w-1/5 flex items-center gap-x-2">
-        <ChainIcon chainId={data.srcChain.id} className="size-6" />
+        <ChainIcon chain={data.srcChain} className="size-6" />
         <span>{data.srcChain.name}</span>
       </div>
       <div className="w-1/5 flex items-center gap-x-2">
         {data.dstChain && (
-          <ChainIcon chainId={data.dstChain.id} className="size-6" />
+          <ChainIcon chain={data.dstChain} className="size-6" />
         )}
         <span>{data.dstChain?.name}</span>
       </div>
@@ -125,7 +125,7 @@ function Row({ tx }: { tx: BurnTx }) {
             </button>
           )}
           <Link
-            href={`${data.srcChain.blockExplorers?.default.url}/tx/${data.hash}`}
+            href={data.srcChain.getTxUri(data.hash)}
             target="_blank"
             className="btn btn-sm btn-primary"
           >

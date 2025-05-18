@@ -4,7 +4,7 @@ import BurnCard from "./components/BurnCard";
 import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
-import { LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
+import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
 import { useAccount } from "wagmi";
 import ChainIcon from "./components/ui/ChainIcon";
 import { useAccountModal } from "@rainbow-me/rainbowkit";
@@ -38,6 +38,11 @@ function App() {
     }
   }, [dark]);
 
+  const currentChain = useMemo(
+    () => CHAINS.find((c) => c.id === chainId),
+    [chainId],
+  );
+
   if (!isClient) {
     return;
   }
@@ -51,7 +56,7 @@ function App() {
             onClick={openAccountModal}
             className="btn btn-primary flex items-center gap-x-2"
           >
-            <ChainIcon chainId={chainId ?? 1} className="size-4" />
+            <ChainIcon chain={currentChain} className="size-4" />
             <span>
               {`${address.substring(0, 6) + ".." + address.substring(37)}`.toLowerCase()}
             </span>

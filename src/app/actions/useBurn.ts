@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import { Address, Chain, pad } from "viem";
+import { Address, pad } from "viem";
 import { useWriteContract } from "wagmi";
-import { CHAINS_CONFIG } from "../constants";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
+import { Chain } from "../types";
 
 type UseBurnProps = {
   srcChain: Chain;
@@ -29,14 +29,14 @@ export function useBurn({
     }
 
     return writeContractAsync({
-      address: CHAINS_CONFIG[srcChain.id].tokenMessenger,
+      address: srcChain.tokenMessengerAddress,
       abi: TOKEN_MESSENGER_ABI,
       functionName: "depositForBurn",
       args: [
         amount,
-        CHAINS_CONFIG[dstChain.id].domain,
+        dstChain.domain,
         pad(recipient),
-        CHAINS_CONFIG[srcChain.id].usdc,
+        srcChain.usdcAddress,
         pad("0x"),
         fee,
         minFinalityThreshold,

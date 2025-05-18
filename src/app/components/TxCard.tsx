@@ -1,6 +1,6 @@
-import { Chain, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
-import { BurnTx } from "../types";
+import { BurnTx, Chain } from "../types";
 import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
 import ChainIcon from "./ui/ChainIcon";
@@ -88,7 +88,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                   <br />
                   to {data.dstChain?.name}{" "}
                   <ChainIcon
-                    chainId={data.dstChain?.id ?? 1}
+                    chain={data.dstChain}
                     className="inline-block -translate-y-[5px] size-10"
                   />
                 </h2>
@@ -170,7 +170,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
               <div className="font-light text-dark text-lg mb-8 text-center">
                 {!data.isMinted && (
                   <span>
-                    Claim your USDC on Base once available to
+                    Claim your USDC on {data.dstChain?.name} once available to
                     <br />
                     complete the transfer.
                   </span>

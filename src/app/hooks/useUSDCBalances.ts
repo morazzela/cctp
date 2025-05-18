@@ -1,20 +1,19 @@
-import { useAccount, useChains, useReadContracts } from "wagmi";
-import { CHAINS_CONFIG } from "../constants";
+import { useAccount, useReadContracts } from "wagmi";
 import { erc20Abi, zeroAddress } from "viem";
 import { useMemo } from "react";
+import { CHAINS } from "../constants";
 
 type UseUSDCBalancesProps = {
   enabled?: boolean;
 };
 
 export function useUSDCBalances(props?: UseUSDCBalancesProps) {
-  const chains = useChains();
   const { address } = useAccount();
 
   const { data, isLoading, refetch } = useReadContracts({
-    contracts: chains.map((chain) => {
+    contracts: CHAINS.map((chain) => {
       return {
-        address: CHAINS_CONFIG[chain.id].usdc,
+        address: chain.usdcAddress,
         abi: erc20Abi,
         functionName: "balanceOf",
         args: [address ?? zeroAddress],
@@ -29,12 +28,12 @@ export function useUSDCBalances(props?: UseUSDCBalancesProps) {
   const res = useMemo(() => {
     const res: { [key: number]: bigint } = {};
 
-    for (const index in chains) {
-      res[chains[index].id] = data?.[index]?.result ?? 0n;
+    for (const index in CHAINS) {
+      res[CHAINS[index].id] = data?.[index]?.result ?? 0n;
     }
 
     return res;
-  }, [data, chains]);
+  }, [data]);
 
   return {
     data: res,

@@ -1,11 +1,11 @@
-import { useChains, usePublicClient } from "wagmi";
+import { usePublicClient } from "wagmi";
 import ChainSelect from "./ui/ChainSelect";
 import { useEffect, useMemo, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/16/solid";
-import { Chain, Hash, isHash } from "viem";
+import { Hash, isHash } from "viem";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
-import { BurnTx } from "../types";
+import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
+import { BurnTx, Chain } from "../types";
 
 type Props = {
   onClose: { (): void };
@@ -18,8 +18,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
     [],
   );
 
-  const chains = useChains();
-  const [chain, setChain] = useState<Chain>(chains[0]);
+  const [chain, setChain] = useState<Chain>(CHAINS[0]);
   const client = usePublicClient({ chainId: chain.id });
   const [checking, setChecking] = useState(false);
   const [hash, setHash] = useState("");
@@ -68,7 +67,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
 
     const burnTx: BurnTx = {
       hash: hash as Hash,
-      srcDomain: CHAINS_CONFIG[chain.id].domain,
+      srcDomain: chain.domain,
       time: Number(block.timestamp),
       fromAddress: tx.from,
     };
@@ -107,7 +106,6 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
         <div>
           <div className="text-lg mb-1">Source Chain</div>
           <ChainSelect
-            chains={chains.map((c) => c)}
             value={chain}
             onChange={(c) => {
               setChain(c);

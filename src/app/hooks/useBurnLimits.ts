@@ -1,18 +1,16 @@
-import { useChains, useReadContracts } from "wagmi";
-import { CHAINS_CONFIG } from "../constants";
+import { useReadContracts } from "wagmi";
 import { TOKEN_MINTER_ABI } from "../abis/TokenMinter";
 import { useMemo } from "react";
+import { CHAINS } from "../constants";
 
 export function useBurnLimits() {
-  const chains = useChains();
-
   const { data, isLoading } = useReadContracts({
-    contracts: chains.map((chain) => {
+    contracts: CHAINS.map((chain) => {
       return {
-        address: CHAINS_CONFIG[chain.id].tokenMinter,
+        address: chain.tokenMinterAddress,
         abi: TOKEN_MINTER_ABI,
         functionName: "burnLimitsPerMessage",
-        args: [CHAINS_CONFIG[chain.id].usdc],
+        args: [chain.usdcAddress],
         chainId: chain.id,
       } as const;
     }),
@@ -21,12 +19,12 @@ export function useBurnLimits() {
   const res = useMemo(() => {
     const res: { [key: number]: bigint } = {};
 
-    for (const i in chains) {
-      res[chains[i].id] = data?.[i]?.result ?? 0n;
+    for (const i in CHAINS) {
+      res[CHAINS[i].id] = data?.[i]?.result ?? 0n;
     }
 
     return res;
-  }, [data, chains]);
+  }, [data]);
 
   return {
     data: res,
