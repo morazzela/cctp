@@ -19,6 +19,7 @@ export default function ChainIcon({ chainId, className }: Props) {
       width={500}
       height={500}
       src={CHAINS_CONFIG[chainId].iconUri}
+      loading="eager"
     />
   );
 }
