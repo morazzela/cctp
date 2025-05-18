@@ -43,7 +43,7 @@ function App() {
 
   return (
     <div className="container mx-auto min-h-dvh flex flex-col justify-center px-4">
-      <ShadowBackground className="hidden dark:block absolute top-0 left-1/2 -translate-x-1/2 translate-y-24" />
+      <ShadowBackground className="-z-10 hidden dark:block absolute top-0 left-1/2 -translate-x-1/2 translate-y-24" />
       <div className="flex justify-end mt-6 gap-x-2">
         {address && (
           <button
