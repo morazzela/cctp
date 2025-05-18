@@ -72,7 +72,7 @@ export default function BurnCard() {
     }
 
     // we add 1% to the min fee
-    return (amount * BigInt(fastBurnFee) * 101n) / 1000000n;
+    return amount * BigInt(fastBurnFee) / 10000n;
   }, [amount, fast, fastBurnFee, srcChain.id]);
 
   const burn = useBurn({
