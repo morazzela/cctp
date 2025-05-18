@@ -170,7 +170,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
               <div className="font-light text-dark text-lg mb-8 text-center">
                 {!data.isMinted && (
                   <span>
-                    Claim your USDC on Base once available to
+                    Claim your USDC on {data.dstChain?.name} once available to
                     <br />
                     complete the transfer.
                   </span>
