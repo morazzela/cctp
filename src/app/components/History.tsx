@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { useReceive } from "../actions/useReceive";
 import { useMemo } from "react";
+import { useUSDCBalances } from "../hooks/useUSDCBalances";
 
 type HistoryProps = {
   transactions: BurnTx[];
@@ -47,6 +48,7 @@ function Row({ tx }: { tx: BurnTx }) {
   const client = usePublicClient({ chainId: data?.dstChain?.id });
   const eta = useETA(data);
   const receive = useReceive(data);
+  const { refetch: refetchBalances } = useUSDCBalances()
 
   const onMintClick = async () => {
     if (!receive) {
@@ -61,6 +63,7 @@ function Row({ tx }: { tx: BurnTx }) {
 
     await client?.waitForTransactionReceipt({ hash });
     await refetchNonceUsed();
+    await refetchBalances();
   };
 
   if (isLoading || data === undefined) {
