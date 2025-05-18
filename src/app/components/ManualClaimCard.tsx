@@ -100,7 +100,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
       <div>
         <h2 className="font-semibold text-3xl">Manually Claim</h2>
         <h3 className="text-base text-dark mt-4">
-          Burn your USDC and claim it on the destination chain.
+          Claim your USDC on the destination chain.
         </h3>
       </div>
       <div className="mt-6 flex flex-col gap-y-4 mb-6">

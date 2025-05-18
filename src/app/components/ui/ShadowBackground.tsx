@@ -81,7 +81,7 @@ export default function ShadowBackground({ className }: Props) {
           y2="916"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stopColor="var(--color-dark)" />
+          <stop offset="0.1" stopColor="var(--color-dark)" />
           <stop offset="1" stopColor="var(--color-dark)" stopOpacity="0" />
         </linearGradient>
       </defs>

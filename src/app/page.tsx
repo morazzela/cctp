@@ -13,6 +13,7 @@ import ShadowLogo from "./components/ui/ShadowLogo";
 import { useEffect, useMemo } from "react";
 import { MoonIcon, SunIcon } from "@heroicons/react/16/solid";
 import ShadowBackground from "./components/ui/ShadowBackground";
+import SonicLogo from "./components/ui/SonicLogo";
 
 function App() {
   const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
@@ -43,7 +44,7 @@ function App() {
 
   return (
     <div className="container mx-auto min-h-dvh flex flex-col justify-center px-4">
-      <ShadowBackground className="-z-10 hidden dark:block absolute top-0 left-1/2 -translate-x-1/2 translate-y-24" />
+      <ShadowBackground className="-z-10 hidden dark:md:block absolute top-0 left-1/2 -translate-x-1/2 translate-y-24" />
       <div className="flex justify-end mt-6 gap-x-2">
         {address && (
           <button
@@ -89,18 +90,21 @@ function App() {
           </div>
         )}
       </div>
-      <div className="bg-white dark:bg-darker h-96 rounded-t-2xl p-6">
-        <Link
-          href="https://shadow.so/"
-          target="_blank"
-          className="flex items-center gap-x-2"
-        >
-          <ShadowLogo className="size-6" />
-          <span className="text-2xl">SHADOW</span>
-        </Link>
-        <div className="text-base mt-2 text-dark">
-          Sonic-native concentrated liquidity layer
+      <div className="bg-white dark:bg-darker h-96 rounded-t-2xl p-6 flex items-start justify-between">
+        <div>
+          <Link
+            href="https://shadow.so/"
+            target="_blank"
+            className="flex items-center gap-x-2"
+          >
+            <ShadowLogo className="size-6" />
+            <span className="text-2xl">SHADOW</span>
+          </Link>
+          <div className="text-base mt-2 text-dark">
+            Sonic-native concentrated liquidity layer
+          </div>
         </div>
+        <SonicLogo className="h-8 w-auto" />
       </div>
     </div>
   );
