@@ -5,8 +5,8 @@ import TokenInput from "./ui/TokenInput";
 import { useAccount, useChains, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import { CHAINS_CONFIG, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
-import { formatUnits, getAddress, isAddress } from "viem";
-import { useFastBurnFees } from "../hooks/useApi";
+import { formatUnits, getAddress, isAddress, parseUnits } from "viem";
+import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "../types";
 import ConnectGuard from "./guard/ConnectGuard";
@@ -22,6 +22,7 @@ import { useUSDCBalances } from "../hooks/useUSDCBalances";
 import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
 import ManualClaimCard from "./ManualClaimCard";
+import { useBurnLimits } from "../hooks/useBurnLimits";
 
 export default function BurnCard() {
   const isClient = useIsClient();
@@ -32,8 +33,15 @@ export default function BurnCard() {
   const chains = useChains();
   const { address, isConnected } = useAccount();
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
+  const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
+    useFastBurnAllowance();
+  const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
   const [isBurnTxFromManualClaim, setIsBurnTxFromManualClaim] = useState(false);
+
+  const isLoading = useMemo(() => {
+    return fastBurnAllowanceLoading || burnLimitsLoading;
+  }, [fastBurnAllowanceLoading, burnLimitsLoading]);
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
@@ -57,23 +65,75 @@ export default function BurnCard() {
     dstDomain: CHAINS_CONFIG[dstChain?.id ?? -1]?.domain,
   });
 
-  /* const {
-    data: fastBurnAllowance,
-    isLoading: fastBurnAllowanceLoading
-  } = useFastBurnAllowance(); */
+  const isFastTransferAvailable = useMemo(() => {
+    if (fastBurnAllowanceLoading || fastBurnAllowance === undefined) {
+      return false;
+    }
+
+    return (
+      CHAINS_CONFIG[srcChain.id].fastAvailable &&
+      amount <= BigInt(parseUnits(fastBurnAllowance.allowance.toFixed(), 6))
+    );
+  }, [fastBurnAllowance, fastBurnAllowanceLoading, srcChain.id, amount]);
+
+  const exceedsBurnAllowance = useMemo(() => {
+    return amount > burnLimits[srcChain.id];
+  }, [burnLimits, amount, srcChain.id]);
 
   const fee = useMemo(() => {
     if (
       !fast ||
       fastBurnFee === undefined ||
-      CHAINS_CONFIG[srcChain.id].fastAvailable === false
+      isFastTransferAvailable === false
     ) {
       return 0n;
     }
 
     // we add 1% to the min fee
-    return amount * BigInt(fastBurnFee) / 10000n;
-  }, [amount, fast, fastBurnFee, srcChain.id]);
+    return (amount * BigInt(fastBurnFee)) / 10000n;
+  }, [amount, fast, fastBurnFee, isFastTransferAvailable]);
+
+  const buttonText = useMemo(() => {
+    if (isLoading) {
+      return "Loading...";
+    }
+
+    if (exceedsBurnAllowance) {
+      return `Exceeds Circle's burn allowance`;
+    }
+
+    if (balance === undefined || (amount > 0n && balance < amount)) {
+      return "Insufficient Balance";
+    }
+
+    if (!recipientAddressValid) {
+      return "Invalid Recipient Address";
+    }
+
+    if (bridging) {
+      return "Bridging...";
+    }
+
+    if (
+      CHAINS_CONFIG[srcChain.id].fastAvailable &&
+      fast &&
+      !isFastTransferAvailable
+    ) {
+      return "Fast Transfer not Available";
+    }
+
+    return "Bridge";
+  }, [
+    isLoading,
+    balance,
+    amount,
+    recipientAddressValid,
+    bridging,
+    srcChain.id,
+    exceedsBurnAllowance,
+    fast,
+    isFastTransferAvailable,
+  ]);
 
   const burn = useBurn({
     srcChain,
@@ -81,8 +141,7 @@ export default function BurnCard() {
     amount,
     recipient: recipientAddressValid ? getAddress(recipientAddress) : undefined,
     fee,
-    minFinalityThreshold:
-      fast && CHAINS_CONFIG[srcChain.id].fastAvailable === true ? 1000 : 2000,
+    minFinalityThreshold: fast && isFastTransferAvailable ? 1000 : 2000,
   });
 
   const onSourceChainChange = useCallback(
@@ -337,7 +396,7 @@ export default function BurnCard() {
                 ETA:{" "}
                 {moment
                   .duration(
-                    fast
+                    fast && isFastTransferAvailable
                       ? CHAINS_CONFIG[srcChain.id].fastEta
                       : CHAINS_CONFIG[srcChain.id].eta,
                     "seconds",
@@ -346,7 +405,7 @@ export default function BurnCard() {
               </div>
             </div>
           </div>
-          {CHAINS_CONFIG[srcChain.id].fastAvailable && (
+          {isFastTransferAvailable && (
             <div className="flex items-center gap-x-2">
               <div
                 className={`font-medium ${fast ? "text-primary-gradient" : ""}`}
@@ -370,18 +429,13 @@ export default function BurnCard() {
                 balance === undefined ||
                 balance < amount ||
                 !recipientAddressValid ||
-                bridging
+                bridging ||
+                isLoading
               }
               onClick={onBurnClick}
               className="btn btn-xl btn-primary"
             >
-              {balance === undefined || (amount > 0n && balance < amount)
-                ? "Insufficient balance"
-                : recipientAddressValid
-                  ? bridging
-                    ? "Bridging..."
-                    : "Bridge"
-                  : "Invalid Recipient Address"}
+              {buttonText}
             </button>
           </ApproveGuard>
         </ConnectGuard>

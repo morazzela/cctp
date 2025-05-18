@@ -9,6 +9,7 @@ type ChainsConfigType = {
   domain: number;
   tokenMessenger: Address;
   messageTransmitter: Address;
+  tokenMinter: Address;
   usdc: Address;
   iconUri?: string;
   eta: number;
@@ -21,6 +22,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     domain: 0,
     tokenMessenger: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+    tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     iconUri: "/images/chains/ethereum.svg",
     fastAvailable: true,
@@ -31,6 +33,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     domain: 13,
     tokenMessenger: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+    tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
     iconUri: "/images/chains/sonic.svg",
     fastAvailable: false,
@@ -41,6 +44,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     domain: 1,
     tokenMessenger: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+    tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
     iconUri: "/images/chains/avalanche.svg",
     fastAvailable: false,
@@ -51,6 +55,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     domain: 6,
     tokenMessenger: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+    tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     iconUri: "/images/chains/base.svg",
     fastAvailable: true,
@@ -61,6 +66,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     domain: 11,
     tokenMessenger: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+    tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
     iconUri: "/images/chains/linea.svg",
     fastAvailable: true,
@@ -71,6 +77,7 @@ export const CHAINS_CONFIG: { [key: number]: ChainsConfigType } = {
     domain: 3,
     tokenMessenger: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
     messageTransmitter: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+    tokenMinter: "0xfd78EE919681417d192449715b2594ab58f5D002",
     usdc: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     iconUri: "/images/chains/arbitrum.svg",
     fastAvailable: true,
