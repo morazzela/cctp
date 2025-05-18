@@ -88,7 +88,7 @@ export default function ChainSelect({
                 onChange(chain);
               }}
               key={chain.id}
-              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darker dark:hover:bg-dark px-4 py-3 hover:bg-light"
+              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
             >
               <ChainIcon chainId={chain.id} className="size-6" />
               <span className="font-medium text-sm">{chain.name}</span>

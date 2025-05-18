@@ -408,9 +408,12 @@ export default function BurnCard() {
             </div>
           </div>
           {isFastTransferAvailable && (
-            <div className="flex items-center gap-x-2">
+            <div
+              onClick={() => setFast((val) => !val)}
+              className="cursor-pointer flex items-center gap-x-2"
+            >
               <div
-                className={`font-medium ${fast ? "text-primary-gradient" : ""}`}
+                className={`font-medium ${fast ? "text-primary-light dark:text-dark-primary" : ""}`}
               >
                 Fast Transfer
               </div>

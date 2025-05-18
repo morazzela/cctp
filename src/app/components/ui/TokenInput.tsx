@@ -35,9 +35,9 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
   }, [value]);
 
   return (
-    <div className="flex w-full flex-col rounded-2xl border bg-lighter dark:bg-darker md:flex-row">
+    <div className="flex w-full flex-col rounded-2xl border bg-lighter dark:bg-darkest md:flex-row">
       <div className="flex w-full items-center justify-between p-2 flex-col md:flex-row">
-        <button className="flex shrink-0 items-center self-start rounded-xl bg-light dark:bg-dark md:hidden">
+        <button className="flex shrink-0 items-center self-start rounded-xl bg-light dark:bg-darker md:hidden">
           <div className="relative flex size-9 items-center justify-center">
             <img
               alt="USDC"
@@ -55,7 +55,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
           </div>
         </button>
         <div className="w-[28rem] max-md:hidden">
-          <div className="whitespace inline-flex h-full w-full items-center border rounded-xl p-3 bg-light dark:bg-dark font-work-sans font-medium">
+          <div className="whitespace inline-flex h-full w-full items-center border rounded-xl p-3 bg-light dark:bg-darker font-work-sans font-medium">
             <div className="relative flex size-8 items-center justify-center md:size-14">
               <img
                 alt="USDC"

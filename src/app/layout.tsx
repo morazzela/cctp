@@ -24,12 +24,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CCTP V2 Bridge",
     description: "Move your USDC instantly with zero added fees.",
-    images: ["/images/preview.png"],
+    images: "/images/preview.png",
   },
   twitter: {
     title: "CCTP V2 Bridge",
     description: "Move your USDC instantly with zero added fees.",
-    images: ["/images/preview.png"],
+    images: "/images/preview.png",
   },
 };
 

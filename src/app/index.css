@@ -13,6 +13,7 @@
   --color-secondary: rgb(134, 86, 239);
   --color-dark: rgb(25, 16, 15);
   --color-darker: rgb(17, 8, 7);
+  --color-darkest: rgb(13, 2, 0);
   --color-lighter: rgb(248, 249, 255);
   --color-light: rgb(238, 239, 247);
   --color-muted: rgb(88, 45, 36);
@@ -148,7 +149,7 @@
     @apply bg-lighter p-3 text-xl w-full rounded-2xl border outline-none;
 
     @variant dark {
-      @apply bg-darker text-light;
+      @apply bg-darkest text-light;
     }
   }
 }
