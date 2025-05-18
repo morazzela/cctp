@@ -9,3 +9,7 @@ export function getChainIdFromDomainId(domainId: number) {
 
   return 1;
 }
+
+export function formatNumber(val: number | bigint) {
+  return new Intl.NumberFormat("en-US").format(val);
+}

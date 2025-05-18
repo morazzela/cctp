@@ -21,6 +21,10 @@
   --color-card-dark: rgb(17, 8, 7);
   --color-danger: rgb(230, 81, 0);
 
+  --color-dark-primary: rgb(255, 148, 1);
+  --color-dark-primary-light: rgb(251, 198, 126);
+  --color-dark-primary-light-transparent: rgba(251, 198, 126, 0.5);
+
   --animate-fade-in-scale: fade-in-scale 0.125s ease-out;
 
   @keyframes fade-in-scale {
@@ -120,8 +124,14 @@
     }
 
     @variant dark {
+      @apply bg-dark-primary/90 text-darker;
+
+      &:hover {
+        @apply bg-dark-primary text-darker;
+      }
+
       &:disabled {
-        @apply bg-primary/20;
+        @apply bg-dark-primary/40;
       }
     }
   }

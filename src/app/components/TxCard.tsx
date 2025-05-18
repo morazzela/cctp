@@ -94,9 +94,9 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                 </h2>
               </div>
               <div className="flex justify-center py-8">
-                <div className="relative bg-primary-light/20 rounded-full p-6 border border-primary-light/10 shadow-[0px_0px_100px_var(--color-primary-light-transparent)]">
+                <div className="relative bg-primary-light/20 dark:bg-dark-primary/20 rounded-full p-6 border border-primary-light/10 shadow-[0px_0px_100px_var(--color-primary-light-transparent)] dark:shadow-[0px_0px_100px_var(--color-dark-primary-light-transparent)]">
                   {data.isMinted && (
-                    <CheckIcon className="z-10 size-16 text-primary-light" />
+                    <CheckIcon className="z-10 size-16 text-primary-light dark:text-dark-primary" />
                   )}
                   {!data.isMinted && (
                     <svg
@@ -106,7 +106,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlnsXlink="http://www.w3.org/1999/xlink"
-                      className="z-50"
+                      className="z-50 text-primary-light dark:text-dark-primary"
                     >
                       <mask
                         id="mask0_2953_2413"
@@ -124,7 +124,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                         />
                       </mask>
                       <g mask="url(#mask0_2953_2413)">
-                        <rect width="39" height="39" fill="#2775CA" />
+                        <rect width="39" height="39" fill="currentColor" />
                       </g>
                       <defs>
                         <pattern
@@ -149,7 +149,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                     </svg>
                   )}
                   <svg
-                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-primary-light-transparent dark:text-dark-primary/20"
                     width={140}
                     height={140}
                     viewBox="0 0 100 100"
@@ -162,7 +162,7 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
                       strokeDasharray={!data.isPending ? "" : "100 1000"}
                       strokeWidth={3}
                       className={`origin-center ${!data.isPending ? "" : "animate-spin"}`}
-                      stroke="var(--color-primary-light-transparent)"
+                      stroke="currentColor"
                     />
                   </svg>
                 </div>

@@ -20,8 +20,7 @@ const satoshi = localFont({
 
 export const metadata: Metadata = {
   title: "CCTP Bridge",
-  description:
-    "Bridge your USDC using Circle's CCTP bridge directly without any fees.",
+  description: "Move your USDC instantly with zero added fees.",
 };
 
 export const viewport: Viewport = {

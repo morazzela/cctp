@@ -190,6 +190,7 @@ export default function BurnCard() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               xmlnsXlink="http://www.w3.org/1999/xlink"
+              className="text-primary-light dark:text-dark-primary"
             >
               <mask
                 id="mask0_2953_2413"
@@ -203,7 +204,7 @@ export default function BurnCard() {
                 <rect width="39" height="39" fill="url(#pattern0_2953_2413)" />
               </mask>
               <g mask="url(#mask0_2953_2413)">
-                <rect width="39" height="39" fill="#2775CA" />
+                <rect width="39" height="39" fill="currentColor" />
               </g>
               <defs>
                 <pattern
@@ -229,8 +230,7 @@ export default function BurnCard() {
             <h2 className="font-semibold text-3xl">Start Bridging</h2>
           </div>
           <h3 className="text-base text-dark dark:text-light mt-4">
-            Burn your USDC and claim it on the destination chain with zero added
-            fees.
+            Move your USDC instantly with zero added fees.
           </h3>
         </div>
         <button
@@ -277,10 +277,10 @@ export default function BurnCard() {
                 className="flex items-center justify-end gap-x-2"
               >
                 <div
-                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light" : "bg-lighter dark:bg-dark"} border relative`}
+                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light dark:bg-dark-primary dark:border-dark-primary" : "bg-lighter dark:bg-dark"} border relative`}
                 >
                   {recipientAddressOpen && (
-                    <CheckIcon className="size-3.5 text-lighter absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    <CheckIcon className="size-3.5 text-lighter dark:text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                   )}
                 </div>
                 <div
@@ -327,13 +327,13 @@ export default function BurnCard() {
         )}
         <div className="flex flex-wrap items-center justify-between text-dark my-4 gap-3">
           <div className="flex flex-wrap gap-x-3 gap-y-2 max-lg:order-2">
-            <div className="bg-primary-light/20 rounded-lg px-3 py-1">
-              <div className="text-primary-light font-medium">
+            <div className="bg-primary-light/20 dark:bg-dark-primary/20 rounded-lg px-3 py-1">
+              <div className="text-primary-light dark:text-dark-primary font-medium">
                 Fee: {formatUnits(fee, 6)} USDC
               </div>
             </div>
-            <div className="bg-primary-light/20 rounded-lg px-3 py-1">
-              <div className="text-primary-light font-medium">
+            <div className="bg-primary-light/20 dark:bg-dark-primary/20 rounded-lg px-3 py-1">
+              <div className="text-primary-light dark:text-dark-primary font-medium">
                 ETA:{" "}
                 {moment
                   .duration(

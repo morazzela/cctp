@@ -90,13 +90,13 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
               <>
                 <div
                   onClick={() => onChange(balance / 2n)}
-                  className="font-semibold text-primary-light cursor-pointer"
+                  className="font-semibold text-primary-light dark:text-dark-primary cursor-pointer"
                 >
                   Half
                 </div>
                 <div
                   onClick={() => onChange(balance)}
-                  className="font-semibold text-primary-light cursor-pointer"
+                  className="font-semibold text-primary-light dark:text-dark-primary cursor-pointer"
                 >
                   Max
                 </div>
