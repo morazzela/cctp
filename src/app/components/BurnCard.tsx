@@ -386,7 +386,7 @@ export default function BurnCard() {
           </ApproveGuard>
         </ConnectGuard>
       </div>
-      <div className="absolute w-full text-center top-full translate-y-2 left-1/2 -translate-x-1/2 text-dark/50 dark:text-text-dark/70 text-xs">
+      <div className="absolute w-full text-center top-full translate-y-2 left-1/2 -translate-x-1/2 text-darker/50 dark:text-lighter/30 text-xs">
         This website does not charge you any extra fees.
       </div>
     </div>

@@ -98,7 +98,7 @@ function App() {
             className="flex items-center gap-x-2"
           >
             <ShadowLogo className="size-6" />
-            <span className="text-2xl">SHADOW</span>
+            <span className="text-2xl dark:text-dark-primary">SHADOW</span>
           </Link>
           <div className="text-base mt-2 text-dark">
             Sonic-native concentrated liquidity layer
