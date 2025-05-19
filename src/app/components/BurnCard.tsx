@@ -54,10 +54,14 @@ export default function BurnCard() {
 
   const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id]);
 
-  const { data: fastBurnFee } = useFastBurnFees({
+  const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: srcChain.domain,
     dstDomain: dstChain.domain,
   });
+
+  const isLoading = useMemo(() => {
+    return fastBurnFeeLoading || fastBurnAllowanceLoading || burnLimitsLoading;
+  }, [fastBurnFeeLoading, fastBurnAllowanceLoading, burnLimitsLoading]);
 
   const isFastTransferAvailable = useMemo(() => {
     if (fastBurnAllowanceLoading || fastBurnAllowance === undefined) {
@@ -395,11 +399,9 @@ export default function BurnCard() {
             </div>
           </div>
           {isFastTransferAvailable && (
-            <div
-              onClick={() => setFast((val) => !val)}
-              className="cursor-pointer flex items-center gap-x-2"
-            >
+            <div className="cursor-pointer flex items-center gap-x-2">
               <div
+                onClick={() => setFast((val) => !val)}
                 className={`font-medium ${fast ? "text-primary-light dark:text-dark-primary" : ""}`}
               >
                 Fast Transfer

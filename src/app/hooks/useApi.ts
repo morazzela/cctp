@@ -20,7 +20,6 @@ export function useFastBurnAllowance() {
       return json;
     },
     staleTime: 60_000,
-    refetchInterval: 60_000,
   });
 }
 
@@ -39,7 +38,6 @@ export function useFastBurnFees({
     },
     enabled: srcDomain !== undefined && dstDomain !== undefined,
     staleTime: 60_000,
-    refetchInterval: 60_000,
   });
 }
 
