@@ -23,6 +23,7 @@ export function useUSDCBalances(props?: UseUSDCBalancesProps) {
     }),
     query: {
       enabled: props?.enabled !== false && address !== undefined,
+      staleTime: 5_000,
     },
   });
 

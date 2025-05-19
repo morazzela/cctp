@@ -16,6 +16,9 @@ export function useBurnLimits() {
         chainId: chain.id,
       } as const;
     }),
+    query: {
+      staleTime: 60 * 60 * 24,
+    },
   });
 
   const res = useMemo(() => {
