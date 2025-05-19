@@ -409,10 +409,10 @@ export default function BurnCard() {
           </div>
           {isFastTransferAvailable && (
             <div
-              onClick={() => setFast((val) => !val)}
               className="cursor-pointer flex items-center gap-x-2"
             >
               <div
+                onClick={() => setFast((val) => !val)}
                 className={`font-medium ${fast ? "text-primary-light dark:text-dark-primary" : ""}`}
               >
                 Fast Transfer
