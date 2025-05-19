@@ -48,7 +48,7 @@ function Row({ tx }: { tx: BurnTx }) {
   const client = usePublicClient({ chainId: data?.dstChain?.id });
   const eta = useETA(data);
   const receive = useReceive(data);
-  const { refetch: refetchBalances } = useUSDCBalances()
+  const { refetch: refetchBalances } = useUSDCBalances();
 
   const onMintClick = async () => {
     if (!receive) {
