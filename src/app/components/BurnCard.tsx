@@ -93,6 +93,10 @@ export default function BurnCard() {
   }, [amount, fast, fastBurnFee, isFastTransferAvailable]);
 
   const buttonText = useMemo(() => {
+    if (isLoading) {
+      return "Loading...";
+    }
+
     if (exceedsBurnAllowance) {
       return `Exceeds Circle's allowance`;
     }
@@ -123,6 +127,7 @@ export default function BurnCard() {
     fast,
     isFastTransferAvailable,
     srcChain.fastETA,
+    isLoading,
   ]);
 
   const burn = useBurn({
@@ -416,7 +421,8 @@ export default function BurnCard() {
                 balance === undefined ||
                 balance < amount ||
                 !recipientAddressValid ||
-                bridging
+                bridging ||
+                isLoading
               }
               onClick={onBurnClick}
               className="btn btn-xl btn-primary"
