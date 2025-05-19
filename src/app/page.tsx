@@ -27,7 +27,9 @@ function App() {
       return [];
     }
 
-    return txs.filter((tx) => tx.fromAddress.toLowerCase() === address.toLowerCase());
+    return txs.filter(
+      (tx) => tx.fromAddress.toLowerCase() === address.toLowerCase(),
+    );
   }, [txs, address]);
 
   useEffect(() => {

@@ -17,7 +17,6 @@ import {
   CheckIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
-import { track } from "@vercel/analytics";
 import { useUSDCBalances } from "../hooks/useUSDCBalances";
 import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
@@ -182,8 +181,6 @@ export default function BurnCard() {
 
     const receipt = await client?.waitForTransactionReceipt({ hash: res });
     const block = await client?.getBlock({ blockNumber: receipt?.blockNumber });
-
-    track("Burn");
 
     const burnTx: BurnTx = {
       hash: res,
