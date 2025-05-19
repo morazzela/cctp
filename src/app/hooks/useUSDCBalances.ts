@@ -20,6 +20,7 @@ export function useUSDCBalances(props?: UseUSDCBalancesProps) {
         chainId: chain.id,
       } as const;
     }),
+    allowFailure: true,
     query: {
       enabled: props?.enabled !== false && address !== undefined,
       staleTime: 5_000,

@@ -16,7 +16,6 @@ import {
   CheckIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
-import { track } from "@vercel/analytics";
 import { useUSDCBalances } from "../hooks/useUSDCBalances";
 import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
@@ -33,7 +32,7 @@ export default function BurnCard() {
   const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
-  const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
+  const { data: burnLimits } = useBurnLimits();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
   const [isBurnTxFromManualClaim, setIsBurnTxFromManualClaim] = useState(false);
 
@@ -60,8 +59,8 @@ export default function BurnCard() {
   });
 
   const isLoading = useMemo(() => {
-    return fastBurnFeeLoading || fastBurnAllowanceLoading || burnLimitsLoading;
-  }, [fastBurnFeeLoading, fastBurnAllowanceLoading, burnLimitsLoading]);
+    return fastBurnFeeLoading || fastBurnAllowanceLoading;
+  }, [fastBurnFeeLoading, fastBurnAllowanceLoading]);
 
   const isFastTransferAvailable = useMemo(() => {
     if (fastBurnAllowanceLoading || fastBurnAllowance === undefined) {
@@ -75,12 +74,8 @@ export default function BurnCard() {
   }, [fastBurnAllowance, fastBurnAllowanceLoading, srcChain.fastETA, amount]);
 
   const exceedsBurnAllowance = useMemo(() => {
-    return (
-      !burnLimitsLoading &&
-      burnLimits[srcChain.id] > 0n &&
-      amount > burnLimits[srcChain.id]
-    );
-  }, [burnLimits, amount, srcChain.id, burnLimitsLoading]);
+    return burnLimits[srcChain.id] > 0n && amount > burnLimits[srcChain.id];
+  }, [burnLimits, amount, srcChain.id]);
 
   const fee = useMemo(() => {
     if (
@@ -171,8 +166,6 @@ export default function BurnCard() {
 
     const receipt = await client?.waitForTransactionReceipt({ hash: res });
     const block = await client?.getBlock({ blockNumber: receipt?.blockNumber });
-
-    track("Burn");
 
     const burnTx: BurnTx = {
       hash: res,

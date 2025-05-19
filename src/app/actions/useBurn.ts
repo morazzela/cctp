@@ -3,6 +3,7 @@ import { Address, pad } from "viem";
 import { useWriteContract } from "wagmi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { Chain } from "../types";
+import { track } from "@vercel/analytics";
 
 type UseBurnProps = {
   srcChain: Chain;
@@ -28,7 +29,7 @@ export function useBurn({
       return;
     }
 
-    return writeContractAsync({
+    const res = await writeContractAsync({
       address: srcChain.tokenMessengerAddress,
       abi: TOKEN_MESSENGER_ABI,
       functionName: "depositForBurn",
@@ -42,6 +43,14 @@ export function useBurn({
         minFinalityThreshold,
       ],
     });
+
+    track("Burn", {
+      srcChain: srcChain.name,
+      dstChain: dstChain.name,
+      amount: amount.toString(),
+    });
+
+    return res;
   }, [
     recipient,
     srcChain,
