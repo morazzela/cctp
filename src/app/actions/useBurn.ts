@@ -4,6 +4,8 @@ import { useWriteContract } from "wagmi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { Chain } from "../types";
 import { track } from "@vercel/analytics";
+import { shouldUseV1 } from "../utils";
+import { TOKEN_MESSENGER_V1_ABI } from "../abis/TokenMessengerV1";
 
 type UseBurnProps = {
   srcChain: Chain;
@@ -29,19 +31,25 @@ export function useBurn({
       return;
     }
 
+    const isV1 = shouldUseV1(srcChain, dstChain);
+
     const res = await writeContractAsync({
-      address: srcChain.tokenMessengerAddress,
-      abi: TOKEN_MESSENGER_ABI,
+      address: (isV1
+        ? srcChain.tokenMessengerV1
+        : srcChain.tokenMessengerV2) as Address,
+      abi: isV1 ? TOKEN_MESSENGER_V1_ABI : TOKEN_MESSENGER_ABI,
       functionName: "depositForBurn",
-      args: [
-        amount,
-        dstChain.domain,
-        pad(recipient),
-        srcChain.usdcAddress,
-        pad("0x"),
-        fee,
-        minFinalityThreshold,
-      ],
+      args: isV1
+        ? [amount, dstChain.domain, pad(recipient), srcChain.usdc]
+        : [
+            amount,
+            dstChain.domain,
+            pad(recipient),
+            srcChain.usdc,
+            pad("0x"),
+            fee,
+            minFinalityThreshold,
+          ],
     });
 
     track("Burn", {

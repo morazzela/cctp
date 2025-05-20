@@ -5,20 +5,21 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import ChainIcon from "./ChainIcon";
-import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
+import { useUSDCBalance } from "@/app/hooks/useUSDCBalance";
 import { Chain } from "@/app/types";
-import { CHAINS } from "@/app/constants";
 
 type Props = {
+  chains: Chain[]
   value: Chain | undefined;
   onChange: { (value: Chain): void };
   withBalances?: boolean;
 };
 
-export default function ChainSelect({ value, onChange, withBalances }: Props) {
-  const { data: balances, isLoading: balancesLoading } = useUSDCBalances({
+export default function ChainSelect({ chains, value, onChange, withBalances }: Props) {
+  const { data: balance, isLoading: balanceLoading } = useUSDCBalance(value, {
     enabled: withBalances === true,
   });
+
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const { isConnected } = useAccount();
@@ -43,11 +44,11 @@ export default function ChainSelect({ value, onChange, withBalances }: Props) {
 
   const chainsWithoutValue = useMemo(() => {
     if (value === undefined) {
-      return CHAINS;
+      return chains;
     }
 
-    return CHAINS.filter((c) => c.id !== value.id);
-  }, [value]);
+    return chains.filter((c) => c.id !== value.id);
+  }, [value, chains]);
 
   return (
     <div className="relative" ref={ref}>
@@ -65,10 +66,10 @@ export default function ChainSelect({ value, onChange, withBalances }: Props) {
         </span>
         {withBalances === true &&
           value !== undefined &&
-          !balancesLoading &&
+          !balanceLoading &&
           isConnected && (
             <span className="ml-auto text-dark text-sm mr-4">
-              {formatUnits(balances[value.id], 6)} USDC
+              {formatUnits(balance, 6)} USDC
             </span>
           )}
         <ChevronDownIcon
@@ -78,24 +79,54 @@ export default function ChainSelect({ value, onChange, withBalances }: Props) {
       {open && (
         <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full rounded-xl overflow-hidden">
           {chainsWithoutValue.map((chain) => (
-            <div
-              onClick={() => {
-                setOpen(false);
-                onChange(chain);
-              }}
-              key={chain.id}
-              className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
-            >
-              <ChainIcon chain={chain} className="size-6" />
-              <span className="font-medium text-sm">{chain.name}</span>
-              {withBalances === true && !balancesLoading && isConnected && (
-                <span className="ml-auto text-dark text-sm">
-                  {formatUnits(balances[chain.id], 6)} USDC
-                </span>
-              )}
-            </div>
+            <ChainSelectOption
+              key={chain.domain}
+              chain={chain}
+              setOpen={setOpen}
+              onChange={onChange}
+              withBalances={withBalances}
+            />
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+type ChainSelectOptionProps = {
+  chain: Chain;
+  setOpen: { (val: boolean): void };
+  onChange: { (val: Chain): void };
+  withBalances?: boolean;
+};
+
+function ChainSelectOption({
+  setOpen,
+  onChange,
+  chain,
+  withBalances,
+}: ChainSelectOptionProps) {
+  const { isConnected } = useAccount();
+
+  const { data: balance, isLoading: balanceLoading } = useUSDCBalance(chain, {
+    enabled: withBalances === true,
+  });
+
+  return (
+    <div
+      onClick={() => {
+        setOpen(false);
+        onChange(chain);
+      }}
+      key={chain.id}
+      className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
+    >
+      <ChainIcon chain={chain} className="size-6" />
+      <span className="font-medium text-sm">{chain.name}</span>
+      {withBalances === true && !balanceLoading && isConnected && (
+        <span className="ml-auto text-dark text-sm">
+          {formatUnits(balance, 6)} USDC
+        </span>
       )}
     </div>
   );

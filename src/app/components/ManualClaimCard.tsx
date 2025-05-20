@@ -107,6 +107,7 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
           <div className="text-lg mb-1">Source Chain</div>
           <ChainSelect
             value={chain}
+            chains={CHAINS}
             onChange={(c) => {
               setChain(c);
             }}

@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 import { useReceive } from "../actions/useReceive";
 import { useMemo } from "react";
-import { useUSDCBalances } from "../hooks/useUSDCBalances";
+import { useUSDCBalance } from "../hooks/useUSDCBalance";
 
 type HistoryProps = {
   transactions: BurnTx[];
@@ -48,7 +48,8 @@ function Row({ tx }: { tx: BurnTx }) {
   const client = usePublicClient({ chainId: data?.dstChain?.id });
   const eta = useETA(data);
   const receive = useReceive(data);
-  const { refetch: refetchBalances } = useUSDCBalances();
+
+  const { refetch: refetchBalance } = useUSDCBalance(data?.dstChain);
 
   const onMintClick = async () => {
     if (!receive) {
@@ -63,7 +64,7 @@ function Row({ tx }: { tx: BurnTx }) {
 
     await client?.waitForTransactionReceipt({ hash });
     await refetchNonceUsed();
-    await refetchBalances();
+    await refetchBalance();
   };
 
   if (isLoading || data === undefined) {
@@ -125,7 +126,7 @@ function Row({ tx }: { tx: BurnTx }) {
             </button>
           )}
           <Link
-            href={data.srcChain.getTxUri(data.hash)}
+            href={`http://socketscan.io/tx/${data.hash}`}
             target="_blank"
             className="btn btn-sm btn-primary"
           >

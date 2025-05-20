@@ -6,14 +6,20 @@ export interface Chain {
   id: number;
   domain: number;
   name: string;
-  usdcAddress: Address;
-  tokenMessengerAddress: Address;
-  messageTransmitterAddress: Address;
-  tokenMinterAddress: Address;
+  usdc: Address;
+  tokenMessengerV1?: Address;
+  messageTransmitterV1?: Address;
+  tokenMinterV1?: Address;
+  tokenMessengerV2?: Address;
+  messageTransmitterV2?: Address;
+  tokenMinterV2?: Address;
   icon: string;
   standardETA: number;
   fastETA?: number;
   getTxUri(hash: string): string;
+
+  hasV1: boolean;
+  hasV2: boolean;
 }
 
 export interface BurnTx {

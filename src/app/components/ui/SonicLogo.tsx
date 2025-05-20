@@ -21,7 +21,7 @@ export default function SonicLogo({ className }: Props) {
         width="230"
         height="69"
       >
-        <g clip-path="url(#clip0_302_607)">
+        <g clipPath="url(#clip0_302_607)">
           <mask
             id="mask1_302_607"
             style={{ maskType: "luminance" }}

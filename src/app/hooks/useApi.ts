@@ -45,12 +45,14 @@ type UseMessagesAndAttestationsProps = {
   srcDomain: number;
   txHash: Hex;
   refetchInterval: number;
+  enabled?: boolean;
 };
 
 export function useMessages({
   srcDomain,
   txHash,
   refetchInterval,
+  enabled,
 }: UseMessagesAndAttestationsProps) {
   return useQuery({
     queryKey: ["messages", srcDomain, txHash],
@@ -69,6 +71,7 @@ export function useMessages({
       };
       return json.messages;
     },
+    enabled,
     staleTime: refetchInterval,
     refetchInterval: refetchInterval,
   });

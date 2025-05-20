@@ -1,5 +1,6 @@
 import { USDC_ICON } from "@/app/constants";
-import { useUSDCBalances } from "@/app/hooks/useUSDCBalances";
+import { useUSDCBalance } from "@/app/hooks/useUSDCBalance";
+import { findChainById } from "@/app/utils";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 
@@ -13,9 +14,10 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
   const [inputValue, setInputValue] = useState(
     value === 0n ? "" : formatUnits(value, 6),
   );
-  const { data: balances } = useUSDCBalances();
 
-  const balance = useMemo(() => balances[chainId] ?? 0n, [balances, chainId]);
+  const chain = useMemo(() => findChainById(chainId), [chainId]);
+
+  const { data: balance } = useUSDCBalance(chain);
 
   const onInput = (event: FormEvent<HTMLInputElement>) => {
     const val = event.currentTarget.value

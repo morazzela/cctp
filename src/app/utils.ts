@@ -12,19 +12,38 @@ export function findChainByDomainId(domain: number): Chain {
   return res;
 }
 
+export function findChainById(id: number): Chain {
+  const res = CHAINS.find((c) => c.id === id);
+
+  if (res === undefined) {
+    throw new Error("Could not find chain by id: " + id);
+  }
+
+  return res;
+}
+
+export function shouldUseV1(srcChain: Chain, dstChain: Chain): boolean {
+  return srcChain.hasV2 !== dstChain.hasV2 || !srcChain.hasV2;
+}
+
 export function formatNumber(val: number | bigint) {
   return new Intl.NumberFormat("en-US").format(val);
 }
 
 type CreateChainFromViemChainProps = {
   domain: number;
-  usdcAddress: Address;
-  tokenMessengerAddress: Address;
-  messageTransmitterAddress: Address;
-  tokenMinterAddress: Address;
+  usdc: Address;
+  tokenMessengerV1?: Address;
+  messageTransmitterV1?: Address;
+  tokenMinterV1?: Address;
+  tokenMessengerV2?: Address;
+  messageTransmitterV2?: Address;
+  tokenMinterV2?: Address;
   standardETA: number;
   fastETA?: number;
   icon: string;
+  hasV1: boolean;
+  hasV2: boolean;
 };
 
 export function createChainFromViemChain(

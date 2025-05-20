@@ -1,14 +1,15 @@
 import { BurnTx, Chain } from "../types";
 import { useBlock, useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
-import { decodeEventLog, Hex } from "viem";
+import { decodeEventLog, encodePacked, Hex, keccak256, toHex } from "viem";
 import { useMessages } from "./useApi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { useTime } from "./useUtils";
 import moment from "moment";
-import { CHAINS } from "../constants";
+import { CHAINS, DEPOSIT_FOR_BURN_TOPIC_V1, DEPOSIT_FOR_BURN_TOPIC_V2, MESSAGE_SENT_TOPIC_V1, MESSAGE_SENT_TOPIC_V2 } from "../constants";
 import { findChainByDomainId } from "../utils";
+import { TOKEN_MESSENGER_V1_ABI } from "../abis/TokenMessengerV1";
 
 export type UseBurnTxDetailsType = {
   time: number;
@@ -21,8 +22,10 @@ export type UseBurnTxDetailsType = {
   isComplete: boolean;
   isMinted: boolean;
   amount: bigint;
-  minFinalityThreshold: number;
+  minFinalityThreshold?: number;
   isFast: boolean;
+  isV1: boolean;
+  isV2: boolean;
   hash: Hex;
 };
 
@@ -40,12 +43,13 @@ export function useBurnTxDetails(tx: BurnTx) {
   const { data: messages } = useMessages({
     srcDomain: tx.srcDomain,
     txHash: tx.hash,
-    refetchInterval: needsRefresh ? 5_000 : 60_000,
+    refetchInterval: needsRefresh ? 10_000 : 60_000,
   });
 
   const { data: block, isLoading: blockLoading } = useBlock({
-    blockHash: receipt?.blockHash,
+    blockNumber: receipt?.blockNumber,
     chainId: srcChain.id,
+    includeTransactions: false,
   });
 
   const res = useMemo(() => {
@@ -53,28 +57,37 @@ export function useBurnTxDetails(tx: BurnTx) {
       return;
     }
 
-    const log = receipt.logs.find(
+    const isV1 = receipt.logs.findIndex((log) => log.topics[0] === DEPOSIT_FOR_BURN_TOPIC_V1) !== -1
+
+    const depositForBurnLog = receipt.logs.find(
       (log) =>
         log.topics[0] ===
-        "0x0c8c1cbdc5190613ebd485511d4e2812cfa45eecb79d845893331fedad5130a5",
+        (isV1 ? DEPOSIT_FOR_BURN_TOPIC_V1 : DEPOSIT_FOR_BURN_TOPIC_V2),
     );
 
-    if (!log) {
+    if (!depositForBurnLog) {
       return;
     }
 
-    const decodedLog = decodeEventLog({
-      abi: TOKEN_MESSENGER_ABI,
+    const depositForBurnDecodedLog = decodeEventLog({
+      abi: isV1 ? TOKEN_MESSENGER_V1_ABI : TOKEN_MESSENGER_ABI,
       eventName: "DepositForBurn",
-      topics: log.topics,
-      data: log.data,
+      topics: depositForBurnLog.topics,
+      data: depositForBurnLog.data,
     });
 
     const dstChain = CHAINS.find(
-      (c) => c.domain === decodedLog.args.destinationDomain,
+      (c) => c.domain === depositForBurnDecodedLog.args.destinationDomain,
     );
 
     const hasMessages = messages !== undefined && messages.length > 0;
+    const minFinalityThreshold = (depositForBurnDecodedLog.args as any).minFinalityThreshold
+
+    let encodedNonce = hasMessages ? messages[0].eventNonce : "0x"
+
+    if (isV1 && hasMessages) {
+      encodedNonce = keccak256(encodePacked(["uint32", "uint64"], [tx.srcDomain, BigInt(encodedNonce)]))
+    }
 
     const res: UseBurnTxDetailsType = {
       time: Number(block.timestamp),
@@ -82,21 +95,25 @@ export function useBurnTxDetails(tx: BurnTx) {
       dstChain,
       attestation: hasMessages ? messages[0].attestation : "0x",
       message: hasMessages ? messages[0].message : "0x",
-      nonce: hasMessages ? messages[0].eventNonce : "0x",
+      nonce: encodedNonce,
       isPending: !hasMessages || messages[0].status === "pending_confirmations",
       isComplete: hasMessages && messages[0].status === "complete",
       isMinted: false,
-      amount: decodedLog.args.amount,
-      minFinalityThreshold: decodedLog.args.minFinalityThreshold,
-      isFast: decodedLog.args.minFinalityThreshold <= 1000,
+      amount: depositForBurnDecodedLog.args.amount,
+      minFinalityThreshold: isV1 ? undefined : minFinalityThreshold,
+      isFast: isV1 ? false : minFinalityThreshold <= 1000,
       hash: tx.hash,
+      isV1,
+      isV2: !isV1,
     };
 
     return res;
   }, [block, messages, receipt, srcChain, tx.hash]);
 
-  const { data: nonceUsed, refetch: refetchNonceUsed } = useReadContract({
-    address: res?.dstChain?.messageTransmitterAddress,
+  const { data: nonceUsed, refetch: refetchNonceUsed, failureReason } = useReadContract({
+    address: res?.isV1
+      ? res?.dstChain?.messageTransmitterV1
+      : res?.dstChain?.messageTransmitterV2,
     abi: MESSAGE_TRANSMITTER_ABI,
     functionName: "usedNonces",
     args: [res?.nonce ?? "0x"],

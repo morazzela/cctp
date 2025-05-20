@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
 import { useAccount, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
-import { ETHEREUM, LOCAL_STORAGE_TRANSACTIONS_KEY, SONIC } from "../constants";
-import { formatUnits, getAddress, isAddress, parseUnits } from "viem";
+import { CHAINS, ETHEREUM, LOCAL_STORAGE_TRANSACTIONS_KEY, SONIC } from "../constants";
+import { Address, formatUnits, getAddress, isAddress, parseUnits } from "viem";
 import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx, Chain } from "../types";
@@ -16,11 +16,12 @@ import {
   CheckIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
-import { useUSDCBalances } from "../hooks/useUSDCBalances";
+import { useUSDCBalance } from "../hooks/useUSDCBalance";
 import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
 import ManualClaimCard from "./ManualClaimCard";
 import { useBurnLimits } from "../hooks/useBurnLimits";
+import { shouldUseV1 } from "../utils";
 
 export default function BurnCard() {
   const isClient = useIsClient();
@@ -29,7 +30,6 @@ export default function BurnCard() {
     [],
   );
   const { address, isConnected } = useAccount();
-  const { data: balances, refetch: refetchBalances } = useUSDCBalances();
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
   const { data: burnLimits } = useBurnLimits();
@@ -45,13 +45,17 @@ export default function BurnCard() {
   const client = usePublicClient({ chainId: srcChain.id });
   const [bridging, setBridging] = useState(false);
   const [manualClaim, setManualClaim] = useState(false);
+  const { data: balance, refetch: refetchBalance } = useUSDCBalance(srcChain);
+
+  const isV1 = useMemo(
+    () => shouldUseV1(srcChain, dstChain),
+    [srcChain, dstChain],
+  );
 
   const recipientAddressValid = useMemo(
     () => recipientAddress !== undefined && isAddress(recipientAddress),
     [recipientAddress],
   );
-
-  const balance = useMemo(() => balances[srcChain.id], [balances, srcChain.id]);
 
   const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: srcChain.domain,
@@ -63,7 +67,7 @@ export default function BurnCard() {
   }, [fastBurnFeeLoading, fastBurnAllowanceLoading]);
 
   const isFastTransferAvailable = useMemo(() => {
-    if (fastBurnAllowanceLoading || fastBurnAllowance === undefined) {
+    if (isV1 || fastBurnAllowanceLoading || fastBurnAllowance === undefined) {
       return false;
     }
 
@@ -71,11 +75,14 @@ export default function BurnCard() {
       srcChain.fastETA !== undefined &&
       amount <= BigInt(parseUnits(fastBurnAllowance.allowance.toFixed(), 6))
     );
-  }, [fastBurnAllowance, fastBurnAllowanceLoading, srcChain.fastETA, amount]);
+  }, [isV1, fastBurnAllowance, fastBurnAllowanceLoading, srcChain.fastETA, amount]);
 
   const exceedsBurnAllowance = useMemo(() => {
-    return burnLimits[srcChain.id] > 0n && amount > burnLimits[srcChain.id];
-  }, [burnLimits, amount, srcChain.id]);
+    return (
+      burnLimits[srcChain.domain][isV1 ? 1 : 2] > 0n &&
+      amount > burnLimits[srcChain.domain][isV1 ? 1 : 2]
+    );
+  }, [burnLimits, amount, srcChain.domain, isV1]);
 
   const fee = useMemo(() => {
     if (
@@ -113,7 +120,7 @@ export default function BurnCard() {
       return "Bridging...";
     }
 
-    if (srcChain.fastETA !== undefined && fast && !isFastTransferAvailable) {
+    if (srcChain.fastETA !== undefined && !isV1 && fast && !isFastTransferAvailable) {
       return "Fast Transfer not Available";
     }
 
@@ -128,7 +135,18 @@ export default function BurnCard() {
     isFastTransferAvailable,
     srcChain.fastETA,
     isLoading,
+    isV1,
   ]);
+
+  const spender = useMemo(() => {
+    return (
+      isV1 ? srcChain.tokenMessengerV1 : srcChain.tokenMessengerV2
+    ) as Address;
+  }, [isV1, srcChain]);
+
+  const availableDstChains = useMemo(() => {
+    return CHAINS.filter((c) => (c.hasV2 && srcChain.hasV2) || (c.hasV1 && srcChain.hasV1))
+  }, [srcChain])
 
   const burn = useBurn({
     srcChain,
@@ -184,8 +202,7 @@ export default function BurnCard() {
     setIsBurnTxFromManualClaim(false);
     setCurrentBurnTx(burnTx);
     setAmount(0n);
-
-    refetchBalances();
+    refetchBalance();
   };
 
   useEffect(() => {
@@ -199,6 +216,15 @@ export default function BurnCard() {
       setRecipientAddress(address);
     }
   }, [address]);
+
+  useEffect(() => {
+    const availableDstChainsWithoutSrc = availableDstChains.filter((c) => c.domain !== srcChain.domain)
+    const valid = availableDstChains.some((c) => c.domain === dstChain.domain)
+
+    if (!valid && availableDstChainsWithoutSrc.length > 0) {
+      setDstChain(availableDstChainsWithoutSrc[0])
+    }
+  }, [dstChain, srcChain, availableDstChains])
 
   if (!isClient) {
     return;
@@ -297,6 +323,7 @@ export default function BurnCard() {
           <div className="w-full md:w-1/2">
             <div className="text-lg mb-1">Source Chain</div>
             <ChainSelect
+              chains={CHAINS}
               value={srcChain}
               onChange={onSourceChainChange}
               withBalances
@@ -305,6 +332,7 @@ export default function BurnCard() {
           <div className="w-full md:w-1/2">
             <div className="text-lg mb-1">Destination Chain</div>
             <ChainSelect
+              chains={availableDstChains}
               value={dstChain}
               onChange={onDestChainChange}
               withBalances
@@ -395,6 +423,13 @@ export default function BurnCard() {
                   .humanize()}
               </div>
             </div>
+            {isV1 && (
+              <div className="bg-primary-light/20 dark:bg-dark-primary/20 rounded-lg px-3 py-1">
+                <div className="text-primary-light dark:text-dark-primary font-medium">
+                  CCTP v1
+                </div>
+              </div>
+            )}
           </div>
           {isFastTransferAvailable && (
             <div className="cursor-pointer flex items-center gap-x-2">
@@ -410,9 +445,9 @@ export default function BurnCard() {
         </div>
         <ConnectGuard chain={srcChain}>
           <ApproveGuard
-            tokenAddress={srcChain.usdcAddress}
+            tokenAddress={srcChain.usdc}
             amount={amount}
-            spender={srcChain.tokenMessengerAddress}
+            spender={spender}
             bypass={balance !== undefined && amount > balance}
           >
             <button
