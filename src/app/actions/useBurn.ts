@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Address, pad } from "viem";
+import { Address, formatUnits, pad } from "viem";
 import { useWriteContract } from "wagmi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { Chain } from "../types";
@@ -55,7 +55,7 @@ export function useBurn({
     track("Burn", {
       srcChain: srcChain.name,
       dstChain: dstChain.name,
-      amount: amount.toString(),
+      amount: formatUnits(amount, 6),
     });
 
     return res;
