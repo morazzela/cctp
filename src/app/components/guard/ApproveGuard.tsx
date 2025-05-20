@@ -23,7 +23,7 @@ export default function ApproveGuard({
   bypass,
 }: Props) {
   const [hash, setHash] = useState<Hex>();
-  const [approving, setApproving] = useState(false)
+  const [approving, setApproving] = useState(false);
 
   const { writeContractAsync } = useWriteContract();
   const { data: txReceipt } = useWaitForTransactionReceipt({ hash });
@@ -44,7 +44,7 @@ export default function ApproveGuard({
       return;
     }
 
-    setApproving(false)
+    setApproving(false);
     refetch();
     setHash(undefined);
   }, [txReceipt, refetch]);
@@ -63,7 +63,7 @@ export default function ApproveGuard({
       className="btn btn-xl btn-primary"
       disabled={approving}
       onClick={async () => {
-        setApproving(true)
+        setApproving(true);
 
         const txHash = await writeContractAsync({
           address: tokenAddress,
@@ -71,8 +71,8 @@ export default function ApproveGuard({
           functionName: "approve",
           args: [spender, amount],
         }).catch((err) => {
-          console.error(err)
-          setApproving(false)
+          console.error(err);
+          setApproving(false);
         });
 
         if (txHash) {

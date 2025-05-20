@@ -3,7 +3,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
 import { useAccount, usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
-import { CHAINS, ETHEREUM, LOCAL_STORAGE_TRANSACTIONS_KEY, SONIC } from "../constants";
+import {
+  CHAINS,
+  ETHEREUM,
+  LOCAL_STORAGE_TRANSACTIONS_KEY,
+  SONIC,
+} from "../constants";
 import { Address, formatUnits, getAddress, isAddress, parseUnits } from "viem";
 import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
@@ -75,7 +80,13 @@ export default function BurnCard() {
       srcChain.fastETA !== undefined &&
       amount <= BigInt(parseUnits(fastBurnAllowance.allowance.toFixed(), 6))
     );
-  }, [isV1, fastBurnAllowance, fastBurnAllowanceLoading, srcChain.fastETA, amount]);
+  }, [
+    isV1,
+    fastBurnAllowance,
+    fastBurnAllowanceLoading,
+    srcChain.fastETA,
+    amount,
+  ]);
 
   const exceedsBurnAllowance = useMemo(() => {
     return (
@@ -120,7 +131,12 @@ export default function BurnCard() {
       return "Bridging...";
     }
 
-    if (srcChain.fastETA !== undefined && !isV1 && fast && !isFastTransferAvailable) {
+    if (
+      srcChain.fastETA !== undefined &&
+      !isV1 &&
+      fast &&
+      !isFastTransferAvailable
+    ) {
       return "Fast Transfer not Available";
     }
 
@@ -145,8 +161,10 @@ export default function BurnCard() {
   }, [isV1, srcChain]);
 
   const availableDstChains = useMemo(() => {
-    return CHAINS.filter((c) => (c.hasV2 && srcChain.hasV2) || (c.hasV1 && srcChain.hasV1))
-  }, [srcChain])
+    return CHAINS.filter(
+      (c) => (c.hasV2 && srcChain.hasV2) || (c.hasV1 && srcChain.hasV1),
+    );
+  }, [srcChain]);
 
   const burn = useBurn({
     srcChain,
@@ -218,13 +236,15 @@ export default function BurnCard() {
   }, [address]);
 
   useEffect(() => {
-    const availableDstChainsWithoutSrc = availableDstChains.filter((c) => c.domain !== srcChain.domain)
-    const valid = availableDstChains.some((c) => c.domain === dstChain.domain)
+    const availableDstChainsWithoutSrc = availableDstChains.filter(
+      (c) => c.domain !== srcChain.domain,
+    );
+    const valid = availableDstChains.some((c) => c.domain === dstChain.domain);
 
     if (!valid && availableDstChainsWithoutSrc.length > 0) {
-      setDstChain(availableDstChainsWithoutSrc[0])
+      setDstChain(availableDstChainsWithoutSrc[0]);
     }
-  }, [dstChain, srcChain, availableDstChains])
+  }, [dstChain, srcChain, availableDstChains]);
 
   if (!isClient) {
     return;

@@ -92,7 +92,7 @@ function App() {
           <div className="dark:hidden absolute h-40 left-1/2 -translate-x-1/2 top-56 w-screen -z-1 border-y-2 border-primary-light"></div>
         </div>
         {validTxs.length > 0 && (
-          <div className="hidden lg:flex w-full">
+          <div className="flex w-full">
             <History transactions={validTxs} />
           </div>
         )}

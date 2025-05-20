@@ -1,14 +1,28 @@
-import { arbitrum, avalanche, base, linea, mainnet, optimism, polygon, sonic, unichain } from "viem/chains";
+import {
+  arbitrum,
+  avalanche,
+  base,
+  linea,
+  mainnet,
+  optimism,
+  polygon,
+  sonic,
+  unichain,
+} from "viem/chains";
 import { createChainFromViemChain } from "./utils";
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions_v2";
 export const USDC_ICON =
   "https://raw.githubusercontent.com/Shadow-Exchange/shadow-assets/main/blockchains/sonic/assets/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo.png";
 
-export const DEPOSIT_FOR_BURN_TOPIC_V1 = "0x2fa9ca894982930190727e75500a97d8dc500233a5065e0f3126c48fbe0343c0"
-export const DEPOSIT_FOR_BURN_TOPIC_V2 = "0x0c8c1cbdc5190613ebd485511d4e2812cfa45eecb79d845893331fedad5130a5"
-export const MESSAGE_SENT_TOPIC_V1 = "0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036"
-export const MESSAGE_SENT_TOPIC_V2 = "0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036"
+export const DEPOSIT_FOR_BURN_TOPIC_V1 =
+  "0x2fa9ca894982930190727e75500a97d8dc500233a5065e0f3126c48fbe0343c0";
+export const DEPOSIT_FOR_BURN_TOPIC_V2 =
+  "0x0c8c1cbdc5190613ebd485511d4e2812cfa45eecb79d845893331fedad5130a5";
+export const MESSAGE_SENT_TOPIC_V1 =
+  "0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036";
+export const MESSAGE_SENT_TOPIC_V2 =
+  "0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036";
 
 export const ETHEREUM = createChainFromViemChain(mainnet, {
   domain: 0,
@@ -134,4 +148,14 @@ export const UNICHAIN = createChainFromViemChain(unichain, {
   hasV2: false,
 });
 
-export const CHAINS = [ETHEREUM, AVALANCHE, SONIC, LINEA, ARBITRUM, BASE, OPTIMISM, POLYGON, UNICHAIN];
+export const CHAINS = [
+  ETHEREUM,
+  AVALANCHE,
+  SONIC,
+  LINEA,
+  ARBITRUM,
+  BASE,
+  OPTIMISM,
+  POLYGON,
+  UNICHAIN,
+];

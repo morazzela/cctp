@@ -1,13 +1,17 @@
 import { BurnTx, Chain } from "../types";
 import { useBlock, useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
-import { decodeEventLog, encodePacked, Hex, keccak256, toHex } from "viem";
+import { decodeEventLog, encodePacked, Hex, keccak256 } from "viem";
 import { useMessages } from "./useApi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
 import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { useTime } from "./useUtils";
 import moment from "moment";
-import { CHAINS, DEPOSIT_FOR_BURN_TOPIC_V1, DEPOSIT_FOR_BURN_TOPIC_V2, MESSAGE_SENT_TOPIC_V1, MESSAGE_SENT_TOPIC_V2 } from "../constants";
+import {
+  CHAINS,
+  DEPOSIT_FOR_BURN_TOPIC_V1,
+  DEPOSIT_FOR_BURN_TOPIC_V2,
+} from "../constants";
 import { findChainByDomainId } from "../utils";
 import { TOKEN_MESSENGER_V1_ABI } from "../abis/TokenMessengerV1";
 
@@ -57,7 +61,10 @@ export function useBurnTxDetails(tx: BurnTx) {
       return;
     }
 
-    const isV1 = receipt.logs.findIndex((log) => log.topics[0] === DEPOSIT_FOR_BURN_TOPIC_V1) !== -1
+    const isV1 =
+      receipt.logs.findIndex(
+        (log) => log.topics[0] === DEPOSIT_FOR_BURN_TOPIC_V1,
+      ) !== -1;
 
     const depositForBurnLog = receipt.logs.find(
       (log) =>
@@ -81,12 +88,19 @@ export function useBurnTxDetails(tx: BurnTx) {
     );
 
     const hasMessages = messages !== undefined && messages.length > 0;
-    const minFinalityThreshold = (depositForBurnDecodedLog.args as any).minFinalityThreshold
+    // eslint-disable-next-line
+    const minFinalityThreshold = (depositForBurnDecodedLog.args as any)
+      .minFinalityThreshold;
 
-    let encodedNonce = hasMessages ? messages[0].eventNonce : "0x"
+    let encodedNonce = hasMessages ? messages[0].eventNonce : "0x";
 
     if (isV1 && hasMessages) {
-      encodedNonce = keccak256(encodePacked(["uint32", "uint64"], [tx.srcDomain, BigInt(encodedNonce)]))
+      encodedNonce = keccak256(
+        encodePacked(
+          ["uint32", "uint64"],
+          [tx.srcDomain, BigInt(encodedNonce)],
+        ),
+      );
     }
 
     const res: UseBurnTxDetailsType = {
@@ -108,9 +122,9 @@ export function useBurnTxDetails(tx: BurnTx) {
     };
 
     return res;
-  }, [block, messages, receipt, srcChain, tx.hash]);
+  }, [block, messages, receipt, srcChain, tx.hash, tx.srcDomain]);
 
-  const { data: nonceUsed, refetch: refetchNonceUsed, failureReason } = useReadContract({
+  const { data: nonceUsed, refetch: refetchNonceUsed } = useReadContract({
     address: res?.isV1
       ? res?.dstChain?.messageTransmitterV1
       : res?.dstChain?.messageTransmitterV2,

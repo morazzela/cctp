@@ -1,6 +1,16 @@
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { http, createConfig, createStorage } from "wagmi";
-import { arbitrum, avalanche, base, linea, mainnet, optimism, polygon, sonic, unichain } from "wagmi/chains";
+import {
+  arbitrum,
+  avalanche,
+  base,
+  linea,
+  mainnet,
+  optimism,
+  polygon,
+  sonic,
+  unichain,
+} from "wagmi/chains";
 
 import {
   binanceWallet,
@@ -45,7 +55,17 @@ export const config = createConfig({
   storage: createStorage({
     storage: window.localStorage,
   }),
-  chains: [mainnet, sonic, avalanche, linea, base, arbitrum, optimism, polygon, unichain],
+  chains: [
+    mainnet,
+    sonic,
+    avalanche,
+    linea,
+    base,
+    arbitrum,
+    optimism,
+    polygon,
+    unichain,
+  ],
   ssr: true,
   transports: {
     [mainnet.id]: http(),

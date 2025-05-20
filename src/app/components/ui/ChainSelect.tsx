@@ -9,13 +9,18 @@ import { useUSDCBalance } from "@/app/hooks/useUSDCBalance";
 import { Chain } from "@/app/types";
 
 type Props = {
-  chains: Chain[]
+  chains: Chain[];
   value: Chain | undefined;
   onChange: { (value: Chain): void };
   withBalances?: boolean;
 };
 
-export default function ChainSelect({ chains, value, onChange, withBalances }: Props) {
+export default function ChainSelect({
+  chains,
+  value,
+  onChange,
+  withBalances,
+}: Props) {
   const { data: balance, isLoading: balanceLoading } = useUSDCBalance(value, {
     enabled: withBalances === true,
   });
