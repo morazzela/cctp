@@ -48,12 +48,12 @@ export const config = createConfig({
   chains: [mainnet, sonic, avalanche, linea, base, arbitrum],
   ssr: true,
   transports: {
-    [mainnet.id]: http(),
+    [mainnet.id]: http("https://ethereum-rpc.publicnode.com"),
     [sonic.id]: http(),
-    [avalanche.id]: http(),
-    [linea.id]: http(),
-    [base.id]: http(),
-    [arbitrum.id]: http(),
+    [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
+    [linea.id]: http("https://linea-rpc.publicnode.com"),
+    [base.id]: http("https://base-rpc.publicnode.com"),
+    [arbitrum.id]: http("https://arbitrum-one-rpc.publicnode.com"),
   },
 });
 
