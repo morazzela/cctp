@@ -65,7 +65,7 @@ export default function BurnCard() {
   const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: srcChain.domain,
     dstDomain: dstChain.domain,
-    enabled: !isV1
+    enabled: !isV1,
   });
 
   const isLoading = useMemo(() => {
