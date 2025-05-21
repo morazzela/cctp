@@ -37,7 +37,7 @@ export default function BurnCard() {
   const { address, isConnected } = useAccount();
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
-  const { data: burnLimits } = useBurnLimits();
+  const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
   const [isBurnTxFromManualClaim, setIsBurnTxFromManualClaim] = useState(false);
 
@@ -65,11 +65,12 @@ export default function BurnCard() {
   const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
     srcDomain: srcChain.domain,
     dstDomain: dstChain.domain,
+    enabled: !isV1
   });
 
   const isLoading = useMemo(() => {
-    return fastBurnFeeLoading || fastBurnAllowanceLoading;
-  }, [fastBurnFeeLoading, fastBurnAllowanceLoading]);
+    return fastBurnFeeLoading || fastBurnAllowanceLoading || burnLimitsLoading;
+  }, [fastBurnFeeLoading, fastBurnAllowanceLoading, burnLimitsLoading]);
 
   const isFastTransferAvailable = useMemo(() => {
     if (isV1 || fastBurnAllowanceLoading || fastBurnAllowance === undefined) {

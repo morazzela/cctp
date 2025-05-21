@@ -80,7 +80,7 @@ export default function TokenInput({ chainId, value, onChange }: Props) {
             <input
               onInput={onInput}
               placeholder="0.0"
-              className="w-full bg-transparent text-3xl font-semibold text-darker dark:text-lighter outline-none placeholder:text-dark dark:placeholder:text-light/20 md:text-4xl text-right"
+              className="w-full bg-transparent text-3xl font-semibold text-darker dark:text-lighter outline-none placeholder:text-dark/20 dark:placeholder:text-light/20 md:text-4xl text-right"
               value={inputValue}
             />
           </div>

@@ -4,6 +4,7 @@ import { Hex } from "viem";
 type UseFastBurnFeesProps = {
   srcDomain: number | undefined;
   dstDomain: number | undefined;
+  enabled: boolean;
 };
 
 export function useFastBurnAllowance() {
@@ -26,6 +27,7 @@ export function useFastBurnAllowance() {
 export function useFastBurnFees({
   srcDomain,
   dstDomain,
+  enabled,
 }: UseFastBurnFeesProps) {
   return useQuery({
     queryKey: ["fast-burn-fees", srcDomain, dstDomain],
@@ -36,7 +38,7 @@ export function useFastBurnFees({
       const json = (await res.json()) as { minimumFee: number };
       return json.minimumFee;
     },
-    enabled: srcDomain !== undefined && dstDomain !== undefined,
+    enabled: enabled && srcDomain !== undefined && dstDomain !== undefined,
     staleTime: 60_000,
   });
 }
