@@ -17,6 +17,7 @@ import ConnectGuard from "./guard/ConnectGuard";
 import Checkbox from "./ui/Checkbox";
 import moment from "moment";
 import {
+  ArrowsRightLeftIcon,
   CheckCircleIcon,
   CheckIcon,
   XMarkIcon,
@@ -39,7 +40,6 @@ export default function BurnCard() {
     useFastBurnAllowance();
   const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
-  const [isBurnTxFromManualClaim, setIsBurnTxFromManualClaim] = useState(false);
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
@@ -218,10 +218,15 @@ export default function BurnCard() {
 
     setBridging(false);
     setTransactions((txs) => [burnTx, ...txs]);
-    setIsBurnTxFromManualClaim(false);
     setCurrentBurnTx(burnTx);
     setAmount(0n);
     refetchBalance();
+  };
+
+  const onSwitch = () => {
+    const tmpChain = dstChain;
+    setDstChain(srcChain);
+    setSrcChain(tmpChain);
   };
 
   useEffect(() => {
@@ -254,11 +259,9 @@ export default function BurnCard() {
   if (currentBurnTx !== undefined) {
     return (
       <TxCard
-        isManual={isBurnTxFromManualClaim}
         tx={currentBurnTx}
         clearTx={() => {
           setCurrentBurnTx(undefined);
-          setIsBurnTxFromManualClaim(false);
         }}
       />
     );
@@ -271,7 +274,6 @@ export default function BurnCard() {
         onLoaded={(tx) => {
           setManualClaim(false);
           setCurrentBurnTx(tx);
-          setIsBurnTxFromManualClaim(true);
         }}
       />
     );
@@ -340,7 +342,7 @@ export default function BurnCard() {
         </button>
       </div>
       <div className="mt-6 flex flex-col gap-4">
-        <div className="gap-4 flex max-md:flex-wrap">
+        <div className="gap-x-2 gap-y-4 flex items-center max-md:flex-wrap">
           <div className="w-full md:w-1/2">
             <div className="text-lg mb-1">Source Chain</div>
             <ChainSelect
@@ -349,6 +351,12 @@ export default function BurnCard() {
               onChange={onSourceChainChange}
               withBalances
             />
+          </div>
+          <div
+            onClick={onSwitch}
+            className="max-md:hidden cursor-pointer translate-y-4 p-2 rounded-full text-dark/20 hover:text-dark/50 dark:text-light/20 dark:hover:text-light/50"
+          >
+            <ArrowsRightLeftIcon className="size-4" />
           </div>
           <div className="w-full md:w-1/2">
             <div className="text-lg mb-1">Destination Chain</div>

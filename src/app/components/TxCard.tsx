@@ -13,10 +13,9 @@ import ConnectGuard from "./guard/ConnectGuard";
 type Props = {
   tx: BurnTx;
   clearTx: { (): void };
-  isManual: boolean;
 };
 
-export default function TxCard({ tx, clearTx, isManual }: Props) {
+export default function TxCard({ tx, clearTx }: Props) {
   const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
   const eta = useETA(data);
   const receive = useReceive(data);
@@ -57,14 +56,12 @@ export default function TxCard({ tx, clearTx, isManual }: Props) {
 
   return (
     <div className="relative card max-lg:rounded-none card-transparent card-body min-h-96 w-full lg:max-w-3xl max-lg:fixed max-lg:left-0 max-lg:top-0 max-lg:w-screen max-lg:h-dvh max-lg:overflow-y-auto max-lg:p-6 max-mg:bg-none max-lg:pt-16 max-lg:z-10">
-      {isManual && (
-        <div
-          onClick={clearTx}
-          className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 max-lg:-translate-x-1/2 max-lg:translate-y-1/2 p-2 lg:p-1 rounded-xl bg-lighter dark:bg-darker dark:hover:bg-darker border cursor-pointer hover:bg-light"
-        >
-          <XMarkIcon className="size-8 lg:size-7 text-dark" />
-        </div>
-      )}
+      <div
+        onClick={clearTx}
+        className="absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 max-lg:-translate-x-1/2 max-lg:translate-y-1/2 p-2 lg:p-1 rounded-xl bg-lighter dark:bg-darker dark:hover:bg-darker border cursor-pointer hover:bg-light"
+      >
+        <XMarkIcon className="size-8 lg:size-7 text-dark" />
+      </div>
       <div>
         {(isLoading || !data) && (
           <div className="absolute inset-0 flex items-center justify-center">
