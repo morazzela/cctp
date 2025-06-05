@@ -10,6 +10,7 @@ import {
   polygon,
   sonic,
   unichain,
+  worldchain,
 } from "wagmi/chains";
 
 import {
@@ -65,6 +66,7 @@ export const config = createConfig({
     optimism,
     polygon,
     unichain,
+    worldchain,
   ],
   ssr: true,
   transports: {
@@ -77,6 +79,7 @@ export const config = createConfig({
     [optimism.id]: http("https://optimism-rpc.publicnode.com"),
     [polygon.id]: http("https://polygon-bor-rpc.publicnode.com"),
     [unichain.id]: http("https://unichain-rpc.publicnode.com"),
+    [worldchain.id]: http(),
   },
 });
 
