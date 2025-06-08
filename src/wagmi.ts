@@ -47,7 +47,7 @@ const connectors = connectorsForWallets(
   {
     appName: "CCTP",
     projectId:
-      process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "YOUR_PROJECT_ID",
+      process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "YOUR_PROJECT_ID2",
   },
 );
 
