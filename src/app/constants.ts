@@ -117,12 +117,16 @@ export const OPTIMISM = createChainFromViemChain(optimism, {
   domain: 2,
   icon: "/images/chains/optimism.svg",
   standardETA: 60 * 20,
+  fastETA: 8,
   tokenMessengerV1: "0x2B4069517957735bE00ceE0fadAE88a26365528f",
   messageTransmitterV1: "0x4D41f22c5a0e5c74090899E5a8Fb597a8842b3e8",
   tokenMinterV1: "0x33E76C5C31cb928dc6FE6487AB3b2C0769B1A1e3",
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
   usdc: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
   hasV1: true,
-  hasV2: false,
+  hasV2: true,
 });
 
 export const POLYGON = createChainFromViemChain(polygon, {
