@@ -1,0 +1,25 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 24C18.6504 24 24 18.6504 24 12C24 5.3496 18.6504 0 12 0C5.3496 0 0 5.3496 0 12C0 18.6504 5.3496 24 12 24Z" fill="black"/>
+  <g clip-path="url(#clip0_6434_5529)">
+    <path d="M7.94933 14.1784C8.02174 14.106 8.12132 14.0638 8.22692 14.0638H17.804C17.979 14.0638 18.0665 14.275 17.9428 14.3987L16.0509 16.2906C15.9785 16.363 15.8789 16.4052 15.7733 16.4052H6.19625C6.02124 16.4052 5.93374 16.194 6.05745 16.0703L7.94933 14.1784Z" fill="url(#paint0_linear_6434_5529)"/>
+    <path d="M7.94933 7.11478C8.02476 7.04236 8.12433 7.00012 8.22692 7.00012H17.804C17.979 7.00012 18.0665 7.21134 17.9428 7.33505L16.0509 9.22693C15.9785 9.29934 15.8789 9.34159 15.7733 9.34159H6.19625C6.02124 9.34159 5.93374 9.13037 6.05745 9.00666L7.94933 7.11478Z" fill="url(#paint1_linear_6434_5529)"/>
+    <path d="M16.0509 10.6239C15.9785 10.5515 15.8789 10.5093 15.7733 10.5093H6.19625C6.02124 10.5093 5.93374 10.7205 6.05745 10.8442L7.94933 12.7361C8.02174 12.8085 8.12132 12.8507 8.22692 12.8507H17.804C17.979 12.8507 18.0665 12.6395 17.9428 12.5158L16.0509 10.6239Z" fill="url(#paint2_linear_6434_5529)"/>
+  </g>
+  <defs>
+    <linearGradient id="paint0_linear_6434_5529" x1="16.8891" y1="5.86998" x2="10.261" y2="18.5654" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00FFA3"/>
+      <stop offset="1" stop-color="#DC1FFF"/>
+    </linearGradient>
+    <linearGradient id="paint1_linear_6434_5529" x1="13.9909" y1="4.35688" x2="7.36284" y2="17.0523" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00FFA3"/>
+      <stop offset="1" stop-color="#DC1FFF"/>
+    </linearGradient>
+    <linearGradient id="paint2_linear_6434_5529" x1="15.4308" y1="5.1086" x2="8.80273" y2="17.804" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00FFA3"/>
+      <stop offset="1" stop-color="#DC1FFF"/>
+    </linearGradient>
+    <clipPath id="clip0_6434_5529">
+      <rect width="12" height="9.40508" fill="white" transform="translate(6 7.00012)"/>
+    </clipPath>
+  </defs>
+</svg>

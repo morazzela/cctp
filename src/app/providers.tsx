@@ -3,21 +3,14 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode } from "react";
 import { cookieToInitialState, WagmiProvider } from "wagmi";
-
-import { config, projectId, wagmiAdapter } from "../wagmi";
-import { createAppKit } from "@reown/appkit/react";
 import {
-  arbitrum,
-  avalanche,
-  base,
-  linea,
-  mainnet,
-  optimism,
-  polygon,
-  sonic,
-  unichain,
-  worldchain,
-} from "viem/chains";
+  config,
+  networks,
+  projectId,
+  solanaAdapter,
+  wagmiAdapter,
+} from "../wagmi";
+import { createAppKit } from "@reown/appkit/react";
 
 const queryClient = new QueryClient();
 
@@ -29,21 +22,10 @@ const metadata = {
 };
 
 createAppKit({
-  adapters: [wagmiAdapter],
+  adapters: [wagmiAdapter, solanaAdapter],
   projectId,
-  networks: [
-    mainnet,
-    sonic,
-    avalanche,
-    linea,
-    base,
-    arbitrum,
-    optimism,
-    polygon,
-    unichain,
-    worldchain,
-  ],
-  defaultNetwork: sonic,
+  networks: networks,
+  defaultNetwork: networks[0],
   metadata,
   features: {
     socials: false,

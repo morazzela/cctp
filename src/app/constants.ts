@@ -6,11 +6,12 @@ import {
   mainnet,
   optimism,
   polygon,
+  solana,
   sonic,
   unichain,
   worldchain,
-} from "viem/chains";
-import { createChainFromViemChain } from "./utils";
+} from "@reown/appkit/networks";
+import { createChainFromNetwork } from "./utils";
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions_v2";
 export const USDC_ICON =
@@ -25,7 +26,7 @@ export const MESSAGE_SENT_TOPIC_V1 =
 export const MESSAGE_SENT_TOPIC_V2 =
   "0x8c5261668696ce22758910d05bab8f186d6eb247ceac2af2e82c7dc17669b036";
 
-export const ETHEREUM = createChainFromViemChain(mainnet, {
+export const ETHEREUM = createChainFromNetwork(mainnet, {
   domain: 0,
   icon: "/images/chains/ethereum.svg",
   standardETA: 20 * 60,
@@ -41,7 +42,7 @@ export const ETHEREUM = createChainFromViemChain(mainnet, {
   hasV2: true,
 });
 
-export const AVALANCHE = createChainFromViemChain(avalanche, {
+export const AVALANCHE = createChainFromNetwork(avalanche, {
   domain: 1,
   icon: "/images/chains/avalanche.svg",
   standardETA: 8,
@@ -56,7 +57,7 @@ export const AVALANCHE = createChainFromViemChain(avalanche, {
   hasV2: true,
 });
 
-export const LINEA = createChainFromViemChain(linea, {
+export const LINEA = createChainFromNetwork(linea, {
   domain: 11,
   icon: "/images/chains/linea.svg",
   standardETA: 60 * 60 * 32,
@@ -69,7 +70,7 @@ export const LINEA = createChainFromViemChain(linea, {
   hasV2: true,
 });
 
-export const BASE = createChainFromViemChain(base, {
+export const BASE = createChainFromNetwork(base, {
   domain: 6,
   icon: "/images/chains/base.svg",
   standardETA: 20 * 60,
@@ -85,7 +86,7 @@ export const BASE = createChainFromViemChain(base, {
   hasV2: true,
 });
 
-export const ARBITRUM = createChainFromViemChain(arbitrum, {
+export const ARBITRUM = createChainFromNetwork(arbitrum, {
   domain: 3,
   icon: "/images/chains/arbitrum.svg",
   standardETA: 20 * 60,
@@ -101,7 +102,7 @@ export const ARBITRUM = createChainFromViemChain(arbitrum, {
   hasV2: true,
 });
 
-export const SONIC = createChainFromViemChain(sonic, {
+export const SONIC = createChainFromNetwork(sonic, {
   domain: 13,
   icon: "/images/chains/sonic.svg",
   standardETA: 8,
@@ -113,7 +114,7 @@ export const SONIC = createChainFromViemChain(sonic, {
   hasV2: true,
 });
 
-export const OPTIMISM = createChainFromViemChain(optimism, {
+export const OPTIMISM = createChainFromNetwork(optimism, {
   domain: 2,
   icon: "/images/chains/optimism.svg",
   standardETA: 60 * 20,
@@ -129,7 +130,7 @@ export const OPTIMISM = createChainFromViemChain(optimism, {
   hasV2: true,
 });
 
-export const POLYGON = createChainFromViemChain(polygon, {
+export const POLYGON = createChainFromNetwork(polygon, {
   domain: 7,
   icon: "/images/chains/polygon.svg",
   standardETA: 60 * 8,
@@ -141,7 +142,7 @@ export const POLYGON = createChainFromViemChain(polygon, {
   hasV2: false,
 });
 
-export const UNICHAIN = createChainFromViemChain(unichain, {
+export const UNICHAIN = createChainFromNetwork(unichain, {
   domain: 10,
   icon: "/images/chains/unichain.svg",
   standardETA: 60 * 20,
@@ -153,7 +154,7 @@ export const UNICHAIN = createChainFromViemChain(unichain, {
   hasV2: false,
 });
 
-export const WORLDCHAIN = createChainFromViemChain(worldchain, {
+export const WORLDCHAIN = createChainFromNetwork(worldchain, {
   domain: 14,
   icon: "/images/chains/worldchain.svg",
   standardETA: 60 * 20,
@@ -162,6 +163,19 @@ export const WORLDCHAIN = createChainFromViemChain(worldchain, {
   messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
   tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
   usdc: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+  hasV1: false,
+  hasV2: true,
+});
+
+export const SOLANA = createChainFromNetwork(solana, {
+  domain: 5,
+  icon: "/images/chains/solana.svg",
+  standardETA: 60 * 20,
+  fastETA: 8,
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
+  usdc: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   hasV1: false,
   hasV2: true,
 });
@@ -177,4 +191,5 @@ export const CHAINS = [
   POLYGON,
   UNICHAIN,
   WORLDCHAIN,
+  SOLANA,
 ];

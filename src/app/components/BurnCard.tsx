@@ -27,7 +27,8 @@ import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
 import ManualClaimCard from "./ManualClaimCard";
 import { useBurnLimits } from "../hooks/useBurnLimits";
-import { shouldUseV1 } from "../utils";
+import { getChecksumedAddress, shouldUseV1 } from "../utils";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function BurnCard() {
   const isClient = useIsClient();
@@ -35,6 +36,8 @@ export default function BurnCard() {
     LOCAL_STORAGE_TRANSACTIONS_KEY,
     [],
   );
+  const [srcChain, setSrcChain] = useState<Chain>(ETHEREUM);
+  const [dstChain, setDstChain] = useState<Chain>(SONIC);
   const { address, isConnected } = useAccount();
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
@@ -43,9 +46,7 @@ export default function BurnCard() {
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
-  const [recipientAddress, setRecipientAddress] = useState(address ?? "");
-  const [srcChain, setSrcChain] = useState<Chain>(ETHEREUM);
-  const [dstChain, setDstChain] = useState<Chain>(SONIC);
+  const [recipientAddress, setRecipientAddress] = useState<string>(address ?? "");
   const [amount, setAmount] = useState(0n);
   const client = usePublicClient({ chainId: srcChain.id });
   const [bridging, setBridging] = useState(false);
@@ -58,8 +59,8 @@ export default function BurnCard() {
   );
 
   const recipientAddressValid = useMemo(
-    () => recipientAddress !== undefined && isAddress(recipientAddress),
-    [recipientAddress],
+    () => getChecksumedAddress(recipientAddress, dstChain) !== null,
+    [recipientAddress, dstChain],
   );
 
   const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
@@ -171,7 +172,7 @@ export default function BurnCard() {
     srcChain,
     dstChain,
     amount,
-    recipient: recipientAddressValid ? getAddress(recipientAddress) : undefined,
+    recipient: recipientAddress,
     fee,
     minFinalityThreshold: fast && isFastTransferAvailable ? 1000 : 2000,
   });
@@ -230,16 +231,21 @@ export default function BurnCard() {
   };
 
   useEffect(() => {
-    if (!recipientAddressOpen) {
-      setRecipientAddress(address ?? "");
+    if (dstChain.namespace !== srcChain.namespace && !recipientAddressOpen) {
+      setRecipientAddressOpen(true)
     }
-  }, [recipientAddressOpen, address]);
+
+    if (dstChain.namespace === srcChain.namespace && recipientAddressOpen) {
+      setRecipientAddressOpen(false)
+    }
+  }, [dstChain.namespace, srcChain.namespace])
 
   useEffect(() => {
-    if (address !== undefined) {
-      setRecipientAddress(address);
+    if (srcChain.namespace !== dstChain.namespace) {
+      setRecipientAddress("")
     }
-  }, [address]);
+    // eslint-disable-next-line
+  }, [dstChain])
 
   useEffect(() => {
     const availableDstChainsWithoutSrc = availableDstChains.filter(
@@ -378,7 +384,7 @@ export default function BurnCard() {
         </div>
         {isConnected && (
           <div>
-            {address !== undefined && (
+            {address !== undefined && srcChain.namespace === dstChain.namespace && (
               <div
                 onClick={() => setRecipientAddressOpen((val) => !val)}
                 className="flex items-center justify-end gap-x-2"
@@ -399,7 +405,7 @@ export default function BurnCard() {
             )}
             {recipientAddressOpen && (
               <div>
-                <div className="text-lg mb-1">Recipient</div>
+                <div className="text-lg mb-1">Recipient Address</div>
                 <div className="relative">
                   <input
                     type="text"
@@ -408,21 +414,17 @@ export default function BurnCard() {
                     onInput={(e) => {
                       const val = e.currentTarget.value.trim();
 
-                      try {
-                        setRecipientAddress(getAddress(val));
-                      } catch (err) {
-                        console.error(err);
-                        setRecipientAddress(val);
-                      }
+                      const checksumed = getChecksumedAddress(val, dstChain)
+                      setRecipientAddress(checksumed ?? val)
                     }}
                     disabled={!recipientAddressOpen}
                   />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-x-4">
                     {recipientAddressValid && (
-                      <CheckCircleIcon className="size-6 text-green-600" />
+                      <CheckCircleIcon className="size-6 text-green-600 mr-2" />
                     )}
                     {!recipientAddressValid && (
-                      <div className="size-5.5 rounded-full bg-danger">
+                      <div className="size-5.5 rounded-full bg-danger mr-2">
                         <XMarkIcon className="size-5.5 text-lighter" />
                       </div>
                     )}
@@ -472,7 +474,7 @@ export default function BurnCard() {
             </div>
           )}
         </div>
-        <ConnectGuard chain={srcChain}>
+        <ConnectGuard chain={srcChain} mustBeActive>
           <ApproveGuard
             tokenAddress={srcChain.usdc}
             amount={amount}

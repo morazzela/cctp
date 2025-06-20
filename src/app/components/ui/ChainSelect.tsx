@@ -3,10 +3,10 @@
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatUnits } from "viem";
-import { useAccount } from "wagmi";
 import ChainIcon from "./ChainIcon";
 import { useUSDCBalance } from "@/app/hooks/useUSDCBalance";
 import { Chain } from "@/app/types";
+import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
 
 type Props = {
   chains: Chain[];
@@ -27,7 +27,8 @@ export default function ChainSelect({
 
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const { isConnected } = useAccount();
+  const { isConnected } = useAppKitAccount();
+  const network = useAppKitNetwork();
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -72,6 +73,7 @@ export default function ChainSelect({
         {withBalances === true &&
           value !== undefined &&
           !balanceLoading &&
+          value.namespace === network.caipNetwork?.chainNamespace &&
           isConnected && (
             <span className="ml-auto text-dark text-sm mr-4">
               {formatUnits(balance, 6)} USDC
@@ -111,7 +113,8 @@ function ChainSelectOption({
   chain,
   withBalances,
 }: ChainSelectOptionProps) {
-  const { isConnected } = useAccount();
+  const { isConnected } = useAppKitAccount();
+  const network = useAppKitNetwork();
 
   const { data: balance, isLoading: balanceLoading } = useUSDCBalance(chain, {
     enabled: withBalances === true,
@@ -128,11 +131,14 @@ function ChainSelectOption({
     >
       <ChainIcon chain={chain} className="size-6" />
       <span className="font-medium text-sm">{chain.name}</span>
-      {withBalances === true && !balanceLoading && isConnected && (
-        <span className="ml-auto text-dark text-sm">
-          {formatUnits(balance, 6)} USDC
-        </span>
-      )}
+      {withBalances === true &&
+        !balanceLoading &&
+        isConnected &&
+        chain.namespace === network.caipNetwork?.chainNamespace && (
+          <span className="ml-auto text-dark text-sm">
+            {formatUnits(balance, 6)} USDC
+          </span>
+        )}
     </div>
   );
 }

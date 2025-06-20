@@ -7,7 +7,7 @@ import { formatUnits, parseUnits } from "viem";
 type Props = {
   value: bigint;
   onChange: { (value: bigint): void };
-  chainId: number;
+  chainId: number | string;
 };
 
 export default function TokenInput({ chainId, value, onChange }: Props) {
