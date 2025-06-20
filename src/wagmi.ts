@@ -1,5 +1,5 @@
-import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { http, createConfig, createStorage } from "wagmi";
+import { cookieStorage, createConfig, createStorage } from "wagmi";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import {
   arbitrum,
   avalanche,
@@ -11,77 +11,31 @@ import {
   sonic,
   unichain,
   worldchain,
-} from "wagmi/chains";
+} from "@reown/appkit/networks";
 
-import {
-  binanceWallet,
-  bitgetWallet,
-  bybitWallet,
-  coinbaseWallet,
-  frameWallet,
-  metaMaskWallet,
-  okxWallet,
-  rabbyWallet,
-  safeWallet,
-  walletConnectWallet,
-} from "@rainbow-me/rainbowkit/wallets";
+export const networks = [
+  mainnet,
+  sonic,
+  avalanche,
+  linea,
+  base,
+  arbitrum,
+  optimism,
+  polygon,
+  unichain,
+  worldchain,
+];
 
-const connectors = connectorsForWallets(
-  [
-    {
-      groupName: "Recommended",
-      wallets: [
-        binanceWallet,
-        metaMaskWallet,
-        rabbyWallet,
-        bybitWallet,
-        coinbaseWallet,
-        bitgetWallet,
-        okxWallet,
-        walletConnectWallet,
-        safeWallet,
-        frameWallet,
-      ],
-    },
-  ],
-  {
-    appName: "CCTP",
-    projectId:
-      process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || "YOUR_PROJECT_ID2",
-  },
-);
+export const projectId = "60dfde649ba314d4c8d1d5e7b83a8200";
 
-export const config = createConfig({
-  connectors,
-  storage: createStorage({
-    storage: window.localStorage,
-  }),
-  chains: [
-    mainnet,
-    sonic,
-    avalanche,
-    linea,
-    base,
-    arbitrum,
-    optimism,
-    polygon,
-    unichain,
-    worldchain,
-  ],
+export const wagmiAdapter = new WagmiAdapter({
+  storage: createStorage({ storage: cookieStorage }),
   ssr: true,
-  transports: {
-    [mainnet.id]: http("https://ethereum-rpc.publicnode.com"),
-    [sonic.id]: http(),
-    [avalanche.id]: http("https://avalanche-c-chain-rpc.publicnode.com"),
-    [linea.id]: http("https://linea-rpc.publicnode.com"),
-    [base.id]: http("https://base-rpc.publicnode.com"),
-    [arbitrum.id]: http("https://arbitrum-one-rpc.publicnode.com"),
-    [optimism.id]: http("https://optimism-rpc.publicnode.com"),
-    [polygon.id]: http("https://polygon-bor-rpc.publicnode.com"),
-    [unichain.id]: http("https://unichain-rpc.publicnode.com"),
-    [worldchain.id]: http(),
-  },
+  projectId,
+  networks,
 });
+
+export const config = wagmiAdapter.wagmiConfig;
 
 declare module "wagmi" {
   interface Register {

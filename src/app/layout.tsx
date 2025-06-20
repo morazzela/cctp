@@ -1,12 +1,12 @@
 import "supports-color";
 import "./index.css";
-import "@rainbow-me/rainbowkit/styles.css";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { type ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import dynamic from "next/dynamic";
+import { headers } from "next/headers";
 
 const Providers = dynamic(() => import("./providers"), { ssr: false });
 
@@ -38,14 +38,16 @@ export const viewport: Viewport = {
   minimumScale: 1,
 };
 
-export default function RootLayout(props: { children: ReactNode }) {
+export default async function RootLayout(props: { children: ReactNode }) {
+  const cookies = await headers().get("cookie");
+
   return (
     <html lang="en">
       <body
         className={`${inter.className} ${satoshi.variable} text-sm bg-lighter dark:bg-dark bg-cover text-darker dark:text-light font-satoshi overflow-x-hidden`}
       >
         <Analytics />
-        <Providers>{props.children}</Providers>
+        <Providers cookies={cookies}>{props.children}</Providers>
       </body>
     </html>
   );

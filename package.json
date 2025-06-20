@@ -12,7 +12,8 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
     "@heroicons/react": "^2.2.0",
-    "@rainbow-me/rainbowkit": "^2.2.4",
+    "@reown/appkit": "^1.7.10",
+    "@reown/appkit-adapter-wagmi": "^1.7.10",
     "@solana/spl-token": "^0.4.13",
     "@solana/wallet-adapter-base": "^0.9.26",
     "@solana/wallet-adapter-react": "^0.15.38",

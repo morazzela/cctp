@@ -1,8 +1,14 @@
 import { Chain } from "@/app/types";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { Connector, useAccount, useConnectors, useSwitchChain } from "wagmi";
+import { useAppKit } from "@reown/appkit/react";
 
 type Props = {
   chain: Chain;
@@ -14,6 +20,16 @@ export default function ConnectGuard({ chain, children, skip }: Props) {
   const [open, setOpen] = useState(false);
   const { switchChainAsync } = useSwitchChain();
   const { isConnected, chainId: requiredChainId } = useAccount();
+  const appKit = useAppKit();
+
+  const onButtonClick = useCallback(async () => {
+    if (isConnected) {
+      await switchChainAsync({ chainId: chain.id });
+      setOpen(false);
+    } else {
+      appKit.open();
+    }
+  }, [appKit, chain.id, isConnected, switchChainAsync]);
 
   if (skip === true || (isConnected && chain.id === requiredChainId)) {
     return children;
@@ -21,23 +37,9 @@ export default function ConnectGuard({ chain, children, skip }: Props) {
 
   return (
     <div>
-      <ConnectButton.Custom>
-        {({ openConnectModal }) => (
-          <button
-            className="btn btn-xl btn-primary w-full"
-            onClick={async () => {
-              if (isConnected) {
-                await switchChainAsync({ chainId: chain.id });
-                setOpen(false);
-              } else {
-                openConnectModal();
-              }
-            }}
-          >
-            {isConnected ? `Connect to ${chain.name}` : "Connect wallet"}
-          </button>
-        )}
-      </ConnectButton.Custom>
+      <button className="btn btn-xl btn-primary w-full" onClick={onButtonClick}>
+        {isConnected ? `Connect to ${chain.name}` : "Connect wallet"}
+      </button>
       <Modal chainId={chain.id} open={open} setOpen={setOpen} />
     </div>
   );

@@ -7,20 +7,20 @@ import { BurnTx } from "./types";
 import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
 import { useAccount } from "wagmi";
 import ChainIcon from "./components/ui/ChainIcon";
-import { useAccountModal } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import ShadowLogo from "./components/ui/ShadowLogo";
 import { useEffect, useMemo } from "react";
 import { MoonIcon, SunIcon } from "@heroicons/react/16/solid";
 import ShadowBackground from "./components/ui/ShadowBackground";
 import SonicLogo from "./components/ui/SonicLogo";
+import { useAppKit } from "@reown/appkit/react";
 
 function App() {
   const [txs] = useLocalStorage<BurnTx[]>(LOCAL_STORAGE_TRANSACTIONS_KEY, []);
   const isClient = useIsClient();
   const { address, chainId } = useAccount();
-  const { openAccountModal } = useAccountModal();
   const [dark, setDark] = useLocalStorage("dark-mode", false);
+  const appKit = useAppKit();
 
   const validTxs = useMemo(() => {
     if (!address) {
@@ -55,7 +55,7 @@ function App() {
       <div className="flex justify-end mt-6 gap-x-2">
         {address && (
           <button
-            onClick={openAccountModal}
+            onClick={() => appKit.open()}
             className="btn btn-primary flex items-center gap-x-2"
           >
             <ChainIcon chain={currentChain} className="size-4" />
