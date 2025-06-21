@@ -11,6 +11,8 @@ import {
   wagmiAdapter,
 } from "../wagmi";
 import { createAppKit } from "@reown/appkit/react";
+import { solana } from "@reown/appkit/networks";
+import { ConnectionProvider } from "@solana/wallet-adapter-react";
 
 const queryClient = new QueryClient();
 
@@ -44,7 +46,9 @@ export default function Providers(props: {
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <ConnectionProvider endpoint={solana.rpcUrls.default.http[0]}>
+          {props.children}
+        </ConnectionProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

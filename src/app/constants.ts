@@ -172,11 +172,12 @@ export const SOLANA = createChainFromNetwork(solana, {
   icon: "/images/chains/solana.svg",
   standardETA: 60 * 20,
   fastETA: 8,
-  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
-  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
-  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
+  messageTransmitterV1: "CCTPmbSD7gX1bxKPAmg77w8oFzNFpaQiQUWD43TKaecd",
+  tokenMessengerV1: "CCTPiPYPc6AsJuwueEnWgSgucamXDZwBd53dQ11YiKX3",
+  messageTransmitterV2: "CCTPV2Sm4AdWt5296sk4P66VBZ7bEhcARwFaaS9YPbeC",
+  tokenMessengerV2: "CCTPV2vPZJS2u2BBsUoscuikbYjnpFmbFsvVuJdgUMQe",
   usdc: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-  hasV1: false,
+  hasV1: true,
   hasV2: true,
 });
 

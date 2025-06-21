@@ -31,6 +31,7 @@ export type UseBurnTxDetailsType = {
   isV1: boolean;
   isV2: boolean;
   hash: Hex;
+  recipient: string;
 };
 
 export function useBurnTxDetails(tx: BurnTx) {
@@ -119,6 +120,7 @@ export function useBurnTxDetails(tx: BurnTx) {
       hash: tx.hash,
       isV1,
       isV2: !isV1,
+      recipient: depositForBurnDecodedLog.args.mintRecipient,
     };
 
     return res;

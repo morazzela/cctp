@@ -10,16 +10,25 @@ type Props = {
   chain: Chain;
   children?: ReactNode;
   skip?: boolean;
-  className?: string
-  mustBeActive?: boolean
+  className?: string;
+  mustBeActive?: boolean;
 };
 
-export default function ConnectGuard({ chain, children, skip, className, mustBeActive }: Props) {
+export default function ConnectGuard({
+  chain,
+  children,
+  skip,
+  className,
+  mustBeActive,
+}: Props) {
   const appKit = useAppKit();
   const { isConnected } = useAppKitAccount({ namespace: chain.namespace });
   const network = useAppKitNetwork();
 
-  const isActive = useMemo(() => network.chainId === chain.id, [network, chain])
+  const isActive = useMemo(
+    () => network.chainId === chain.id,
+    [network, chain],
+  );
 
   const onButtonClick = useCallback(async () => {
     if (isConnected) {
@@ -37,7 +46,10 @@ export default function ConnectGuard({ chain, children, skip, className, mustBeA
   }
 
   return (
-    <button className={`btn btn-xl btn-primary w-full ${className}`} onClick={onButtonClick}>
+    <button
+      className={`btn btn-xl btn-primary w-full ${className}`}
+      onClick={onButtonClick}
+    >
       {`Connect to ${chain.name}`}
     </button>
   );

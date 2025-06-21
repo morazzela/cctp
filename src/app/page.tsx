@@ -24,6 +24,8 @@ function App() {
 
   const { chainId } = useAppKitNetwork();
   const { address } = useAppKitAccount();
+  const { address: evmAddress } = useAppKitAccount({ namespace: "eip155" });
+  const { address: solanaAddress } = useAppKitAccount({ namespace: "solana" });
   const [dark, setDark] = useLocalStorage("dark-mode", false);
   const appKit = useAppKit();
 
@@ -33,9 +35,11 @@ function App() {
     }
 
     return txs.filter(
-      (tx) => tx.fromAddress.toLowerCase() === address?.toLowerCase(),
+      (tx) =>
+        tx.fromAddress.toLowerCase() === evmAddress?.toLowerCase() ||
+        tx.fromAddress.toLowerCase() === solanaAddress?.toLowerCase(),
     );
-  }, [txs, address]);
+  }, [txs, evmAddress, solanaAddress]);
 
   useEffect(() => {
     if (dark) {

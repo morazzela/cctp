@@ -17,9 +17,9 @@ type UseBurnProps = {
 };
 
 export function useBurn(props: UseBurnProps) {
-  const evmBurn = useEVMBurn(props)
+  const evmBurn = useEVMBurn(props);
 
-  return evmBurn
+  return evmBurn;
 }
 
 function useEVMBurn({
@@ -39,9 +39,9 @@ function useEVMBurn({
 
     const isV1 = shouldUseV1(srcChain, dstChain);
 
-    let validRecipient = recipient
+    let validRecipient = recipient;
     if (dstChain.isSolana) {
-      validRecipient = solanaAddressToHex(recipient)
+      validRecipient = solanaAddressToHex(recipient);
     }
 
     const res = await writeContractAsync({
@@ -51,7 +51,12 @@ function useEVMBurn({
       abi: isV1 ? TOKEN_MESSENGER_V1_ABI : TOKEN_MESSENGER_ABI,
       functionName: "depositForBurn",
       args: isV1
-        ? [amount, dstChain.domain, pad(validRecipient as Address), srcChain.usdc as Address]
+        ? [
+            amount,
+            dstChain.domain,
+            pad(validRecipient as Address),
+            srcChain.usdc as Address,
+          ]
         : [
             amount,
             dstChain.domain,

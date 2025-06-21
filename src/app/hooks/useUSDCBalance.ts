@@ -8,6 +8,7 @@ import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 
 type UseUSDCBalancesProps = {
   enabled?: boolean;
+  address?: string;
 };
 
 export function useUSDCBalance(

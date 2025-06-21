@@ -46,7 +46,9 @@ export default function BurnCard() {
 
   const [fast, setFast] = useState(true);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
-  const [recipientAddress, setRecipientAddress] = useState<string>(address ?? "");
+  const [recipientAddress, setRecipientAddress] = useState<string>(
+    address ?? "",
+  );
   const [amount, setAmount] = useState(0n);
   const client = usePublicClient({ chainId: srcChain.id });
   const [bridging, setBridging] = useState(false);
@@ -232,20 +234,26 @@ export default function BurnCard() {
 
   useEffect(() => {
     if (dstChain.namespace !== srcChain.namespace && !recipientAddressOpen) {
-      setRecipientAddressOpen(true)
+      setRecipientAddressOpen(true);
     }
 
     if (dstChain.namespace === srcChain.namespace && recipientAddressOpen) {
-      setRecipientAddressOpen(false)
+      setRecipientAddressOpen(false);
     }
-  }, [dstChain.namespace, srcChain.namespace])
+  }, [dstChain.namespace, srcChain.namespace]);
 
   useEffect(() => {
     if (srcChain.namespace !== dstChain.namespace) {
-      setRecipientAddress("")
+      setRecipientAddress("");
     }
     // eslint-disable-next-line
-  }, [dstChain])
+  }, [dstChain]);
+
+  useEffect(() => {
+    if (!recipientAddressOpen) {
+      setRecipientAddress(address ?? "");
+    }
+  }, [recipientAddressOpen, address]);
 
   useEffect(() => {
     const availableDstChainsWithoutSrc = availableDstChains.filter(
@@ -382,27 +390,28 @@ export default function BurnCard() {
             onChange={(val) => setAmount(val)}
           />
         </div>
-        {isConnected && (
+        {(isConnected || srcChain.namespace !== dstChain.namespace) && (
           <div>
-            {address !== undefined && srcChain.namespace === dstChain.namespace && (
-              <div
-                onClick={() => setRecipientAddressOpen((val) => !val)}
-                className="flex items-center justify-end gap-x-2"
-              >
+            {address !== undefined &&
+              srcChain.namespace === dstChain.namespace && (
                 <div
-                  className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light dark:bg-dark-primary dark:border-dark-primary" : "bg-lighter dark:bg-dark"} border relative`}
+                  onClick={() => setRecipientAddressOpen((val) => !val)}
+                  className="flex items-center justify-end gap-x-2"
                 >
-                  {recipientAddressOpen && (
-                    <CheckIcon className="size-3.5 text-lighter dark:text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                  )}
+                  <div
+                    className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light dark:bg-dark-primary dark:border-dark-primary" : "bg-lighter dark:bg-dark"} border relative`}
+                  >
+                    {recipientAddressOpen && (
+                      <CheckIcon className="size-3.5 text-lighter dark:text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    )}
+                  </div>
+                  <div
+                    className={`cursor-default text-sm ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
+                  >
+                    Send to a different address
+                  </div>
                 </div>
-                <div
-                  className={`cursor-default text-sm ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
-                >
-                  Send to a different address
-                </div>
-              </div>
-            )}
+              )}
             {recipientAddressOpen && (
               <div>
                 <div className="text-lg mb-1">Recipient Address</div>
@@ -414,8 +423,8 @@ export default function BurnCard() {
                     onInput={(e) => {
                       const val = e.currentTarget.value.trim();
 
-                      const checksumed = getChecksumedAddress(val, dstChain)
-                      setRecipientAddress(checksumed ?? val)
+                      const checksumed = getChecksumedAddress(val, dstChain);
+                      setRecipientAddress(checksumed ?? val);
                     }}
                     disabled={!recipientAddressOpen}
                   />
