@@ -1,10 +1,9 @@
 import { BurnTx, Chain } from "../types";
-import { useBlock, useReadContract, useWaitForTransactionReceipt } from "wagmi";
+import { useBlock, useWaitForTransactionReceipt } from "wagmi";
 import { useEffect, useMemo, useState } from "react";
 import { decodeEventLog, encodePacked, Hex, keccak256 } from "viem";
 import { useMessages } from "./useApi";
 import { TOKEN_MESSENGER_ABI } from "../abis/TokenMessenger";
-import { MESSAGE_TRANSMITTER_ABI } from "../abis/MessageTransmitter";
 import { useTime } from "./useUtils";
 import moment from "moment";
 import {
@@ -14,6 +13,12 @@ import {
 } from "../constants";
 import { findChainByDomainId } from "../utils";
 import { TOKEN_MESSENGER_V1_ABI } from "../abis/TokenMessengerV1";
+import { useNonceUsed } from "./useNonceUsed";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import {
+  useTokenMessengerMinterV1,
+  useTokenMessengerMinterV2,
+} from "./useSolana";
 
 export type UseBurnTxDetailsType = {
   time: number;
@@ -30,7 +35,7 @@ export type UseBurnTxDetailsType = {
   isFast: boolean;
   isV1: boolean;
   isV2: boolean;
-  hash: Hex;
+  hash: string;
   recipient: string;
 };
 
@@ -42,19 +47,66 @@ export function useBurnTxDetails(tx: BurnTx) {
     [tx.srcDomain],
   );
 
+  const evmRes = useEVMBurnTxDetails(tx, srcChain, needsRefresh);
+  const solanaRes = useSolanaBurnTxDetails(tx, srcChain, needsRefresh);
+
+  const { data: res, isLoading } = useMemo(
+    () => (srcChain.isEVM ? evmRes : solanaRes),
+    [srcChain, evmRes, solanaRes],
+  );
+
+  const { data: nonceUsed, refetch: refetchNonceUsed } = useNonceUsed(res);
+
+  const resWithNonceUsed = useMemo(() => {
+    if (res === undefined) {
+      return;
+    }
+    if (!nonceUsed) {
+      return res;
+    }
+    return { ...res, isMinted: nonceUsed, isPending: false, isComplete: false };
+  }, [res, nonceUsed]);
+
+  useEffect(() => {
+    if (resWithNonceUsed && resWithNonceUsed.isMinted) {
+      setNeedsRefresh(false);
+    }
+  }, [resWithNonceUsed]);
+
+  return {
+    data: resWithNonceUsed,
+    isLoading,
+    refetchNonceUsed,
+  };
+}
+
+export function useEVMBurnTxDetails(
+  tx: BurnTx,
+  srcChain: Chain,
+  needsRefresh: boolean,
+) {
   const { data: receipt, isLoading: receiptLoading } =
-    useWaitForTransactionReceipt({ hash: tx.hash, chainId: srcChain.id });
+    useWaitForTransactionReceipt({
+      hash: tx.hash as Hex,
+      chainId: srcChain.id as number,
+      query: {
+        enabled: srcChain.isEVM,
+      },
+    });
 
   const { data: messages } = useMessages({
     srcDomain: tx.srcDomain,
     txHash: tx.hash,
-    refetchInterval: needsRefresh ? 10_000 : 60_000,
+    refetchInterval: needsRefresh ? 10_000 : Infinity,
   });
 
   const { data: block, isLoading: blockLoading } = useBlock({
     blockNumber: receipt?.blockNumber,
-    chainId: srcChain.id,
+    chainId: srcChain.id as number,
     includeTransactions: false,
+    query: {
+      enabled: srcChain.isEVM,
+    },
   });
 
   const res = useMemo(() => {
@@ -126,46 +178,139 @@ export function useBurnTxDetails(tx: BurnTx) {
     return res;
   }, [block, messages, receipt, srcChain, tx.hash, tx.srcDomain]);
 
-  const { data: nonceUsed, refetch: refetchNonceUsed } = useReadContract({
-    address: res?.isV1
-      ? res?.dstChain?.messageTransmitterV1
-      : res?.dstChain?.messageTransmitterV2,
-    abi: MESSAGE_TRANSMITTER_ABI,
-    functionName: "usedNonces",
-    args: [res?.nonce ?? "0x"],
-    chainId: res?.dstChain?.id,
-    query: {
-      enabled:
-        res !== undefined && res.nonce !== "0x" && res.dstChain !== undefined,
-    },
+  return {
+    data: res,
+    isLoading: blockLoading || receiptLoading,
+  };
+}
+
+export function useSolanaBurnTxDetails(
+  tx: BurnTx,
+  srcChain: Chain,
+  needsRefresh: boolean,
+) {
+  const [state, setState] = useState<UseBurnTxDetailsType>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [reloadCounter, setReloadCounter] = useState(0);
+  const { connection } = useAppKitConnection();
+  const tokenMessengerMinterV1 = useTokenMessengerMinterV1();
+  const tokenMessengerMinterV2 = useTokenMessengerMinterV2();
+
+  const { data: messages } = useMessages({
+    srcDomain: tx.srcDomain,
+    txHash: tx.hash,
+    refetchInterval: needsRefresh ? 10_000 : Infinity,
   });
 
-  const isLoading = useMemo(
-    () => receiptLoading || blockLoading,
-    [receiptLoading, blockLoading],
-  );
+  useEffect(() => {
+    async function main() {
+      if (
+        !srcChain.isSolana ||
+        !connection ||
+        !tokenMessengerMinterV1 ||
+        !tokenMessengerMinterV2
+      ) {
+        return;
+      }
 
-  const resWithNonceUsed = useMemo(() => {
-    if (res === undefined) {
-      return;
+      const hasMessages = messages !== undefined && messages.length > 0;
+
+      if (!hasMessages) {
+        return;
+      }
+
+      const msg = messages[0];
+
+      const dstChain = CHAINS.find(
+        (c) => c.domain === Number(msg.decodedMessage?.destinationDomain),
+      );
+
+      if (!dstChain) {
+        return;
+      }
+
+      const isV1 = msg.cctpVersion === 1;
+
+      const onChainTx = await connection.getTransaction(tx.hash, {
+        commitment: "confirmed",
+        maxSupportedTransactionVersion: 0,
+      });
+
+      if (!onChainTx) {
+        return;
+      }
+
+      const minFinalityThreshold = isV1
+        ? undefined
+        : Number(msg.decodedMessage?.minFinalityThreshold ?? 0);
+
+      let encodedNonce = hasMessages ? messages[0].eventNonce : "0x";
+
+      if (isV1 && hasMessages) {
+        encodedNonce = keccak256(
+          encodePacked(
+            ["uint32", "uint64"],
+            [tx.srcDomain, BigInt(encodedNonce)],
+          ),
+        );
+      }
+
+      const res: UseBurnTxDetailsType = {
+        time: Number(onChainTx.blockTime),
+        srcChain,
+        dstChain,
+        attestation: hasMessages ? msg.attestation : "0x",
+        message: hasMessages ? msg.message : "0x",
+        nonce: encodedNonce,
+        isPending: !hasMessages || msg.status === "pending_confirmations",
+        isComplete: hasMessages && msg.status === "complete",
+        isMinted: false,
+        amount: BigInt(
+          messages?.[0].decodedMessage?.decodedMessageBody?.amount ?? 0,
+        ),
+        minFinalityThreshold,
+        isFast:
+          isV1 || minFinalityThreshold === undefined
+            ? false
+            : minFinalityThreshold <= 1000,
+        hash: tx.hash,
+        isV1,
+        isV2: !isV1,
+        recipient: msg.decodedMessage?.decodedMessageBody?.mintRecipient ?? "",
+      };
+
+      setState(res);
+      setIsLoading(false);
     }
-    const minted = nonceUsed === 1n;
-    if (!minted) {
-      return res;
-    }
-    return { ...res, isMinted: minted, isPending: false, isComplete: false };
-  }, [res, nonceUsed]);
+
+    main();
+  }, [
+    tx,
+    connection,
+    messages,
+    tokenMessengerMinterV1,
+    tokenMessengerMinterV2,
+    reloadCounter,
+    srcChain,
+  ]);
 
   useEffect(() => {
-    if (resWithNonceUsed && resWithNonceUsed.isMinted) {
-      setNeedsRefresh(false);
+    if (!needsRefresh) {
+      return;
     }
-  }, [resWithNonceUsed]);
+
+    const id = setInterval(() => {
+      setReloadCounter((val) => val + 1);
+    }, 10_000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [needsRefresh]);
 
   return {
-    data: resWithNonceUsed,
-    isLoading,
-    refetchNonceUsed,
+    data: state,
+    isLoading: isLoading,
   };
 }
 

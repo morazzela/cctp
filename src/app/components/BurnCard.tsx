@@ -1,7 +1,7 @@
 import ChainSelect from "./ui/ChainSelect";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import TokenInput from "./ui/TokenInput";
-import { useAccount, usePublicClient } from "wagmi";
+import { usePublicClient } from "wagmi";
 import ApproveGuard from "./guard/ApproveGuard";
 import {
   CHAINS,
@@ -9,7 +9,7 @@ import {
   LOCAL_STORAGE_TRANSACTIONS_KEY,
   SONIC,
 } from "../constants";
-import { Address, formatUnits, getAddress, isAddress, parseUnits } from "viem";
+import { Address, formatUnits, Hex, parseUnits } from "viem";
 import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx, Chain } from "../types";
@@ -27,7 +27,8 @@ import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
 import ManualClaimCard from "./ManualClaimCard";
 import { useBurnLimits } from "../hooks/useBurnLimits";
-import { getChecksumedAddress, shouldUseV1 } from "../utils";
+import { getChecksumedAddress, shouldUseV1, sleep } from "../utils";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 import { useAppKitAccount } from "@reown/appkit/react";
 
 export default function BurnCard() {
@@ -38,7 +39,12 @@ export default function BurnCard() {
   );
   const [srcChain, setSrcChain] = useState<Chain>(ETHEREUM);
   const [dstChain, setDstChain] = useState<Chain>(SONIC);
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAppKitAccount({
+    namespace: srcChain.namespace,
+  });
+  const { address: dstAddress } = useAppKitAccount({
+    namespace: dstChain.namespace,
+  });
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
   const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
@@ -50,7 +56,8 @@ export default function BurnCard() {
     address ?? "",
   );
   const [amount, setAmount] = useState(0n);
-  const client = usePublicClient({ chainId: srcChain.id });
+  const client = usePublicClient({ chainId: srcChain.id as number });
+  const { connection: solanaConnection } = useAppKitConnection();
   const [bridging, setBridging] = useState(false);
   const [manualClaim, setManualClaim] = useState(false);
   const { data: balance, refetch: refetchBalance } = useUSDCBalance(srcChain);
@@ -209,13 +216,41 @@ export default function BurnCard() {
       return;
     }
 
-    const receipt = await client?.waitForTransactionReceipt({ hash: res });
-    const block = await client?.getBlock({ blockNumber: receipt?.blockNumber });
+    let time: number = 0;
+    if (srcChain.isEVM) {
+      const receipt = await client?.waitForTransactionReceipt({
+        hash: res as Hex,
+      });
+      const block = await client?.getBlock({
+        blockNumber: receipt?.blockNumber,
+      });
+      time = Number(block?.timestamp ?? 0);
+    } else if (
+      srcChain.isSolana &&
+      typeof res === "object" &&
+      "signature" in res
+    ) {
+      let confirmed = false;
+      do {
+        const tx = await solanaConnection?.getTransaction(res.signature, {
+          commitment: "confirmed",
+          maxSupportedTransactionVersion: 0,
+        });
+
+        confirmed = !!tx && !!tx.blockTime;
+
+        if (!tx) {
+          await sleep(5000);
+        } else {
+          time = Number(tx.blockTime);
+        }
+      } while (confirmed === false);
+    }
 
     const burnTx: BurnTx = {
-      hash: res,
+      hash: typeof res === "object" ? res.signature : res,
       srcDomain: srcChain.domain,
-      time: Number(block?.timestamp ?? 0),
+      time,
       fromAddress: address,
     };
 
@@ -240,20 +275,12 @@ export default function BurnCard() {
     if (dstChain.namespace === srcChain.namespace && recipientAddressOpen) {
       setRecipientAddressOpen(false);
     }
+    // eslint-disable-next-line
   }, [dstChain.namespace, srcChain.namespace]);
 
   useEffect(() => {
-    if (srcChain.namespace !== dstChain.namespace) {
-      setRecipientAddress("");
-    }
-    // eslint-disable-next-line
-  }, [dstChain]);
-
-  useEffect(() => {
-    if (!recipientAddressOpen) {
-      setRecipientAddress(address ?? "");
-    }
-  }, [recipientAddressOpen, address]);
+    setRecipientAddress(dstAddress ?? "");
+  }, [dstAddress]);
 
   useEffect(() => {
     const availableDstChainsWithoutSrc = availableDstChains.filter(
@@ -379,6 +406,7 @@ export default function BurnCard() {
               value={dstChain}
               onChange={onDestChainChange}
               withBalances
+              srcChain={srcChain}
             />
           </div>
         </div>
@@ -434,7 +462,7 @@ export default function BurnCard() {
                     )}
                     {!recipientAddressValid && (
                       <div className="size-5.5 rounded-full bg-danger mr-2">
-                        <XMarkIcon className="size-5.5 text-lighter" />
+                        <XMarkIcon className="size-5.5 text-lighter dark:text-darker" />
                       </div>
                     )}
                   </div>
@@ -463,13 +491,11 @@ export default function BurnCard() {
                   .humanize()}
               </div>
             </div>
-            {isV1 && (
-              <div className="bg-primary-light/20 dark:bg-dark-primary/20 rounded-lg px-3 py-1">
-                <div className="text-primary-light dark:text-dark-primary font-medium">
-                  CCTP v1
-                </div>
+            <div className="bg-primary-light/20 dark:bg-dark-primary/20 rounded-lg px-3 py-1">
+              <div className="text-primary-light dark:text-dark-primary font-medium">
+                CCTP {isV1 ? "v1" : "v2"}
               </div>
-            )}
+            </div>
           </div>
           {isFastTransferAvailable && (
             <div className="cursor-pointer flex items-center gap-x-2">

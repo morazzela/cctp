@@ -1,10 +1,15 @@
 import { Chain } from "./types";
-import { CHAINS } from "./constants";
+import { CHAINS, SOLANA } from "./constants";
 import { AppKitNetwork } from "@reown/appkit/networks";
 import { Address, getAddress, isAddress, toBytes, toHex } from "viem";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { PublicKey } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
+import { getAssociatedTokenAddress } from "@solana/spl-token";
+import { MessageTransmitter } from "./idls/MessageTransmitter";
+import { TokenMessengerMinter } from "./idls/TokenMessengerMinter";
+import { MessageTransmitterV2 } from "./idls/MessageTransmitterV2";
+import { TokenMessengerMinterV2 } from "./idls/TokenMessengerMinterV2";
 
 export function findChainByDomainId(domain: number): Chain {
   const res = CHAINS.find((c) => c.domain === domain);
@@ -140,13 +145,255 @@ export const findProgramAddress = (
   return res[0];
 };
 
-export const decodeEventNonceFromMessageV2 = (messageHex: string) => {
+export const decodeEventNonceFromMessage = (messageHex: string): string => {
   const nonceIndex = 12;
-  const nonceBytesLength = 32;
+  const nonceBytesLength = 8;
   const message = toBytes(messageHex);
   const eventNonceBytes = message.subarray(
     nonceIndex,
-    nonceIndex + nonceBytesLength
+    nonceIndex + nonceBytesLength,
   );
-  return Buffer.from(eventNonceBytes)
+  const eventNonceHex = toHex(eventNonceBytes);
+  return BigInt(eventNonceHex).toString();
 };
+
+export const decodeEventNonceFromMessageV2 = (messageHex: string) => {
+  const nonceIndex = 12;
+  const nonceBytesLength = 32;
+  const message = Buffer.from(messageHex.replace("0x", ""), "hex");
+  const eventNonceBytes = message.subarray(
+    nonceIndex,
+    nonceIndex + nonceBytesLength,
+  );
+  return Buffer.from(eventNonceBytes);
+};
+
+export async function getSolanaUSDCAccount(solanaAddress: string) {
+  return await getAssociatedTokenAddress(
+    new PublicKey(SOLANA.usdc),
+    new PublicKey(solanaAddress),
+  );
+}
+
+export async function getReceiveV2PDAS(
+  messageTransmitterProgram: anchor.Program<MessageTransmitterV2>,
+  tokenMessengerMinterProgram: anchor.Program<TokenMessengerMinterV2>,
+  solUsdcAddress: PublicKey,
+  remoteUsdcAddressHex: string,
+  remoteDomain: number,
+  nonce: Buffer,
+) {
+  const tokenMessengerAccount = findProgramAddress(
+    "token_messenger",
+    tokenMessengerMinterProgram.programId,
+  );
+
+  const messageTransmitterAccount = findProgramAddress(
+    "message_transmitter",
+    messageTransmitterProgram.programId,
+  );
+
+  const tokenMinterAccount = findProgramAddress(
+    "token_minter",
+    tokenMessengerMinterProgram.programId,
+  );
+
+  const localToken = findProgramAddress(
+    "local_token",
+    tokenMessengerMinterProgram.programId,
+    [solUsdcAddress],
+  );
+
+  const remoteTokenMessengerKey = findProgramAddress(
+    "remote_token_messenger",
+    tokenMessengerMinterProgram.programId,
+    [remoteDomain.toFixed()],
+  );
+
+  const remoteTokenKey = new PublicKey(toBytes(remoteUsdcAddressHex));
+
+  const tokenPair = findProgramAddress(
+    "token_pair",
+    tokenMessengerMinterProgram.programId,
+    [remoteDomain.toFixed(), remoteTokenKey],
+  );
+
+  const custodyTokenAccount = findProgramAddress(
+    "custody",
+    tokenMessengerMinterProgram.programId,
+    [solUsdcAddress],
+  );
+
+  const authorityPda = findProgramAddress(
+    "message_transmitter_authority",
+    messageTransmitterProgram.programId,
+    [tokenMessengerMinterProgram.programId],
+  );
+
+  const tokenMessengerEventAuthority = findProgramAddress(
+    "__event_authority",
+    tokenMessengerMinterProgram.programId,
+  );
+
+  const usedNonces = findProgramAddress(
+    "used_nonce",
+    messageTransmitterProgram.programId,
+    [nonce],
+  );
+
+  const tokenMessengerAccounts =
+    await tokenMessengerMinterProgram.account.tokenMessenger.fetch(
+      tokenMessengerAccount,
+    );
+  const feeRecipientTokenAccount = await getAssociatedTokenAddress(
+    solUsdcAddress,
+    tokenMessengerAccounts.feeRecipient,
+  );
+
+  return {
+    messageTransmitterAccount,
+    tokenMessengerAccount,
+    tokenMinterAccount,
+    localToken,
+    remoteTokenMessengerKey,
+    remoteTokenKey,
+    tokenPair,
+    custodyTokenAccount,
+    authorityPda,
+    tokenMessengerEventAuthority,
+    usedNonces,
+    feeRecipientTokenAccount,
+  };
+}
+
+export async function getReceiveV1PDAS(
+  messageTransmitterProgram: anchor.Program<MessageTransmitter>,
+  tokenMessengerMinterProgram: anchor.Program<TokenMessengerMinter>,
+  solUsdcAddress: PublicKey,
+  remoteUsdcAddressHex: string,
+  remoteDomain: number,
+  nonce: string,
+) {
+  const tokenMessengerAccount = findProgramAddress(
+    "token_messenger",
+    tokenMessengerMinterProgram.programId,
+  );
+  const messageTransmitterAccount = findProgramAddress(
+    "message_transmitter",
+    messageTransmitterProgram.programId,
+  );
+  const tokenMinterAccount = findProgramAddress(
+    "token_minter",
+    tokenMessengerMinterProgram.programId,
+  );
+  const localToken = findProgramAddress(
+    "local_token",
+    tokenMessengerMinterProgram.programId,
+    [solUsdcAddress],
+  );
+  const remoteTokenMessengerKey = findProgramAddress(
+    "remote_token_messenger",
+    tokenMessengerMinterProgram.programId,
+    [remoteDomain.toFixed()],
+  );
+  const remoteTokenKey = new PublicKey(toBytes(remoteUsdcAddressHex));
+  const tokenPair = findProgramAddress(
+    "token_pair",
+    tokenMessengerMinterProgram.programId,
+    [remoteDomain.toFixed(), remoteTokenKey],
+  );
+  const custodyTokenAccount = findProgramAddress(
+    "custody",
+    tokenMessengerMinterProgram.programId,
+    [solUsdcAddress],
+  );
+  const authorityPda = findProgramAddress(
+    "message_transmitter_authority",
+    messageTransmitterProgram.programId,
+    [tokenMessengerMinterProgram.programId],
+  );
+  const tokenMessengerEventAuthority = findProgramAddress(
+    "__event_authority",
+    tokenMessengerMinterProgram.programId,
+  );
+
+  const usedNonces = await messageTransmitterProgram.methods
+    .getNoncePda({
+      nonce: new anchor.BN(nonce),
+      sourceDomain: Number(remoteDomain),
+    })
+    .accounts({
+      messageTransmitter: messageTransmitterAccount,
+    })
+    .view();
+
+  return {
+    messageTransmitterAccount,
+    tokenMessengerAccount,
+    tokenMinterAccount,
+    localToken,
+    remoteTokenMessengerKey,
+    tokenPair,
+    custodyTokenAccount,
+    authorityPda,
+    tokenMessengerEventAuthority,
+    usedNonces,
+  };
+}
+
+export async function getDepositPDAS(
+  messageTransmitterProgram:
+    | anchor.Program<MessageTransmitter>
+    | anchor.Program<MessageTransmitterV2>,
+  tokenMessengerMinterProgram:
+    | anchor.Program<TokenMessengerMinter>
+    | anchor.Program<TokenMessengerMinterV2>,
+  solUsdcAddress: PublicKey,
+  remoteDomain: number,
+) {
+  const messageTransmitterAccount = findProgramAddress(
+    "message_transmitter",
+    messageTransmitterProgram.programId,
+  );
+  const tokenMessengerAccount = findProgramAddress(
+    "token_messenger",
+    tokenMessengerMinterProgram.programId,
+  );
+  const tokenMinterAccount = findProgramAddress(
+    "token_minter",
+    tokenMessengerMinterProgram.programId,
+  );
+  const localToken = findProgramAddress(
+    "local_token",
+    tokenMessengerMinterProgram.programId,
+    [solUsdcAddress],
+  );
+  const remoteTokenMessengerKey = findProgramAddress(
+    "remote_token_messenger",
+    tokenMessengerMinterProgram.programId,
+    [remoteDomain.toString()],
+  );
+  const authorityPda = findProgramAddress(
+    "sender_authority",
+    tokenMessengerMinterProgram.programId,
+  );
+
+  const tokenMessengerEventAuthority = findProgramAddress(
+    "__event_authority",
+    tokenMessengerMinterProgram.programId,
+  );
+
+  return {
+    messageTransmitterAccount,
+    tokenMessengerAccount,
+    tokenMinterAccount,
+    localToken,
+    remoteTokenMessengerKey,
+    authorityPda,
+    tokenMessengerEventAuthority,
+  };
+}
+
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

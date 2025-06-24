@@ -1,5 +1,4 @@
 import { AppKitNetwork } from "@reown/appkit/networks";
-import { Address, Hex } from "viem";
 import { ChainNamespace } from "@reown/appkit-common";
 
 export interface Chain {
@@ -30,7 +29,7 @@ export interface Chain {
 
 export interface BurnTx {
   srcDomain: number;
-  hash: Hex;
+  hash: string;
   time: number;
-  fromAddress: Address;
+  fromAddress: string;
 }

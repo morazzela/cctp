@@ -41,7 +41,7 @@ export default function ConnectGuard({
     }
   }, [appKit, isConnected, chain, network]);
 
-  if (skip === true || (isConnected && (isActive || mustBeActive !== true))) {
+  if (skip === true || (isConnected && (isActive || mustBeActive === false))) {
     return children;
   }
 

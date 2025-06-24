@@ -10,7 +10,7 @@
     "format": "prettier --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\""
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.31.1",
+    "@coral-xyz/anchor": "^0.31.0",
     "@heroicons/react": "^2.2.0",
     "@reown/appkit": "^1.7.10",
     "@reown/appkit-adapter-solana": "^1.7.10",

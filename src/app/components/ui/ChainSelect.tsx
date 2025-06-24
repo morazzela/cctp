@@ -1,16 +1,18 @@
 "use client";
 
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
+import { BoltIcon, ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
 import { useUSDCBalance } from "@/app/hooks/useUSDCBalance";
 import { Chain } from "@/app/types";
-import { useAppKitAccount, useAppKitNetwork } from "@reown/appkit/react";
+import { useAppKitAccount } from "@reown/appkit/react";
+import { shouldUseV1 } from "@/app/utils";
 
 type Props = {
   chains: Chain[];
   value: Chain | undefined;
+  srcChain?: Chain;
   onChange: { (value: Chain): void };
   withBalances?: boolean;
 };
@@ -20,6 +22,7 @@ export default function ChainSelect({
   value,
   onChange,
   withBalances,
+  srcChain,
 }: Props) {
   const { data: balance, isLoading: balanceLoading } = useUSDCBalance(value, {
     enabled: withBalances === true,
@@ -27,8 +30,7 @@ export default function ChainSelect({
 
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const { isConnected } = useAppKitAccount();
-  const network = useAppKitNetwork();
+  const { isConnected } = useAppKitAccount({ namespace: value?.namespace });
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
@@ -65,6 +67,12 @@ export default function ChainSelect({
         <span
           className={`flex items-center font-medium text-sm gap-x-2 ${value === undefined ? "text-dark" : ""}`}
         >
+          {srcChain && value && !shouldUseV1(srcChain, value) && (
+            <BoltIcon
+              title="Fast Transfer"
+              className="size-4 text-amber-400 mr-1"
+            />
+          )}
           {value !== undefined && (
             <ChainIcon chain={value} className="size-6" />
           )}
@@ -73,7 +81,6 @@ export default function ChainSelect({
         {withBalances === true &&
           value !== undefined &&
           !balanceLoading &&
-          value.namespace === network.caipNetwork?.chainNamespace &&
           isConnected && (
             <span className="ml-auto text-dark text-sm mr-4">
               {formatUnits(balance, 6)} USDC
@@ -92,6 +99,7 @@ export default function ChainSelect({
               setOpen={setOpen}
               onChange={onChange}
               withBalances={withBalances}
+              srcChain={srcChain}
             />
           ))}
         </div>
@@ -105,6 +113,7 @@ type ChainSelectOptionProps = {
   setOpen: { (val: boolean): void };
   onChange: { (val: Chain): void };
   withBalances?: boolean;
+  srcChain?: Chain;
 };
 
 function ChainSelectOption({
@@ -112,9 +121,9 @@ function ChainSelectOption({
   onChange,
   chain,
   withBalances,
+  srcChain,
 }: ChainSelectOptionProps) {
-  const { isConnected } = useAppKitAccount();
-  const network = useAppKitNetwork();
+  const { isConnected } = useAppKitAccount({ namespace: chain.namespace });
 
   const { data: balance, isLoading: balanceLoading } = useUSDCBalance(chain, {
     enabled: withBalances === true,
@@ -129,16 +138,18 @@ function ChainSelectOption({
       key={chain.id}
       className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
     >
+      <div className="size-4 mr-1">
+        {srcChain && !shouldUseV1(srcChain, chain) && (
+          <BoltIcon title="Fast Transfer" className="size-4 text-amber-400" />
+        )}
+      </div>
       <ChainIcon chain={chain} className="size-6" />
       <span className="font-medium text-sm">{chain.name}</span>
-      {withBalances === true &&
-        !balanceLoading &&
-        isConnected &&
-        chain.namespace === network.caipNetwork?.chainNamespace && (
-          <span className="ml-auto text-dark text-sm">
-            {formatUnits(balance, 6)} USDC
-          </span>
-        )}
+      {withBalances === true && !balanceLoading && isConnected && (
+        <span className="ml-auto text-dark text-sm">
+          {formatUnits(balance, 6)} USDC
+        </span>
+      )}
     </div>
   );
 }

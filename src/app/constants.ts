@@ -170,7 +170,7 @@ export const WORLDCHAIN = createChainFromNetwork(worldchain, {
 export const SOLANA = createChainFromNetwork(solana, {
   domain: 5,
   icon: "/images/chains/solana.svg",
-  standardETA: 60 * 20,
+  standardETA: 25,
   fastETA: 8,
   messageTransmitterV1: "CCTPmbSD7gX1bxKPAmg77w8oFzNFpaQiQUWD43TKaecd",
   tokenMessengerV1: "CCTPiPYPc6AsJuwueEnWgSgucamXDZwBd53dQ11YiKX3",

@@ -1,4 +1,4 @@
-import { formatUnits } from "viem";
+import { formatUnits, Hex } from "viem";
 import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import { BurnTx, Chain } from "../types";
 import Loader from "./ui/Loader";
@@ -9,6 +9,8 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
 import ConnectGuard from "./guard/ConnectGuard";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import { sleep } from "../utils";
 
 type Props = {
   tx: BurnTx;
@@ -22,10 +24,19 @@ export default function TxCard({ tx, clearTx }: Props) {
   const [confirmationPending, setConfirmationPending] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [claiming, setClaiming] = useState(false);
-  const client = usePublicClient({ chainId: data?.dstChain?.id ?? 1 });
+  const client = usePublicClient({
+    chainId: (data?.dstChain?.id ?? 1) as number,
+  });
+  const { connection } = useAppKitConnection();
 
   const onClaim = async () => {
-    if (!receive || !client) {
+    if (
+      !receive ||
+      !data ||
+      !data.dstChain ||
+      (data.dstChain.isEVM && !client) ||
+      (data.dstChain.isSolana && !connection)
+    ) {
       return;
     }
 
@@ -38,7 +49,21 @@ export default function TxCard({ tx, clearTx }: Props) {
     }
 
     setConfirmationPending(true);
-    await client.waitForTransactionReceipt({ hash });
+    if (data.dstChain.isEVM) {
+      await client?.waitForTransactionReceipt({ hash: hash as Hex });
+    } else if (data.dstChain.isSolana) {
+      let success = false;
+      do {
+        const tx = await connection?.getTransaction(hash, {
+          commitment: "confirmed",
+          maxSupportedTransactionVersion: 0,
+        });
+
+        success = !!tx;
+
+        await sleep(5_000);
+      } while (success === false);
+    }
     await refetchNonceUsed();
     setConfirmationPending(false);
     setClaimed(true);

@@ -3,7 +3,7 @@ import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import moment from "moment";
 import { usePublicClient } from "wagmi";
 import { USDC_ICON } from "../constants";
-import { formatUnits } from "viem";
+import { formatUnits, Hex } from "viem";
 import ChainIcon from "./ui/ChainIcon";
 import {
   ArrowLongRightIcon,
@@ -15,6 +15,12 @@ import Link from "next/link";
 import { useReceive } from "../actions/useReceive";
 import { useMemo } from "react";
 import { useUSDCBalance } from "../hooks/useUSDCBalance";
+import {
+  useAppKit,
+  useAppKitAccount,
+  useAppKitNetwork,
+} from "@reown/appkit/react";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 
 type HistoryProps = {
   transactions: BurnTx[];
@@ -49,11 +55,31 @@ function Row({ tx }: { tx: BurnTx }) {
   const client = usePublicClient({ chainId: data?.dstChain?.id });
   const eta = useETA(data);
   const receive = useReceive(data);
-
+  const { isConnected } = useAppKitAccount({
+    namespace: data?.dstChain?.namespace,
+  });
+  const { connection: solanaConnection } = useAppKitConnection();
+  const { chainId, switchNetwork } = useAppKitNetwork();
+  const { open } = useAppKit();
   const { refetch: refetchBalance } = useUSDCBalance(data?.dstChain);
 
   const onMintClick = async () => {
-    if (!receive) {
+    if (!receive || !data || !data.dstChain || !solanaConnection) {
+      return;
+    }
+
+    if (!isConnected) {
+      open({
+        view: "Connect",
+        namespace: data.dstChain.namespace,
+      });
+
+      return;
+    }
+
+    if (data.dstChain.id !== chainId) {
+      switchNetwork(data.dstChain.network);
+
       return;
     }
 
@@ -63,7 +89,12 @@ function Row({ tx }: { tx: BurnTx }) {
       return;
     }
 
-    await client?.waitForTransactionReceipt({ hash });
+    if (data.dstChain.isEVM) {
+      await client?.waitForTransactionReceipt({ hash: hash as Hex });
+    } else if (data.dstChain.isSolana) {
+      await solanaConnection.confirmTransaction(hash, "confirmed");
+    }
+
     await refetchNonceUsed();
     await refetchBalance();
   };
@@ -73,16 +104,14 @@ function Row({ tx }: { tx: BurnTx }) {
   }
 
   return (
-    <div className="card rounded-xl relative grid grid-cols-5 gap-y-6 items-center p-3 lg:py-5 font-medium">
+    <div className="card rounded-xl relative grid grid-cols-5 gap-y-6 items-center p-3 lg:py-4 font-medium">
       <div className="max-lg:col-span-3 flex max-lg:flex-row-reverse max-lg:justify-end items-center">
         <div className="size-4 mr-2 shrink-0">
           {data.isFast && (
             <BoltIcon title="Fast Transfer" className="size-4 text-primary" />
           )}
         </div>
-        <span>
-          {moment(Number(data.time) * 1000).format("DD/MM/YYYY HH:mm")}
-        </span>
+        <span>{moment(Number(data.time) * 1000).format("DD/MM/YY HH:mm")}</span>
       </div>
       <div className="col-span-2 flex lg:hidden justify-end items-center gap-x-1.5">
         <span>{formatUnits(data.amount, 6)}</span>

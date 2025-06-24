@@ -45,7 +45,7 @@ export function useFastBurnFees({
 
 type UseMessagesAndAttestationsProps = {
   srcDomain: number;
-  txHash: Hex;
+  txHash: string;
   refetchInterval: number;
   enabled?: boolean;
 };
@@ -69,6 +69,23 @@ export function useMessages({
           eventNonce: Hex;
           cctpVersion: number;
           status: "pending_confirmations" | "complete";
+          decodedMessage?: {
+            sourceDomain: string;
+            sender: string;
+            recipient: string;
+            nonce: string;
+            messageBody: string;
+            destinationDomain: string;
+            destinationCaller: string;
+            minFinalityThreshold?: string;
+            decodedMessageBody?: {
+              amount: string;
+              burnToken: string;
+              messageSender: string;
+              mintRecipient: string;
+              maxFee?: string;
+            };
+          };
         }[];
       };
       return json.messages;

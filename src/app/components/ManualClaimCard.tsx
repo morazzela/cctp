@@ -6,6 +6,7 @@ import { Hash, isHash } from "viem";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
 import { BurnTx, Chain } from "../types";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 
 type Props = {
   onClose: { (): void };
@@ -19,14 +20,24 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
   );
 
   const [chain, setChain] = useState<Chain>(CHAINS[0]);
-  const client = usePublicClient({ chainId: chain.id });
+  const client = usePublicClient({ chainId: chain.id as number });
   const [checking, setChecking] = useState(false);
   const [hash, setHash] = useState("");
   const [notFound, setNotFound] = useState(false);
+  const { connection } = useAppKitConnection();
 
   const isValidHash = useMemo(() => {
-    return isHash(hash);
-  }, [hash]);
+    if (chain.isEVM) {
+      return isHash(hash);
+    }
+
+    if (chain.isSolana) {
+      const base58Regex = /^[1-9A-HJ-NP-Za-km-z]{87,88}$/;
+      return base58Regex.test(hash);
+    }
+
+    return false;
+  }, [chain, hash]);
 
   const alreadyExists = useMemo(() => {
     if (!isValidHash) {
@@ -37,27 +48,62 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
   }, [txs, hash, isValidHash]);
 
   const onCheck = async () => {
-    if (!isValidHash || !chain || !client || client.chain.id !== chain.id) {
+    if (
+      !isValidHash ||
+      !chain ||
+      (chain.isEVM && !client) ||
+      (chain.isSolana && !connection)
+    ) {
       return;
     }
 
     setChecking(true);
 
-    const tx = await client
-      .getTransaction({ hash: hash as Hash })
-      .catch(console.error);
+    let timestamp: number | undefined = undefined;
+    let fromAddress: string | undefined = undefined;
 
-    if (tx === undefined) {
-      setChecking(false);
-      setNotFound(true);
-      return;
+    if (chain.isEVM) {
+      const tx = await client
+        ?.getTransaction({ hash: hash as Hash })
+        .catch(console.error);
+
+      if (tx === undefined) {
+        setChecking(false);
+        setNotFound(true);
+        return;
+      }
+
+      const block = await client
+        ?.getBlock({ blockNumber: tx.blockNumber })
+        .catch(console.error);
+
+      if (block === undefined) {
+        setChecking(false);
+        setNotFound(true);
+        return;
+      }
+
+      timestamp = Number(block.timestamp);
+      fromAddress = tx.from;
     }
 
-    const block = await client
-      .getBlock({ blockNumber: tx.blockNumber })
-      .catch(console.error);
+    if (chain.isSolana) {
+      const tx = await connection?.getTransaction(hash, {
+        commitment: "confirmed",
+        maxSupportedTransactionVersion: 0,
+      });
 
-    if (block === undefined) {
+      if (!tx || tx.blockTime === null || tx.blockTime === undefined) {
+        setChecking(false);
+        setNotFound(true);
+        return;
+      }
+
+      timestamp = tx.blockTime;
+      fromAddress = tx.transaction.message.getAccountKeys().get(0)?.toString();
+    }
+
+    if (timestamp === undefined || fromAddress === undefined) {
       setChecking(false);
       setNotFound(true);
       return;
@@ -68,8 +114,8 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
     const burnTx: BurnTx = {
       hash: hash as Hash,
       srcDomain: chain.domain,
-      time: Number(block.timestamp),
-      fromAddress: tx.from,
+      time: timestamp,
+      fromAddress: fromAddress,
     };
 
     if (!alreadyExists) {

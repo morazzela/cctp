@@ -4,7 +4,12 @@ import BurnCard from "./components/BurnCard";
 import History from "./components/History";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx } from "./types";
-import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY } from "./constants";
+import {
+  CHAINS,
+  ETHEREUM,
+  LOCAL_STORAGE_TRANSACTIONS_KEY,
+  SOLANA,
+} from "./constants";
 import ChainIcon from "./components/ui/ChainIcon";
 import Link from "next/link";
 import ShadowLogo from "./components/ui/ShadowLogo";
@@ -23,14 +28,13 @@ function App() {
   const isClient = useIsClient();
 
   const { chainId } = useAppKitNetwork();
-  const { address } = useAppKitAccount();
   const { address: evmAddress } = useAppKitAccount({ namespace: "eip155" });
   const { address: solanaAddress } = useAppKitAccount({ namespace: "solana" });
   const [dark, setDark] = useLocalStorage("dark-mode", false);
   const appKit = useAppKit();
 
   const validTxs = useMemo(() => {
-    if (!address) {
+    if (!evmAddress && !solanaAddress) {
       return [];
     }
 
@@ -62,14 +66,28 @@ function App() {
     <div className="container mx-auto min-h-dvh flex flex-col justify-center px-4">
       <ShadowBackground className="-z-10 hidden dark:md:block absolute top-0 left-1/2 -translate-x-1/2 translate-y-24" />
       <div className="flex justify-end mt-6 gap-x-2">
-        {address && (
+        {evmAddress && (
           <button
             onClick={() => appKit.open({ view: "Account" })}
             className="btn btn-primary flex items-center gap-x-2"
           >
-            <ChainIcon chain={currentChain} className="size-4" />
+            <ChainIcon
+              chain={currentChain?.isEVM ? currentChain : ETHEREUM}
+              className="size-4"
+            />
             <span>
-              {`${address.substring(0, 6) + ".." + address.substring(37)}`.toLowerCase()}
+              {`${evmAddress.substring(0, 6) + ".." + evmAddress.substring(37)}`.toLowerCase()}
+            </span>
+          </button>
+        )}
+        {solanaAddress && (
+          <button
+            onClick={() => appKit.open({ view: "Account" })}
+            className="btn btn-primary flex items-center gap-x-2"
+          >
+            <ChainIcon chain={SOLANA} className="size-4" />
+            <span>
+              {`${solanaAddress.substring(0, 6) + ".." + solanaAddress.substring(37)}`.toLowerCase()}
             </span>
           </button>
         )}
