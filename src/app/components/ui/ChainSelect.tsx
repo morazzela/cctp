@@ -138,11 +138,13 @@ function ChainSelectOption({
       key={chain.id}
       className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
     >
-      <div className="size-4 mr-1">
-        {srcChain && !shouldUseV1(srcChain, chain) && (
-          <BoltIcon title="Fast Transfer" className="size-4 text-amber-400" />
-        )}
-      </div>
+      {srcChain && (
+        <div className="size-4 mr-1">
+          {!shouldUseV1(srcChain, chain) && (
+            <BoltIcon title="Fast Transfer" className="size-4 text-amber-400" />
+          )}
+        </div>
+      )}
       <ChainIcon chain={chain} className="size-6" />
       <span className="font-medium text-sm">{chain.name}</span>
       {withBalances === true && !balanceLoading && isConnected && (

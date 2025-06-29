@@ -68,7 +68,9 @@ function App() {
       <div className="flex justify-end mt-6 gap-x-2">
         {evmAddress && (
           <button
-            onClick={() => appKit.open({ view: "Account" })}
+            onClick={() =>
+              appKit.open({ view: "Account", namespace: "eip155" })
+            }
             className="btn btn-primary flex items-center gap-x-2"
           >
             <ChainIcon
@@ -82,7 +84,9 @@ function App() {
         )}
         {solanaAddress && (
           <button
-            onClick={() => appKit.open({ view: "Account" })}
+            onClick={() =>
+              appKit.open({ view: "Account", namespace: "solana" })
+            }
             className="btn btn-primary flex items-center gap-x-2"
           >
             <ChainIcon chain={SOLANA} className="size-4" />

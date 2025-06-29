@@ -24,7 +24,7 @@ export function useFastBurnAllowance() {
   });
 }
 
-export function useFastBurnFees({
+export function useV2Fees({
   srcDomain,
   dstDomain,
   enabled,
@@ -33,10 +33,13 @@ export function useFastBurnFees({
     queryKey: ["fast-burn-fees", srcDomain, dstDomain],
     queryFn: async () => {
       const res = await fetch(
-        `https://iris-api.circle.com/v2/fastBurn/USDC/fees/${srcDomain}/${dstDomain}`,
+        `https://iris-api.circle.com/v2/burn/USDC/fees/${srcDomain}/${dstDomain}`,
       );
-      const json = (await res.json()) as { minimumFee: number };
-      return json.minimumFee;
+      const json = (await res.json()) as {
+        minimumFee: number;
+        finalityThreshold: number;
+      }[];
+      return json;
     },
     enabled: enabled && srcDomain !== undefined && dstDomain !== undefined,
     staleTime: 60_000,

@@ -52,7 +52,7 @@ export default function History({ transactions }: HistoryProps) {
 
 function Row({ tx }: { tx: BurnTx }) {
   const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
-  const client = usePublicClient({ chainId: data?.dstChain?.id });
+  const client = usePublicClient({ chainId: data?.dstChain?.id as number });
   const eta = useETA(data);
   const receive = useReceive(data);
   const { isConnected } = useAppKitAccount({
@@ -163,7 +163,7 @@ function Row({ tx }: { tx: BurnTx }) {
             </button>
           )}
           <Link
-            href={`http://socketscan.io/tx/${data.hash}`}
+            href={`https://usdc.range.org/usdc/status/${data.hash}`}
             target="_blank"
             className="btn btn-sm btn-primary"
           >

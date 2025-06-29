@@ -6,8 +6,6 @@
  */
 export type MessageTransmitterV2 = {
   address: "CCTPV2Sm4AdWt5296sk4P66VBZ7bEhcARwFaaS9YPbeC";
-  name: "messageTransmitterV2";
-  version: "0.2.0";
   metadata: {
     name: "messageTransmitterV2";
     version: "0.2.0";

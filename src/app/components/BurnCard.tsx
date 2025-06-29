@@ -10,7 +10,7 @@ import {
   SONIC,
 } from "../constants";
 import { Address, formatUnits, Hex, parseUnits } from "viem";
-import { useFastBurnAllowance, useFastBurnFees } from "../hooks/useApi";
+import { useFastBurnAllowance, useV2Fees } from "../hooks/useApi";
 import { useIsClient, useLocalStorage } from "@uidotdev/usehooks";
 import { BurnTx, Chain } from "../types";
 import ConnectGuard from "./guard/ConnectGuard";
@@ -72,18 +72,23 @@ export default function BurnCard() {
     [recipientAddress, dstChain],
   );
 
-  const { data: fastBurnFee, isLoading: fastBurnFeeLoading } = useFastBurnFees({
+  const { data: v2Fees, isLoading: v2FeesLoading } = useV2Fees({
     srcDomain: srcChain.domain,
     dstDomain: dstChain.domain,
     enabled: !isV1,
   });
 
   const isLoading = useMemo(() => {
-    return fastBurnFeeLoading || fastBurnAllowanceLoading || burnLimitsLoading;
-  }, [fastBurnFeeLoading, fastBurnAllowanceLoading, burnLimitsLoading]);
+    return v2FeesLoading || fastBurnAllowanceLoading || burnLimitsLoading;
+  }, [v2FeesLoading, fastBurnAllowanceLoading, burnLimitsLoading]);
 
   const isFastTransferAvailable = useMemo(() => {
-    if (isV1 || fastBurnAllowanceLoading || fastBurnAllowance === undefined) {
+    if (
+      isV1 ||
+      fastBurnAllowanceLoading ||
+      fastBurnAllowance === undefined ||
+      v2Fees === undefined
+    ) {
       return false;
     }
 
@@ -95,6 +100,7 @@ export default function BurnCard() {
     isV1,
     fastBurnAllowance,
     fastBurnAllowanceLoading,
+    v2Fees,
     srcChain.fastETA,
     amount,
   ]);
@@ -107,19 +113,15 @@ export default function BurnCard() {
   }, [burnLimits, amount, srcChain.domain, isV1]);
 
   const fee = useMemo(() => {
-    if (
-      !fast ||
-      fastBurnFee === undefined ||
-      isFastTransferAvailable === false
-    ) {
+    if (!fast || v2Fees === undefined || isFastTransferAvailable === false) {
       return 0n;
     }
 
-    const fee = (amount * BigInt(fastBurnFee)) / 10000n;
-    const remainder = (amount * BigInt(fastBurnFee)) % 10000n;
+    const fee = (amount * BigInt(v2Fees[0].minimumFee)) / 10000n;
+    const remainder = (amount * BigInt(v2Fees[0].minimumFee)) % 10000n;
 
     return remainder === 0n ? fee : fee + 1n;
-  }, [amount, fast, fastBurnFee, isFastTransferAvailable]);
+  }, [amount, fast, v2Fees, isFastTransferAvailable]);
 
   const buttonText = useMemo(() => {
     if (isLoading) {
@@ -183,7 +185,11 @@ export default function BurnCard() {
     amount,
     recipient: recipientAddress,
     fee,
-    minFinalityThreshold: fast && isFastTransferAvailable ? 1000 : 2000,
+    minFinalityThreshold: isV1
+      ? 2000
+      : ((fast && isFastTransferAvailable
+          ? v2Fees?.[0].finalityThreshold
+          : v2Fees?.[1].finalityThreshold) ?? 2000),
   });
 
   const onSourceChainChange = useCallback(
@@ -232,12 +238,16 @@ export default function BurnCard() {
     ) {
       let confirmed = false;
       do {
+        console.log("1", res.signature);
+
         const tx = await solanaConnection?.getTransaction(res.signature, {
           commitment: "confirmed",
           maxSupportedTransactionVersion: 0,
         });
 
-        confirmed = !!tx && !!tx.blockTime;
+        console.log("2", tx);
+
+        confirmed = !!tx && tx.blockTime !== null && tx.blockTime !== undefined;
 
         if (!tx) {
           await sleep(5000);

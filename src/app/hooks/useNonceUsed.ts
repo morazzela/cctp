@@ -69,6 +69,8 @@ export function useSolanaNonceUsed(props?: UseBurnTxDetailsType) {
           })
           .view();
 
+        console.log({ props, isUsed });
+
         setState(isUsed);
         return;
       }
@@ -94,6 +96,8 @@ export function useSolanaNonceUsed(props?: UseBurnTxDetailsType) {
           })
           .view();
 
+        console.log({ props, isUsed });
+
         setState(isUsed);
         return;
       }
@@ -111,6 +115,7 @@ export function useSolanaNonceUsed(props?: UseBurnTxDetailsType) {
   ]);
 
   const refetch = useCallback(() => {
+    console.log("refetch");
     setRefetchCounter((val) => val + 1);
   }, []);
 
