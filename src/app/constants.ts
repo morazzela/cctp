@@ -133,12 +133,16 @@ export const POLYGON = createChainFromViemChain(polygon, {
   domain: 7,
   icon: "/images/chains/polygon.svg",
   standardETA: 60 * 8,
+  fastETA: 35,
   tokenMessengerV1: "0x9daF8c91AEFAE50b9c0E69629D3F6Ca40cA3B3FE",
   messageTransmitterV1: "0xF3be9355363857F3e001be68856A2f96b4C39Ba9",
   tokenMinterV1: "0x10f7835F827D6Cf035115E10c50A853d7FB2D2EC",
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
   usdc: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
   hasV1: true,
-  hasV2: false,
+  hasV2: true,
 });
 
 export const UNICHAIN = createChainFromViemChain(unichain, {
