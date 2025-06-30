@@ -278,6 +278,7 @@ export default function BurnCard() {
   useEffect(() => {
     if (dstChain.namespace !== srcChain.namespace && !recipientAddressOpen) {
       setRecipientAddressOpen(true);
+      setRecipientAddress("");
     }
 
     if (dstChain.namespace === srcChain.namespace && recipientAddressOpen) {
@@ -287,7 +288,10 @@ export default function BurnCard() {
   }, [dstChain.namespace, srcChain.namespace]);
 
   useEffect(() => {
-    setRecipientAddress(dstAddress ?? "");
+    if (dstChain.namespace === srcChain.namespace) {
+      setRecipientAddress(dstAddress ?? "");
+    }
+    // eslint-disable-next-line
   }, [dstAddress]);
 
   useEffect(() => {
