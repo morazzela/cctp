@@ -191,14 +191,14 @@ export const SOLANA = createChainFromNetwork(solana, {
 
 export const CHAINS = [
   ETHEREUM,
-  AVALANCHE,
-  SONIC,
-  LINEA,
   ARBITRUM,
+  SOLANA,
+  AVALANCHE,
   BASE,
+  UNICHAIN,
+  SONIC,
   OPTIMISM,
   POLYGON,
-  UNICHAIN,
   WORLDCHAIN,
-  SOLANA,
+  LINEA,
 ];
