@@ -107,11 +107,6 @@ export function getChecksumedAddress(
   if (chain.isSolana) {
     try {
       const pk = new PublicKey(address);
-
-      if (!PublicKey.isOnCurve(pk)) {
-        return null;
-      }
-
       return pk.toString();
     } catch (err) {
       console.error(err);
