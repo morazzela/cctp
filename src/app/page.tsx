@@ -21,6 +21,7 @@ import {
   useAppKit,
   useAppKitAccount,
   useAppKitNetwork,
+  useAppKitTheme,
 } from "@reown/appkit/react";
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
   const { address: solanaAddress } = useAppKitAccount({ namespace: "solana" });
   const [dark, setDark] = useLocalStorage("dark-mode", false);
   const appKit = useAppKit();
+  const { setThemeMode } = useAppKitTheme();
 
   const validTxs = useMemo(() => {
     if (!evmAddress && !solanaAddress) {
@@ -46,12 +48,14 @@ function App() {
   }, [txs, evmAddress, solanaAddress]);
 
   useEffect(() => {
+    setThemeMode(dark ? "dark" : "light");
+
     if (dark) {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, [dark]);
+  }, [dark, setThemeMode]);
 
   const currentChain = useMemo(
     () => CHAINS.find((c) => c.network.id === chainId),
