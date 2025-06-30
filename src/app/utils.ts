@@ -97,7 +97,7 @@ export function getChecksumedAddress(
   }
 
   if (chain.isEVM) {
-    if (!isAddress(address)) {
+    if (!isAddress(address, { strict: false })) {
       return null;
     }
 
