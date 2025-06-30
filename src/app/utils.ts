@@ -167,6 +167,7 @@ export async function getSolanaUSDCAccount(solanaAddress: string) {
   return await getAssociatedTokenAddress(
     new PublicKey(SOLANA.usdc),
     new PublicKey(solanaAddress),
+    true,
   );
 }
 
