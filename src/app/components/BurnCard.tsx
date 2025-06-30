@@ -42,9 +42,6 @@ export default function BurnCard() {
   const { address, isConnected } = useAppKitAccount({
     namespace: srcChain.namespace,
   });
-  const { address: dstAddress } = useAppKitAccount({
-    namespace: dstChain.namespace,
-  });
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
   const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
@@ -285,10 +282,6 @@ export default function BurnCard() {
     }
     // eslint-disable-next-line
   }, [dstChain.namespace, srcChain.namespace]);
-
-  useEffect(() => {
-    setRecipientAddress(dstAddress ?? "");
-  }, [dstAddress]);
 
   useEffect(() => {
     const availableDstChainsWithoutSrc = availableDstChains.filter(
