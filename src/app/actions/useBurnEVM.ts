@@ -10,6 +10,7 @@ import {
   solanaAddressToHex,
 } from "../utils";
 import { TOKEN_MESSENGER_V1_ABI } from "../abis/TokenMessengerV1";
+import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 
 type UseBurnProps = {
   srcChain: Chain;
@@ -29,9 +30,10 @@ export function useEVMBurn({
   minFinalityThreshold,
 }: UseBurnProps) {
   const { writeContractAsync } = useWriteContract();
+  const { connection } = useAppKitConnection();
 
   return useCallback(async () => {
-    if (!recipient || !srcChain.isEVM) {
+    if (!recipient || !srcChain.isEVM || !connection) {
       return;
     }
 
@@ -40,6 +42,21 @@ export function useEVMBurn({
     let validRecipient = recipient;
     if (dstChain.isSolana) {
       const tokenAccount = await getSolanaUSDCAccount(recipient);
+      const parsedTokenAccountInfo =
+        await connection.getParsedAccountInfo(tokenAccount);
+
+      if (
+        parsedTokenAccountInfo.value &&
+        "parsed" in parsedTokenAccountInfo.value.data
+      ) {
+        if (
+          parsedTokenAccountInfo.value.data.parsed.info.owner.toLowerCase() !==
+          recipient.toLowerCase()
+        ) {
+          return;
+        }
+      }
+
       validRecipient = solanaAddressToHex(tokenAccount.toBase58());
     }
 
@@ -83,5 +100,6 @@ export function useEVMBurn({
     fee,
     minFinalityThreshold,
     writeContractAsync,
+    connection,
   ]);
 }
