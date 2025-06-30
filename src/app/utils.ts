@@ -1,6 +1,5 @@
 import { Chain } from "./types";
 import { CHAINS, SOLANA } from "./constants";
-import { AppKitNetwork } from "@reown/appkit/networks";
 import { Address, getAddress, isAddress, toBytes, toHex } from "viem";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { PublicKey } from "@solana/web3.js";
@@ -56,7 +55,8 @@ type CreateChainFromNetworkProps = {
 };
 
 export function createChainFromNetwork(
-  network: AppKitNetwork,
+  // eslint-disable-next-line
+  network: any,
   props: CreateChainFromNetworkProps,
 ): Chain {
   const namespace =

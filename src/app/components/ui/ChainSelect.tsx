@@ -1,13 +1,12 @@
 "use client";
 
-import { BoltIcon, ChevronDownIcon } from "@heroicons/react/16/solid";
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatUnits } from "viem";
 import ChainIcon from "./ChainIcon";
 import { useUSDCBalance } from "@/app/hooks/useUSDCBalance";
 import { Chain } from "@/app/types";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { shouldUseV1 } from "@/app/utils";
 
 type Props = {
   chains: Chain[];
@@ -67,12 +66,6 @@ export default function ChainSelect({
         <span
           className={`flex items-center font-medium text-sm gap-x-2 ${value === undefined ? "text-dark" : ""}`}
         >
-          {srcChain && value && !shouldUseV1(srcChain, value) && (
-            <BoltIcon
-              title="Fast Transfer"
-              className="size-4 text-amber-400 mr-1"
-            />
-          )}
           {value !== undefined && (
             <ChainIcon chain={value} className="size-6" />
           )}
@@ -121,7 +114,6 @@ function ChainSelectOption({
   onChange,
   chain,
   withBalances,
-  srcChain,
 }: ChainSelectOptionProps) {
   const { isConnected } = useAppKitAccount({ namespace: chain.namespace });
 
@@ -138,13 +130,6 @@ function ChainSelectOption({
       key={chain.id}
       className="rounded-none cursor-pointer flex items-center gap-x-2 bg-lighter dark:bg-darkest dark:hover:bg-darker px-4 py-3 hover:bg-light"
     >
-      {srcChain && (
-        <div className="size-4 mr-1">
-          {!shouldUseV1(srcChain, chain) && (
-            <BoltIcon title="Fast Transfer" className="size-4 text-amber-400" />
-          )}
-        </div>
-      )}
       <ChainIcon chain={chain} className="size-6" />
       <span className="font-medium text-sm">{chain.name}</span>
       {withBalances === true && !balanceLoading && isConnected && (

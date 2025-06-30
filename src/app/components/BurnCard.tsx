@@ -106,10 +106,8 @@ export default function BurnCard() {
   ]);
 
   const exceedsBurnAllowance = useMemo(() => {
-    return (
-      burnLimits[srcChain.domain][isV1 ? 1 : 2] > 0n &&
-      amount > burnLimits[srcChain.domain][isV1 ? 1 : 2]
-    );
+    const limit = burnLimits[srcChain.domain][isV1 ? 1 : 2];
+    return limit > 0n && amount > burnLimits[srcChain.domain][isV1 ? 1 : 2];
   }, [burnLimits, amount, srcChain.domain, isV1]);
 
   const fee = useMemo(() => {

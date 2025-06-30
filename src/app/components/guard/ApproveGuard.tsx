@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { Address, erc20Abi, Hex, zeroAddress } from "viem";
+import { Address, erc20Abi, Hex, isAddress, zeroAddress } from "viem";
 import {
   useAccount,
   useReadContract,
@@ -9,7 +9,7 @@ import {
 
 type Props = {
   children: ReactNode;
-  tokenAddress: Address;
+  tokenAddress: string;
   spender: Address;
   amount: bigint;
   bypass?: boolean;
@@ -30,12 +30,12 @@ export default function ApproveGuard({
   const { address } = useAccount();
 
   const { data: allowance, refetch } = useReadContract({
-    address: tokenAddress,
+    address: tokenAddress as Address,
     abi: erc20Abi,
     functionName: "allowance",
     args: [address ?? zeroAddress, spender],
     query: {
-      enabled: amount > 0n && address !== undefined,
+      enabled: amount > 0n && address !== undefined && isAddress(tokenAddress),
     },
   });
 
@@ -63,6 +63,10 @@ export default function ApproveGuard({
       className="btn btn-xl btn-primary"
       disabled={approving}
       onClick={async () => {
+        if (!isAddress(tokenAddress)) {
+          return;
+        }
+
         setApproving(true);
 
         const txHash = await writeContractAsync({

@@ -64,6 +64,7 @@ export default function TxCard({ tx, clearTx }: Props) {
         await sleep(5_000);
       } while (success === false);
     }
+    await sleep(5_000);
     await refetchNonceUsed();
     setConfirmationPending(false);
     setClaimed(true);

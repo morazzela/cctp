@@ -69,8 +69,6 @@ export function useSolanaNonceUsed(props?: UseBurnTxDetailsType) {
           })
           .view();
 
-        console.log({ props, isUsed });
-
         setState(isUsed);
         return;
       }

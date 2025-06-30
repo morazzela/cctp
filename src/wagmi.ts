@@ -2,7 +2,6 @@ import { cookieStorage, createConfig, createStorage } from "wagmi";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { SolanaAdapter } from "@reown/appkit-adapter-solana";
 import {
-  AppKitNetwork,
   arbitrum,
   avalanche,
   base,
@@ -18,7 +17,8 @@ import {
 
 export const projectId = "60dfde649ba314d4c8d1d5e7b83a8200";
 
-const evmNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [
+// eslint-disable-next-line
+const evmNetworks: [any, ...any[]] = [
   mainnet,
   arbitrum,
   avalanche,
@@ -31,10 +31,8 @@ const evmNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [
   worldchain,
 ];
 
-export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
-  ...evmNetworks,
-  solana,
-];
+// eslint-disable-next-line
+export const networks: [any, ...any[]] = [...evmNetworks, solana];
 
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({ storage: cookieStorage }),

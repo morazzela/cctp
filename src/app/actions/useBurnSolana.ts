@@ -77,85 +77,45 @@ export function useSolanaBurn({
     const usdcAccount = await getSolanaUSDCAccount(address);
     const messageSentEventAccountKeypair = Keypair.generate();
 
-    let signature: string;
-
     if (isV1) {
-      console.log(
-        messageTransmitterV1.programId.toString(),
-        tokenMessengerMinterV1.programId.toString(),
-        usdc.toString(),
-        dstChain.domain,
-      );
-
-      const pdas = await getDepositPDAS(
-        messageTransmitterV1,
-        tokenMessengerMinterV1,
-        usdc,
-        dstChain.domain,
-      );
-
-      signature = await tokenMessengerMinterV1.methods
-        .depositForBurn({
-          amount: new BN(amount),
-          destinationDomain: dstChain.domain,
-          mintRecipient: new PublicKey(toBytes(validRecipient)),
-        })
-        .accounts({
-          owner: pk,
-          eventRentPayer: pk,
-          senderAuthorityPda: pdas.authorityPda,
-          burnTokenAccount: usdcAccount,
-          messageTransmitter: pdas.messageTransmitterAccount,
-          tokenMessenger: pdas.tokenMessengerAccount,
-          remoteTokenMessenger: pdas.remoteTokenMessengerKey,
-          tokenMinter: pdas.tokenMinterAccount,
-          localToken: pdas.localToken,
-          burnTokenMint: usdc,
-          messageTransmitterProgram: messageTransmitterV1.programId,
-          tokenMessengerMinterProgram: tokenMessengerMinterV1.programId,
-          messageSentEventData: messageSentEventAccountKeypair.publicKey,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        })
-        .signers([messageSentEventAccountKeypair])
-        .rpc();
-    } else {
-      const pdas = await getDepositPDAS(
-        messageTransmitterV2,
-        tokenMessengerMinterV2,
-        usdc,
-        dstChain.domain,
-      );
-
-      signature = await tokenMessengerMinterV2.methods
-        .depositForBurn({
-          amount: new BN(amount),
-          destinationDomain: dstChain.domain,
-          mintRecipient: new PublicKey(toBytes(validRecipient)),
-          destinationCaller: PublicKey.default,
-          maxFee: new BN(fee),
-          minFinalityThreshold: minFinalityThreshold,
-        })
-        .accounts({
-          owner: pk,
-          eventRentPayer: pk,
-          senderAuthorityPda: pdas.authorityPda,
-          burnTokenAccount: usdcAccount,
-          messageTransmitter: pdas.messageTransmitterAccount,
-          tokenMessenger: pdas.tokenMessengerAccount,
-          remoteTokenMessenger: pdas.remoteTokenMessengerKey,
-          tokenMinter: pdas.tokenMinterAccount,
-          localToken: pdas.localToken,
-          burnTokenMint: usdc,
-          messageSentEventData: messageSentEventAccountKeypair.publicKey,
-          messageTransmitterProgram: messageTransmitterV2.programId,
-          tokenMessengerMinterProgram: tokenMessengerMinterV2.programId,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
-          systemProgram: SystemProgram.programId,
-        })
-        .signers([messageSentEventAccountKeypair])
-        .rpc();
+      throw new Error("CCTP V1 not supported");
     }
+
+    const pdas = await getDepositPDAS(
+      messageTransmitterV2,
+      tokenMessengerMinterV2,
+      usdc,
+      dstChain.domain,
+    );
+
+    const signature = await tokenMessengerMinterV2.methods
+      .depositForBurn({
+        amount: new BN(amount),
+        destinationDomain: dstChain.domain,
+        mintRecipient: new PublicKey(toBytes(validRecipient)),
+        destinationCaller: PublicKey.default,
+        maxFee: new BN(fee),
+        minFinalityThreshold: minFinalityThreshold,
+      })
+      .accountsPartial({
+        owner: pk,
+        eventRentPayer: pk,
+        senderAuthorityPda: pdas.authorityPda,
+        burnTokenAccount: usdcAccount,
+        messageTransmitter: pdas.messageTransmitterAccount,
+        tokenMessenger: pdas.tokenMessengerAccount,
+        remoteTokenMessenger: pdas.remoteTokenMessengerKey,
+        tokenMinter: pdas.tokenMinterAccount,
+        localToken: pdas.localToken,
+        burnTokenMint: usdc,
+        messageSentEventData: messageSentEventAccountKeypair.publicKey,
+        messageTransmitterProgram: messageTransmitterV2.programId,
+        tokenMessengerMinterProgram: tokenMessengerMinterV2.programId,
+        tokenProgram: spl.TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([messageSentEventAccountKeypair])
+      .rpc();
 
     // tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
     // tx.feePayer = pk;
