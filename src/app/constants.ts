@@ -134,24 +134,32 @@ export const POLYGON = createChainFromNetwork(polygon, {
   domain: 7,
   icon: "/images/chains/polygon.svg",
   standardETA: 60 * 8,
+  fastETA: 35,
   tokenMessengerV1: "0x9daF8c91AEFAE50b9c0E69629D3F6Ca40cA3B3FE",
   messageTransmitterV1: "0xF3be9355363857F3e001be68856A2f96b4C39Ba9",
   tokenMinterV1: "0x10f7835F827D6Cf035115E10c50A853d7FB2D2EC",
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
   usdc: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
   hasV1: true,
-  hasV2: false,
+  hasV2: true,
 });
 
 export const UNICHAIN = createChainFromNetwork(unichain, {
   domain: 10,
   icon: "/images/chains/unichain.svg",
   standardETA: 60 * 20,
+  fastETA: 8,
   tokenMessengerV1: "0x4e744b28E787c3aD0e810eD65A24461D4ac5a762",
   messageTransmitterV1: "0x353bE9E2E38AB1D19104534e4edC21c643Df86f4",
   tokenMinterV1: "0x726bFEF3cBb3f8AF7d8CB141E78F86Ae43C34163",
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
   usdc: "0x078D782b760474a361dDA0AF3839290b0EF57AD6",
   hasV1: true,
-  hasV2: false,
+  hasV2: true,
 });
 
 export const WORLDCHAIN = createChainFromNetwork(worldchain, {
