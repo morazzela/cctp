@@ -10,7 +10,7 @@ import {
   solanaAddressToHex,
 } from "../utils";
 import { TOKEN_MESSENGER_V1_ABI } from "../abis/TokenMessengerV1";
-import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import { useConnection } from "@solana/wallet-adapter-react";
 
 type UseBurnProps = {
   srcChain: Chain;
@@ -30,10 +30,10 @@ export function useEVMBurn({
   minFinalityThreshold,
 }: UseBurnProps) {
   const { writeContractAsync } = useWriteContract();
-  const { connection } = useAppKitConnection();
+  const { connection } = useConnection();
 
   return useCallback(async () => {
-    if (!recipient || !srcChain.isEVM || !connection) {
+    if (!recipient || !srcChain.isEVM) {
       return;
     }
 

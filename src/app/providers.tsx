@@ -46,7 +46,11 @@ export default function Providers(props: {
   return (
     <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>
-        <ConnectionProvider endpoint={solana.rpcUrls.default.http[0]}>
+        <ConnectionProvider
+          endpoint={
+            process.env.NEXT_PUBLIC_SOLANA_RPC ?? solana.rpcUrls.default.http[0]
+          }
+        >
           {props.children}
         </ConnectionProvider>
       </QueryClientProvider>
