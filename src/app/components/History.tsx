@@ -20,7 +20,7 @@ import {
   useAppKitAccount,
   useAppKitNetwork,
 } from "@reown/appkit/react";
-import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import { useConnection } from "@solana/wallet-adapter-react";
 
 type HistoryProps = {
   transactions: BurnTx[];
@@ -58,13 +58,13 @@ function Row({ tx }: { tx: BurnTx }) {
   const { isConnected } = useAppKitAccount({
     namespace: data?.dstChain?.namespace,
   });
-  const { connection: solanaConnection } = useAppKitConnection();
+  const { connection: solanaConnection } = useConnection();
   const { chainId, switchNetwork } = useAppKitNetwork();
   const { open } = useAppKit();
   const { refetch: refetchBalance } = useUSDCBalance(data?.dstChain);
 
   const onMintClick = async () => {
-    if (!receive || !data || !data.dstChain || !solanaConnection) {
+    if (!receive || !data || !data.dstChain) {
       return;
     }
 
