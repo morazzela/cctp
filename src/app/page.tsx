@@ -122,9 +122,21 @@ function App() {
               </span>
             </Link>
           </div>
-          <BurnCard />
-          <div className="dark:hidden absolute h-40 left-1/2 -translate-x-1/2 top-56 -translate-y-1/2 w-screen -z-1 bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-lighter)_35%,var(--color-lighter)_65%,var(--color-secondary)_90%] dark:bg-linear-[90deg,var(--color-primary-light)_0%,var(--color-dark)_35%,var(--color-dark)_65%,var(--color-secondary)_90%]"></div>
-          <div className="dark:hidden absolute h-40 left-1/2 -translate-x-1/2 top-56 w-screen -z-1 border-y-2 border-primary-light"></div>
+          <div className="w-full flex justify-center relative">
+            <div className="dark:hidden">
+              <img
+                alt="BG Square"
+                src="/images/bg_square.svg"
+                className="w-full absolute -z-10 top-1/2 -translate-y-1/2"
+              />
+              <img
+                alt="BG Arrows"
+                src="/images/bg_arrow.svg"
+                className="w-full absolute -z-10 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+              />
+            </div>
+            <BurnCard />
+          </div>
         </div>
         {validTxs.length > 0 && (
           <div className="flex w-full">
