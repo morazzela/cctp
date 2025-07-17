@@ -15,7 +15,8 @@ import {
   worldchain,
 } from "@reown/appkit/networks";
 
-export const projectId = "60dfde649ba314d4c8d1d5e7b83a8200";
+export const projectId =
+  process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
 
 // eslint-disable-next-line
 const evmNetworks: [any, ...any[]] = [
