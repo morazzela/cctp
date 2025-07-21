@@ -288,6 +288,10 @@ export default function BurnCard() {
   }, [dstChain.namespace, srcChain.namespace]);
 
   useEffect(() => {
+    setRecipientAddress(address ?? "")
+  }, [recipientAddressOpen])
+
+  useEffect(() => {
     setRecipientAddress(dstAddress ?? "");
   }, [dstAddress]);
 
