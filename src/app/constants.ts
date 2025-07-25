@@ -6,6 +6,7 @@ import {
   mainnet,
   optimism,
   polygon,
+  sei,
   solana,
   sonic,
   unichain,
@@ -175,6 +176,18 @@ export const WORLDCHAIN = createChainFromNetwork(worldchain, {
   hasV2: true,
 });
 
+export const SEI = createChainFromNetwork(sei, {
+  domain: 16,
+  icon: "/images/chains/sei.webp",
+  standardETA: 5,
+  tokenMessengerV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
+  usdc: "0xe15fC38F6D8c56aF07bbCBe3BAf5708A2Bf42392",
+  hasV1: false,
+  hasV2: true,
+});
+
 export const SOLANA = createChainFromNetwork(solana, {
   domain: 5,
   icon: "/images/chains/solana.svg",
@@ -192,6 +205,7 @@ export const SOLANA = createChainFromNetwork(solana, {
 export const CHAINS = [
   ETHEREUM,
   ARBITRUM,
+  SEI,
   SOLANA,
   AVALANCHE,
   BASE,

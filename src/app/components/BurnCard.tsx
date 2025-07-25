@@ -288,8 +288,9 @@ export default function BurnCard() {
   }, [dstChain.namespace, srcChain.namespace]);
 
   useEffect(() => {
-    setRecipientAddress(address ?? "")
-  }, [recipientAddressOpen])
+    setRecipientAddress(address ?? "");
+    // eslint-disable-next-line
+  }, [recipientAddressOpen]);
 
   useEffect(() => {
     setRecipientAddress(dstAddress ?? "");

@@ -13,6 +13,7 @@ import {
   sonic,
   unichain,
   worldchain,
+  sei,
 } from "@reown/appkit/networks";
 
 export const projectId =
@@ -30,6 +31,7 @@ const evmNetworks: [any, ...any[]] = [
   sonic,
   unichain,
   worldchain,
+  sei,
 ];
 
 // eslint-disable-next-line
