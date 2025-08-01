@@ -50,7 +50,10 @@ export default function TxCard({ tx, clearTx }: Props) {
 
     setConfirmationPending(true);
     if (data.dstChain.isEVM) {
-      await client?.waitForTransactionReceipt({ hash: hash as Hex });
+      await client?.waitForTransactionReceipt({
+        hash: hash as Hex,
+        pollingInterval: 10_000,
+      });
     } else if (data.dstChain.isSolana) {
       let success = false;
       do {
