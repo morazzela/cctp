@@ -42,6 +42,13 @@ export const wagmiAdapter = new WagmiAdapter({
   ssr: true,
   projectId,
   networks: evmNetworks,
+  customRpcUrls: {
+    [`eip155:${arbitrum.id}`]: [
+      {
+        url: "https://arbitrum.drpc.org",
+      },
+    ],
+  },
 });
 
 export const solanaAdapter = new SolanaAdapter();
