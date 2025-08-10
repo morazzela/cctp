@@ -48,6 +48,51 @@ export const wagmiAdapter = new WagmiAdapter({
         url: "https://arbitrum.drpc.org",
       },
     ],
+    [`eip155:${sei.id}`]: [
+      {
+        url: "https://sei.drpc.org",
+      },
+    ],
+    [`eip155:${base.id}`]: [
+      {
+        url: "https://base.drpc.org",
+      },
+    ],
+    [`eip155:${mainnet.id}`]: [
+      {
+        url: "https://eth.drpc.org",
+      },
+    ],
+    [`eip155:${avalanche.id}`]: [
+      {
+        url: "https://avalanche.drpc.org",
+      },
+    ],
+    [`eip155:${linea.id}`]: [
+      {
+        url: "https://linea.drpc.org",
+      },
+    ],
+    [`eip155:${optimism.id}`]: [
+      {
+        url: "https://optimism.drpc.org",
+      },
+    ],
+    [`eip155:${sonic.id}`]: [
+      {
+        url: "https://sonic.drpc.org",
+      },
+    ],
+    [`eip155:${unichain.id}`]: [
+      {
+        url: "https://unichain.drpc.org",
+      },
+    ],
+    [`eip155:${polygon.id}`]: [
+      {
+        url: "https://polygon.drpc.org",
+      },
+    ],
   },
 });
 

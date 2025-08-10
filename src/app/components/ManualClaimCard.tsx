@@ -4,9 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { Hash, isHash } from "viem";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY } from "../constants";
+import { CHAINS, LOCAL_STORAGE_TRANSACTIONS_KEY, SOLANA } from "../constants";
 import { BurnTx, Chain } from "../types";
 import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
+import ConnectGuard from "./guard/ConnectGuard";
 
 type Props = {
   onClose: { (): void };
@@ -169,16 +170,18 @@ export default function ManualClaimCard({ onClose, onLoaded }: Props) {
           />
         </div>
       </div>
-      <button
-        disabled={!isValidHash || checking}
-        className="btn btn-xl btn-primary w-full"
-        onClick={onCheck}
-      >
-        {!isValidHash && "Invalid Hash"}
-        {!checking && notFound && "Transaction not found"}
-        {!checking && isValidHash && !notFound && "Check Transaction"}
-        {checking && "Checking Transaction..."}
-      </button>
+      <ConnectGuard chain={SOLANA} skip={!chain.isSolana}>
+        <button
+          disabled={!isValidHash || checking}
+          className="btn btn-xl btn-primary w-full"
+          onClick={onCheck}
+        >
+          {!isValidHash && "Invalid Hash"}
+          {!checking && notFound && "Transaction not found"}
+          {!checking && isValidHash && !notFound && "Check Transaction"}
+          {checking && "Checking Transaction..."}
+        </button>
+      </ConnectGuard>
     </div>
   );
 }
