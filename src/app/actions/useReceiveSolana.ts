@@ -171,7 +171,8 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
     if (
       txSize > 1232 ||
       (simulation.value.unitsConsumed !== undefined &&
-        simulation.value.unitsConsumed > 200_000)
+        simulation.value.unitsConsumed > 200_000) ||
+      simulation.value.err !== null
     ) {
       const slot = await connection.getSlot();
 
