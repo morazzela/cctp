@@ -9,11 +9,18 @@ import {
   useAppKitConnection,
 } from "@reown/appkit-adapter-solana/react";
 import { useCallback } from "react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import {
+  AddressLookupTableProgram,
+  ComputeBudgetProgram,
+  PublicKey,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import {
   decodeEventNonceFromMessageV2,
   evmAddressToBase58PublicKey,
   getReceiveV2PDAS,
+  sleep,
 } from "../utils";
 import * as spl from "@solana/spl-token";
 
@@ -37,12 +44,13 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       return;
     }
 
-    const txs: Transaction[] = [];
+    const txs: VersionedTransaction[] = [];
 
     const pk = new PublicKey(address);
     const usdc = new PublicKey(data.dstChain.usdc);
     const recipient = evmAddressToBase58PublicKey(data.recipient);
     const accountInfo = await connection.getAccountInfo(recipient);
+    const recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
     if (!accountInfo) {
       const instruction = spl.createAssociatedTokenAccountInstruction(
@@ -51,8 +59,14 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
         pk,
         usdc,
       );
-      const tx = new Transaction();
-      tx.instructions = [instruction];
+
+      const tx = new VersionedTransaction(
+        new TransactionMessage({
+          payerKey: pk,
+          instructions: [instruction],
+          recentBlockhash,
+        }).compileToV0Message(),
+      );
       txs.push(tx);
     }
 
@@ -127,7 +141,7 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       pubkey: tokenMessengerMinterV2.programId,
     });
 
-    const tx = await messageTransmitterV2.methods
+    const ix = await messageTransmitterV2.methods
       .receiveMessage({
         message: Buffer.from(data.message.replace("0x", ""), "hex"),
         attestation: Buffer.from(data.attestation.replace("0x", ""), "hex"),
@@ -141,12 +155,95 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
         program: messageTransmitterV2.programId,
       })
       .remainingAccounts(accountMetas)
-      .transaction();
+      .instruction();
+
+    let tx = new VersionedTransaction(
+      new TransactionMessage({
+        instructions: [ix],
+        payerKey: pk,
+        recentBlockhash,
+      }).compileToV0Message(),
+    );
+
+    const txSize = tx.serialize().length;
+    const simulation = await connection.simulateTransaction(tx);
+
+    if (
+      txSize > 1232 ||
+      (simulation.value.unitsConsumed !== undefined &&
+        simulation.value.unitsConsumed > 200_000) ||
+      simulation.value.err !== null
+    ) {
+      const slot = await connection.getSlot();
+
+      const [createIx, lookupTableAddress] =
+        AddressLookupTableProgram.createLookupTable({
+          authority: pk,
+          payer: pk,
+          recentSlot: slot,
+        });
+
+      const extendIx = AddressLookupTableProgram.extendLookupTable({
+        payer: pk,
+        authority: pk,
+        lookupTable: lookupTableAddress,
+        addresses: accountMetas.map((meta) => meta.pubkey),
+      });
+
+      const tableTx = new VersionedTransaction(
+        new TransactionMessage({
+          payerKey: pk,
+          recentBlockhash,
+          instructions: [createIx, extendIx],
+        }).compileToV0Message(),
+      );
+
+      const sign = await walletProvider.signAndSendTransaction(tableTx);
+
+      let success = false;
+      do {
+        const tx = await connection?.getTransaction(sign, {
+          commitment: "finalized",
+          maxSupportedTransactionVersion: 0,
+        });
+
+        success = !!tx;
+
+        await sleep(3_000);
+      } while (success === false);
+
+      const { value: lookupTableAccount } =
+        await connection.getAddressLookupTable(lookupTableAddress);
+
+      if (!lookupTableAccount) {
+        txs.push(tx);
+        return txs;
+      }
+
+      tx = new VersionedTransaction(
+        new TransactionMessage({
+          instructions: [
+            ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
+            ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1n }),
+            ix,
+          ],
+          payerKey: pk,
+          recentBlockhash,
+        }).compileToV0Message([lookupTableAccount]),
+      );
+    }
 
     txs.push(tx);
 
     return txs;
-  }, [data, messageTransmitterV2, tokenMessengerMinterV2, connection, address]);
+  }, [
+    data,
+    messageTransmitterV2,
+    tokenMessengerMinterV2,
+    connection,
+    address,
+    walletProvider,
+  ]);
 
   return useCallback(async () => {
     if (data?.isV1) {
@@ -159,13 +256,9 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       return;
     }
 
-    const pk = new PublicKey(address);
-
     let signature: string = "";
 
     for (const tx of txs) {
-      tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-      tx.feePayer = pk;
       signature = await walletProvider.signAndSendTransaction(tx);
     }
 

@@ -68,6 +68,36 @@ export function useBurnTxDetails(tx: BurnTx) {
   }, [res, nonceUsed]);
 
   useEffect(() => {
+    async function main() {
+      const now = moment().utc().unix();
+
+      if (
+        !resWithNonceUsed ||
+        resWithNonceUsed.isMinted ||
+        !resWithNonceUsed.isFast
+      ) {
+        return;
+      }
+
+      if (resWithNonceUsed.time > now - 86400) {
+        return;
+      }
+
+      await fetch(
+        `https://iris-api.circle.com/v2/reattest/${resWithNonceUsed.nonce}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+
+    main();
+  }, [resWithNonceUsed]);
+
+  useEffect(() => {
     if (resWithNonceUsed && resWithNonceUsed.isMinted) {
       setNeedsRefresh(false);
     }
