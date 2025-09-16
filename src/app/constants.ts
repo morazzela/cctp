@@ -13,6 +13,7 @@ import {
   worldchain,
 } from "@reown/appkit/networks";
 import { createChainFromNetwork } from "./utils";
+import { hyperevm } from "./chains";
 
 export const LOCAL_STORAGE_TRANSACTIONS_KEY = "transactions_v2";
 export const USDC_ICON =
@@ -202,9 +203,22 @@ export const SOLANA = createChainFromNetwork(solana, {
   hasV2: true,
 });
 
+export const HYPEREVM = createChainFromNetwork(hyperevm, {
+  domain: 19,
+  icon: "/images/chains/hyperevm.svg",
+  standardETA: 5,
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
+  usdc: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
+  hasV1: false,
+  hasV2: true,
+});
+
 export const CHAINS = [
   ETHEREUM,
   ARBITRUM,
+  HYPEREVM,
   SEI,
   SOLANA,
   AVALANCHE,
