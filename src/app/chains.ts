@@ -16,3 +16,20 @@ export const hyperevm = defineChain({
     },
   },
 });
+
+export const xdc = defineChain({
+  id: 50,
+  caipNetworkId: "eip155:50",
+  chainNamespace: "eip155",
+  name: "XDC",
+  nativeCurrency: {
+    name: "XDC",
+    symbol: "XDC",
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.xdc.network"],
+    },
+  },
+});

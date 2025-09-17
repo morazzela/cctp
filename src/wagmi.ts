@@ -15,7 +15,7 @@ import {
   worldchain,
   sei,
 } from "@reown/appkit/networks";
-import { hyperevm } from "./app/chains";
+import { hyperevm, xdc } from "./app/chains";
 
 export const projectId =
   process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID ?? "";
@@ -34,6 +34,7 @@ const evmNetworks: [any, ...any[]] = [
   worldchain,
   sei,
   hyperevm,
+  xdc,
 ];
 
 // eslint-disable-next-line
@@ -98,6 +99,11 @@ export const wagmiAdapter = new WagmiAdapter({
     [`eip155:${hyperevm.id}`]: [
       {
         url: "https://hyperliquid.drpc.org",
+      },
+    ],
+    [`eip155:${xdc.id}`]: [
+      {
+        url: "https://rpc.xdcrpc.com",
       },
     ],
   },
