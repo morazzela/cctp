@@ -16,7 +16,6 @@ import ShadowLogo from "./components/ui/ShadowLogo";
 import { useEffect, useMemo } from "react";
 import { MoonIcon, SunIcon } from "@heroicons/react/16/solid";
 import ShadowBackground from "./components/ui/ShadowBackground";
-import SonicLogo from "./components/ui/SonicLogo";
 import {
   useAppKit,
   useAppKitAccount,
@@ -145,23 +144,32 @@ function App() {
         )}
       </div>
       <div className="bg-white dark:bg-darker h-96 rounded-t-2xl p-6 flex items-start justify-between">
-        <div>
-          <Link
-            href="https://shadow.so/"
-            target="_blank"
-            className="flex items-center gap-x-2"
-          >
-            <ShadowLogo className="size-6" />
-            <span className="text-2xl dark:text-dark-primary">SHADOW</span>
-          </Link>
-          <div className="text-base mt-2 text-dark">
-            Sonic-native concentrated liquidity layer
-          </div>
+        <div className="-ml-6">
+          <img 
+            src="/light.svg" 
+            alt="CCTP.to" 
+            className="h-24 w-auto dark:hidden"
+          />
+          <img 
+            src="/dark.svg" 
+            alt="CCTP.to" 
+            className="h-24 w-auto hidden dark:block"
+          />
         </div>
-        <SonicLogo className="h-8 w-auto" />
+        <div className="flex flex-col items-end justify-center h-24">
+          <Link
+            href="https://x.com/cctpto"
+            target="_blank"
+            className="flex items-center gap-x-2 text-gray-600 dark:text-orange-500 hover:text-blue-500 dark:hover:text-white transition-colors duration-200"
+          >
+            <span className="text-3xl font-bold">𝕏</span>
+            <span className="text-sm font-medium">@cctpto</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
 }
 
 export default App;
+
