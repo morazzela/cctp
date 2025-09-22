@@ -14,6 +14,7 @@ import {
   unichain,
   worldchain,
   sei,
+  plumeMainnet,
 } from "@reown/appkit/networks";
 import { hyperevm, xdc } from "./app/chains";
 
@@ -35,6 +36,7 @@ const evmNetworks: [any, ...any[]] = [
   sei,
   hyperevm,
   xdc,
+  plumeMainnet,
 ];
 
 // eslint-disable-next-line
