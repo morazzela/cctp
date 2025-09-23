@@ -229,7 +229,7 @@ export const XDC = createChainFromNetwork(xdc, {
 });
 
 export const PLUME = createChainFromNetwork(plumeMainnet, {
-  domain: 20,
+  domain: 22,
   icon: "/images/chains/plume.png",
   standardETA: 10,
   tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
