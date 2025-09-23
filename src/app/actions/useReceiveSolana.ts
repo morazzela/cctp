@@ -56,7 +56,7 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       const instruction = spl.createAssociatedTokenAccountInstruction(
         pk,
         recipient,
-        pk,
+        recipient,
         usdc,
       );
 
