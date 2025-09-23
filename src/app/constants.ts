@@ -5,6 +5,7 @@ import {
   linea,
   mainnet,
   optimism,
+  plumeMainnet,
   polygon,
   sei,
   solana,
@@ -227,11 +228,24 @@ export const XDC = createChainFromNetwork(xdc, {
   hasV2: true,
 });
 
+export const PLUME = createChainFromNetwork(plumeMainnet, {
+  domain: 22,
+  icon: "/images/chains/plume.png",
+  standardETA: 10,
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
+  usdc: "0x222365EF19F7947e5484218551B56bb3965Aa7aF",
+  hasV1: false,
+  hasV2: true,
+});
+
 export const CHAINS = [
   ETHEREUM,
   ARBITRUM,
   XDC,
   HYPEREVM,
+  PLUME,
   SEI,
   SOLANA,
   AVALANCHE,

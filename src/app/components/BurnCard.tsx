@@ -50,7 +50,7 @@ export default function BurnCard() {
   const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
-  const [fast, setFast] = useState(true);
+  const [fast, setFast] = useState(false);
   const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState<string>(
     address ?? "",
