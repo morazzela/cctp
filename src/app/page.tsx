@@ -145,14 +145,14 @@ function App() {
       </div>
       <div className="bg-white dark:bg-darker h-96 rounded-t-2xl p-6 flex items-start justify-between">
         <div className="-ml-6">
-          <img 
-            src="/light.svg" 
-            alt="CCTP.to" 
+          <img
+            src="/light.svg"
+            alt="CCTP.to"
             className="h-24 w-auto dark:hidden"
           />
-          <img 
-            src="/dark.svg" 
-            alt="CCTP.to" 
+          <img
+            src="/dark.svg"
+            alt="CCTP.to"
             className="h-24 w-auto hidden dark:block"
           />
         </div>
@@ -172,4 +172,3 @@ function App() {
 }
 
 export default App;
-

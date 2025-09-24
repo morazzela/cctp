@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   initialScale: 1,
-  minimumScale: 1, 
+  minimumScale: 1,
 };
 
 export default async function RootLayout(props: { children: ReactNode }) {
