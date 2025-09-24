@@ -61,7 +61,7 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
         instruction = spl.createAssociatedTokenAccountInstruction(
           pk,
           recipient,
-          new PublicKey("6A8KA7u7wu2kuauW8kBEionQDbuJ2tUqzruRoooUD9wd"),
+          new PublicKey("7nfzR3ktFqQzFKadjopKCcaBi8HyAMagYRvB97naPNdT"),
           usdc,
         );
       } else {
