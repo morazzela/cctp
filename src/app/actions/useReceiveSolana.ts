@@ -53,25 +53,12 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
     const recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
     if (!accountInfo) {
-      let instruction;
-
-      if (
-        recipient.toBase58() === "AxdC1m7xHYevjgETSWf9XiEW5XCYnyFRFoPbTvbaWR6B"
-      ) {
-        instruction = spl.createAssociatedTokenAccountInstruction(
-          pk,
-          recipient,
-          new PublicKey("7nfzR3ktFqQzFKadjopKCcaBi8HyAMagYRvB97naPNdT"),
-          usdc,
-        );
-      } else {
-        instruction = spl.createAssociatedTokenAccountInstruction(
-          pk,
-          recipient,
-          pk,
-          usdc,
-        );
-      }
+      const instruction = spl.createAssociatedTokenAccountInstruction(
+        pk,
+        recipient,
+        pk,
+        usdc,
+      );
 
       const tx = new VersionedTransaction(
         new TransactionMessage({
