@@ -20,6 +20,7 @@ import {
   ArrowsRightLeftIcon,
   CheckCircleIcon,
   CheckIcon,
+  ExclamationTriangleIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import { useUSDCBalance } from "../hooks/useUSDCBalance";
@@ -30,6 +31,7 @@ import { useBurnLimits } from "../hooks/useBurnLimits";
 import { getChecksumedAddress, shouldUseV1, sleep } from "../utils";
 import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { useCreateSolanaUSDCAccount } from "../actions/useCreateSolanaUSDCAccount";
 
 export default function BurnCard() {
   const isClient = useIsClient();
@@ -61,6 +63,17 @@ export default function BurnCard() {
   const [bridging, setBridging] = useState(false);
   const [manualClaim, setManualClaim] = useState(false);
   const { data: balance, refetch: refetchBalance } = useUSDCBalance(srcChain);
+  const {
+    isInit: isSolanaUSDCAccountInit,
+    isLoading: solanaUSDCAccountLoading,
+    create: createSolanaUSDCAccount,
+    isCreating: isCreatingSolanaUSDCAccount,
+  } = useCreateSolanaUSDCAccount(recipientAddress, dstChain.isSolana);
+
+  const needSolanaUSDCAccount = useMemo(
+    () => dstChain.isSolana && !isSolanaUSDCAccountInit,
+    [dstChain.isSolana, isSolanaUSDCAccountInit],
+  );
 
   const isV1 = useMemo(
     () => shouldUseV1(srcChain, dstChain),
@@ -79,8 +92,18 @@ export default function BurnCard() {
   });
 
   const isLoading = useMemo(() => {
-    return v2FeesLoading || fastBurnAllowanceLoading || burnLimitsLoading;
-  }, [v2FeesLoading, fastBurnAllowanceLoading, burnLimitsLoading]);
+    return (
+      v2FeesLoading ||
+      fastBurnAllowanceLoading ||
+      burnLimitsLoading ||
+      solanaUSDCAccountLoading
+    );
+  }, [
+    v2FeesLoading,
+    fastBurnAllowanceLoading,
+    burnLimitsLoading,
+    solanaUSDCAccountLoading,
+  ]);
 
   const isFastTransferAvailable = useMemo(() => {
     if (
@@ -207,7 +230,7 @@ export default function BurnCard() {
     setDstChain(chain);
   };
 
-  const onBurnClick = async () => {
+  const onBurnClick = useCallback(async () => {
     if (!address) {
       return;
     }
@@ -267,7 +290,17 @@ export default function BurnCard() {
     setCurrentBurnTx(burnTx);
     setAmount(0n);
     refetchBalance();
-  };
+  }, [
+    address,
+    burn,
+    client,
+    refetchBalance,
+    setTransactions,
+    solanaConnection,
+    srcChain.domain,
+    srcChain.isEVM,
+    srcChain.isSolana,
+  ]);
 
   const onSwitch = () => {
     const tmpChain = dstChain;
@@ -523,29 +556,49 @@ export default function BurnCard() {
             </div>
           )}
         </div>
-        <ConnectGuard chain={srcChain} mustBeActive>
-          <ApproveGuard
-            tokenAddress={srcChain.usdc}
-            amount={amount}
-            spender={spender}
-            bypass={balance !== undefined && amount > balance}
-          >
+        {!solanaUSDCAccountLoading &&
+        needSolanaUSDCAccount &&
+        recipientAddressValid ? (
+          <>
+            <div className="bg-red-950 text-red-100 border-2 border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-2">
+              <ExclamationTriangleIcon className="size-6 text-red-500" />
+              <div>The recipient address must have an active USDC account.</div>
+            </div>
             <button
-              disabled={
-                amount <= 0n ||
-                balance === undefined ||
-                balance < amount ||
-                !recipientAddressValid ||
-                bridging ||
-                isLoading
-              }
-              onClick={onBurnClick}
+              disabled={isCreatingSolanaUSDCAccount}
               className="btn btn-xl btn-primary"
+              onClick={createSolanaUSDCAccount}
             >
-              {buttonText}
+              {isCreatingSolanaUSDCAccount
+                ? "Initializing Account..."
+                : "Initialize Solana USDC Account"}
             </button>
-          </ApproveGuard>
-        </ConnectGuard>
+          </>
+        ) : (
+          <ConnectGuard chain={srcChain} mustBeActive>
+            <ApproveGuard
+              tokenAddress={srcChain.usdc}
+              amount={amount}
+              spender={spender}
+              bypass={balance !== undefined && amount > balance}
+            >
+              <button
+                disabled={
+                  amount <= 0n ||
+                  balance === undefined ||
+                  balance < amount ||
+                  !recipientAddressValid ||
+                  bridging ||
+                  isLoading
+                }
+                onClick={onBurnClick}
+                className="btn btn-xl btn-primary"
+              >
+                {buttonText}
+              </button>
+            </ApproveGuard>
+          </ConnectGuard>
+        )}
       </div>
       <div className="absolute w-full text-center top-full translate-y-2 left-1/2 -translate-x-1/2 text-darker/50 dark:text-lighter/30 text-xs">
         This website does not charge you any extra fees.
