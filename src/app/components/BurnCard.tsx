@@ -145,6 +145,10 @@ export default function BurnCard() {
   }, [amount, fast, v2Fees, isFastTransferAvailable]);
 
   const buttonText = useMemo(() => {
+    if (solanaUSDCAccountLoading) {
+      return "Checking USDC Account...";
+    }
+
     if (isLoading) {
       return "Loading...";
     }
@@ -186,6 +190,7 @@ export default function BurnCard() {
     srcChain.fastETA,
     isLoading,
     isV1,
+    solanaUSDCAccountLoading,
   ]);
 
   const spender = useMemo(() => {
@@ -560,7 +565,7 @@ export default function BurnCard() {
         needSolanaUSDCAccount &&
         recipientAddressValid ? (
           <>
-            <div className="bg-red-950 text-red-100 border-2 border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-2">
+            <div className="bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-100 border-2 border-red-300 dark:border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-2">
               <ExclamationTriangleIcon className="size-6 text-red-500" />
               <div>The recipient address must have an active USDC account.</div>
             </div>
