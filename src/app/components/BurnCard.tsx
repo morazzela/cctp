@@ -21,6 +21,7 @@ import {
   CheckCircleIcon,
   CheckIcon,
   ExclamationTriangleIcon,
+  PencilIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import { useUSDCBalance } from "../hooks/useUSDCBalance";
@@ -313,7 +314,7 @@ export default function BurnCard() {
     setSrcChain(tmpChain);
   };
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (dstChain.namespace !== srcChain.namespace && !recipientAddressOpen) {
       setRecipientAddressOpen(true);
       setRecipientAddress("");
@@ -323,10 +324,10 @@ export default function BurnCard() {
       setRecipientAddressOpen(false);
     }
     // eslint-disable-next-line
-  }, [dstChain.namespace, srcChain.namespace]);
+  }, [dstChain.namespace, srcChain.namespace]); */
 
   useEffect(() => {
-    setRecipientAddress(address ?? "");
+    setRecipientAddress(dstAddress ?? "");
     // eslint-disable-next-line
   }, [recipientAddressOpen]);
 
@@ -472,27 +473,80 @@ export default function BurnCard() {
         </div>
         {(isConnected || srcChain.namespace !== dstChain.namespace) && (
           <div>
-            {address !== undefined &&
-              srcChain.namespace === dstChain.namespace && (
-                <div
-                  onClick={() => setRecipientAddressOpen((val) => !val)}
-                  className="flex items-center justify-end gap-x-2"
-                >
-                  <div
-                    className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light dark:bg-dark-primary dark:border-dark-primary" : "bg-lighter dark:bg-dark"} border relative`}
-                  >
+            {address !== undefined && (
+              <div className="flex items-center justify-start">
+                <div className="flex items-center gap-x-2 w-full">
+                  <span className="text-dark shrink-0">Send to</span>
+                  <div className="flex w-full">
+                    <div
+                      className={`relative ${recipientAddressOpen ? "w-full" : "w-36"}`}
+                    >
+                      <input
+                        onClick={() => {
+                          if (!recipientAddressOpen) {
+                            setRecipientAddressOpen(true);
+                          }
+                        }}
+                        className={`${recipientAddressOpen ? "" : "cursor-pointer hover:bg-light dark:hover:bg-darkest"} bg-lighter pr-6 dark:bg-darkest border py-1.5 px-3 ${recipientAddressOpen ? "rounded-l-2xl" : "rounded-2xl"} font-mono w-full`}
+                        value={
+                          recipientAddressOpen
+                            ? recipientAddress
+                            : `${recipientAddress.substring(0, 6) + ".." + recipientAddress.substring(recipientAddress.length - 4)}`
+                        }
+                        onInput={(e) => {
+                          const val = e.currentTarget.value.trim();
+                          const checksumed = getChecksumedAddress(
+                            val,
+                            dstChain,
+                          );
+                          setRecipientAddress(checksumed ?? val);
+                        }}
+                      />
+                      {!recipientAddressOpen && (
+                        <PencilIcon className="size-4 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                      )}
+                      {recipientAddressOpen && (
+                        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-x-4">
+                          {recipientAddressValid && (
+                            <CheckCircleIcon className="size-6 text-green-600" />
+                          )}
+                          {!recipientAddressValid && (
+                            <div className="size-5.5 rounded-full bg-danger">
+                              <XMarkIcon className="size-5.5 text-lighter dark:text-darker" />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     {recipientAddressOpen && (
-                      <CheckIcon className="size-3.5 text-lighter dark:text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                      <button
+                        onClick={() => setRecipientAddressOpen(false)}
+                        className={`bg-lighter dark:bg-darkest rounded-r-2xl border py-1.5 px-3 hover:bg-light dark:hover:bg-darkest cursor-pointer ${recipientAddressOpen ? "-translate-x-px" : ""}`}
+                      >
+                        Reset
+                      </button>
                     )}
                   </div>
-                  <div
-                    className={`cursor-default text-sm ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
-                  >
-                    Send to a different address
-                  </div>
                 </div>
-              )}
-            {recipientAddressOpen && (
+                {false && (
+                  <div className="flex items-center gap-x-2">
+                    <div
+                      className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light dark:bg-dark-primary dark:border-dark-primary" : "bg-lighter dark:bg-dark"} border relative`}
+                    >
+                      {recipientAddressOpen && (
+                        <CheckIcon className="size-3.5 text-lighter dark:text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                      )}
+                    </div>
+                    <div
+                      className={`cursor-default text-sm ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
+                    >
+                      Send to a different address
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {recipientAddressOpen && false && (
               <div>
                 <div className="text-lg mb-1">Recipient Address</div>
                 <div className="relative">
