@@ -7,6 +7,7 @@ import {
   CHAINS,
   ETHEREUM,
   LOCAL_STORAGE_TRANSACTIONS_KEY,
+  SOLANA,
   SONIC,
 } from "../constants";
 import { Address, formatUnits, Hex, parseUnits } from "viem";
@@ -19,10 +20,7 @@ import moment from "moment";
 import {
   ArrowsRightLeftIcon,
   CheckCircleIcon,
-  CheckIcon,
   ExclamationTriangleIcon,
-  PencilIcon,
-  XMarkIcon,
 } from "@heroicons/react/16/solid";
 import { useUSDCBalance } from "../hooks/useUSDCBalance";
 import TxCard from "./TxCard";
@@ -54,7 +52,6 @@ export default function BurnCard() {
   const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
   const [fast, setFast] = useState(false);
-  const [recipientAddressOpen, setRecipientAddressOpen] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState<string>(
     address ?? "",
   );
@@ -328,11 +325,6 @@ export default function BurnCard() {
 
   useEffect(() => {
     setRecipientAddress(dstAddress ?? "");
-    // eslint-disable-next-line
-  }, [recipientAddressOpen]);
-
-  useEffect(() => {
-    setRecipientAddress(dstAddress ?? "");
   }, [dstAddress]);
 
   useEffect(() => {
@@ -475,24 +467,13 @@ export default function BurnCard() {
           <div>
             {address !== undefined && (
               <div className="flex items-center justify-start">
-                <div className="flex items-center gap-x-2 w-full">
-                  <span className="text-dark shrink-0">Send to</span>
+                <div className="w-full">
+                  <span className="shrink-0 text-lg mb-1">Send to</span>
                   <div className="flex w-full">
-                    <div
-                      className={`relative ${recipientAddressOpen ? "w-full" : "w-36"}`}
-                    >
+                    <div className={`relative w-full`}>
                       <input
-                        onClick={() => {
-                          if (!recipientAddressOpen) {
-                            setRecipientAddressOpen(true);
-                          }
-                        }}
-                        className={`${recipientAddressOpen ? "" : "cursor-pointer hover:bg-light dark:hover:bg-darkest"} bg-lighter pr-6 dark:bg-darkest border py-1.5 px-3 ${recipientAddressOpen ? "rounded-l-2xl" : "rounded-2xl"} font-mono w-full`}
-                        value={
-                          recipientAddressOpen
-                            ? recipientAddress
-                            : `${recipientAddress.substring(0, 6) + ".." + recipientAddress.substring(recipientAddress.length - 4)}`
-                        }
+                        className={`bg-lighter focus:outline-2 translate-x-px pr-6 dark:bg-darkest text-lg border py-3 px-4 ${dstAddress === undefined || dstAddress === recipientAddress ? "rounded-2xl" : "rounded-l-2xl"} font-mono w-full`}
+                        value={recipientAddress}
                         onInput={(e) => {
                           const val = e.currentTarget.value.trim();
                           const checksumed = getChecksumedAddress(
@@ -502,75 +483,22 @@ export default function BurnCard() {
                           setRecipientAddress(checksumed ?? val);
                         }}
                       />
-                      {!recipientAddressOpen && (
-                        <PencilIcon className="size-4 absolute right-2.5 top-1/2 -translate-y-1/2" />
+                      {recipientAddressValid && (
+                        <CheckCircleIcon className="size-6 absolute top-1/2 -translate-y-1/2 right-4 text-green-500" />
                       )}
-                      {recipientAddressOpen && (
-                        <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-x-4">
-                          {recipientAddressValid && (
-                            <CheckCircleIcon className="size-6 text-green-600" />
-                          )}
-                          {!recipientAddressValid && (
-                            <div className="size-5.5 rounded-full bg-danger">
-                              <XMarkIcon className="size-5.5 text-lighter dark:text-darker" />
-                            </div>
-                          )}
-                        </div>
+                      {!recipientAddressValid && (
+                        <ExclamationTriangleIcon className="size-6 absolute top-1/2 -translate-y-1/2 right-4 text-red-500" />
                       )}
                     </div>
-                    {recipientAddressOpen && (
-                      <button
-                        onClick={() => setRecipientAddressOpen(false)}
-                        className={`bg-lighter dark:bg-darkest rounded-r-2xl border py-1.5 px-3 hover:bg-light dark:hover:bg-darkest cursor-pointer ${recipientAddressOpen ? "-translate-x-px" : ""}`}
-                      >
-                        Reset
-                      </button>
-                    )}
-                  </div>
-                </div>
-                {false && (
-                  <div className="flex items-center gap-x-2">
-                    <div
-                      className={`size-4 rounded ${recipientAddressOpen ? "bg-primary-light border-primary-light dark:bg-dark-primary dark:border-dark-primary" : "bg-lighter dark:bg-dark"} border relative`}
-                    >
-                      {recipientAddressOpen && (
-                        <CheckIcon className="size-3.5 text-lighter dark:text-darker absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    {dstAddress !== undefined &&
+                      dstAddress !== recipientAddress && (
+                        <button
+                          onClick={() => setRecipientAddress(dstAddress)}
+                          className={`bg-light dark:bg-darkest rounded-r-2xl border py-1.5 dark:hover:text-light px-4 text-dark dark:text-dark hover:bg-lighter dark:hover:bg-darkest cursor-pointer`}
+                        >
+                          Reset
+                        </button>
                       )}
-                    </div>
-                    <div
-                      className={`cursor-default text-sm ${recipientAddressOpen ? "text-primary-gradient" : "text-dark"}`}
-                    >
-                      Send to a different address
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            {recipientAddressOpen && false && (
-              <div>
-                <div className="text-lg mb-1">Recipient Address</div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    className={`form-control pr-12 ${!recipientAddressOpen ? "text-dark" : ""}`}
-                    value={recipientAddress}
-                    onInput={(e) => {
-                      const val = e.currentTarget.value.trim();
-
-                      const checksumed = getChecksumedAddress(val, dstChain);
-                      setRecipientAddress(checksumed ?? val);
-                    }}
-                    disabled={!recipientAddressOpen}
-                  />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-x-4">
-                    {recipientAddressValid && (
-                      <CheckCircleIcon className="size-6 text-green-600 mr-2" />
-                    )}
-                    {!recipientAddressValid && (
-                      <div className="size-5.5 rounded-full bg-danger mr-2">
-                        <XMarkIcon className="size-5.5 text-lighter dark:text-darker" />
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -619,22 +547,28 @@ export default function BurnCard() {
         needSolanaUSDCAccount &&
         recipientAddressValid ? (
           <>
-            <div className="bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-100 border-2 border-red-300 dark:border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-2">
-              <ExclamationTriangleIcon className="size-6 text-red-500" />
+            <div className="bg-red-500 dark:bg-red-950 text-red-50 dark:text-red-100 dark:border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-3">
+              <ExclamationTriangleIcon className="size-6" />
               <div>The recipient address must have an active USDC account.</div>
             </div>
-            <button
-              disabled={isCreatingSolanaUSDCAccount}
-              className="btn btn-xl btn-primary"
-              onClick={createSolanaUSDCAccount}
-            >
-              {isCreatingSolanaUSDCAccount
-                ? "Initializing Account..."
-                : "Initialize Solana USDC Account"}
-            </button>
+            <ConnectGuard chain={SOLANA} mustBeActive>
+              <button
+                disabled={isCreatingSolanaUSDCAccount}
+                className="btn btn-xl btn-primary"
+                onClick={createSolanaUSDCAccount}
+              >
+                {isCreatingSolanaUSDCAccount
+                  ? "Initializing Account..."
+                  : "Initialize Solana USDC Account"}
+              </button>
+            </ConnectGuard>
           </>
         ) : (
-          <ConnectGuard chain={srcChain} mustBeActive>
+          <ConnectGuard
+            chain={srcChain}
+            skip={solanaUSDCAccountLoading}
+            mustBeActive
+          >
             <ApproveGuard
               tokenAddress={srcChain.usdc}
               amount={amount}

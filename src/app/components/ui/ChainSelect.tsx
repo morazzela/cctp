@@ -84,7 +84,7 @@ export default function ChainSelect({
         />
       </button>
       {open && (
-        <div className="animate-fade-in-scale z-10 absolute border top-full translate-y-1 left-0 w-full rounded-xl overflow-hidden">
+        <div className="animate-fade-in-scale z-10 max-h-96 absolute border top-full translate-y-1 left-0 w-full rounded-xl overflow-y-auto">
           {chainsWithoutValue.map((chain) => (
             <ChainSelectOption
               key={chain.domain}
