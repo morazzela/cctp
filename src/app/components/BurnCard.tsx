@@ -573,7 +573,10 @@ export default function BurnCard() {
               tokenAddress={srcChain.usdc}
               amount={amount}
               spender={spender}
-              bypass={balance !== undefined && amount > balance}
+              bypass={
+                !recipientAddressValid ||
+                (balance !== undefined && amount > balance)
+              }
             >
               <button
                 disabled={
