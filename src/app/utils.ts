@@ -71,7 +71,7 @@ export function createChainFromNetwork(
     isSolana: namespace === "solana",
     id: network.id,
     name: network.name,
-    getTxUri: (hash) => `${network.blockExplorers?.default.url}/tx/${hash}`,
+    getTxUri: (hash) => `${network.blockExplorers?.default?.url}/tx/${hash}`,
     ...props,
   };
 }

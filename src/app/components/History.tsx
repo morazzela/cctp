@@ -163,7 +163,7 @@ function Row({ tx }: { tx: BurnTx }) {
             </button>
           )}
           <Link
-            href={`https://usdc.range.org/usdc/status/${data.hash}`}
+            href={data.srcChain.getTxUri(data.hash) ?? ""}
             target="_blank"
             className="btn btn-sm btn-primary"
           >
