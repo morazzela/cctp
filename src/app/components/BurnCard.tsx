@@ -545,6 +545,7 @@ export default function BurnCard() {
         </div>
         {!solanaUSDCAccountLoading &&
         needSolanaUSDCAccount &&
+        amount > 0n &&
         recipientAddressValid ? (
           <>
             <div className="bg-red-500 dark:bg-red-950 text-red-50 dark:text-red-100 dark:border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-3">

@@ -28,7 +28,9 @@ export default function ConnectGuard({
   const network = useAppKitNetwork();
 
   const isActive = useMemo(
-    () => network.chainId === chain.id && chain.id === chainId,
+    () =>
+      network.chainId === chain.id &&
+      (chain.namespace !== "eip155" || chain.id === chainId),
     [network, chain, chainId],
   );
 
