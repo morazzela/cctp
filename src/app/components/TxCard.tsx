@@ -4,7 +4,7 @@ import { BurnTx, Chain } from "../types";
 import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
 import ChainIcon from "./ui/ChainIcon";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
@@ -29,7 +29,7 @@ export default function TxCard({ tx, clearTx }: Props) {
   });
   const { connection } = useAppKitConnection();
 
-  const onClaim = async () => {
+  const onClaim = useCallback(async () => {
     if (
       !receive ||
       !data ||
@@ -41,7 +41,10 @@ export default function TxCard({ tx, clearTx }: Props) {
     }
 
     setClaiming(true);
-    const hash = await receive().catch(() => setClaiming(false));
+    const hash = await receive().catch((err) => {
+      console.error(err);
+      setClaiming(false);
+    });
     setClaiming(false);
 
     if (!hash) {
@@ -71,7 +74,7 @@ export default function TxCard({ tx, clearTx }: Props) {
     await refetchNonceUsed();
     setConfirmationPending(false);
     setClaimed(true);
-  };
+  }, [receive, data, client, connection, refetchNonceUsed]);
 
   useEffect(() => {
     if (!claimed) {

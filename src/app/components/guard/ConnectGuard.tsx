@@ -5,6 +5,7 @@ import {
   useAppKitAccount,
   useAppKitNetwork,
 } from "@reown/appkit/react";
+import { useAccount } from "wagmi";
 
 type Props = {
   chain: Chain;
@@ -23,11 +24,12 @@ export default function ConnectGuard({
 }: Props) {
   const appKit = useAppKit();
   const { isConnected } = useAppKitAccount({ namespace: chain.namespace });
+  const { chainId } = useAccount();
   const network = useAppKitNetwork();
 
   const isActive = useMemo(
-    () => network.chainId === chain.id,
-    [network, chain],
+    () => network.chainId === chain.id && chain.id === chainId,
+    [network, chain, chainId],
   );
 
   const onButtonClick = useCallback(async () => {
