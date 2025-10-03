@@ -19,15 +19,15 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "CCTP V2 Bridge",
+  title: "CCTP Bridge",
   description: "Move your USDC instantly with zero added fees.",
   openGraph: {
-    title: "CCTP V2 Bridge",
+    title: "CCTP Bridge",
     description: "Move your USDC instantly with zero added fees.",
     images: "/images/preview.png",
   },
   twitter: {
-    title: "CCTP V2 Bridge",
+    title: "CCTP Bridge",
     description: "Move your USDC instantly with zero added fees.",
     images: "/images/preview.png",
   },
