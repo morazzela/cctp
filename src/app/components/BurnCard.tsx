@@ -21,6 +21,7 @@ import {
   ArrowsRightLeftIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/16/solid";
 import { useUSDCBalance } from "../hooks/useUSDCBalance";
 import TxCard from "./TxCard";
@@ -317,6 +318,10 @@ export default function BurnCard({
     // eslint-disable-next-line
   }, [dstChain.namespace, srcChain.namespace]); */
 
+  const isDifferentRecipient = useMemo(() => {
+    return dstAddress !== undefined && dstAddress !== recipientAddress;
+  }, [recipientAddress, dstAddress]);
+
   useEffect(() => {
     setRecipientAddress(dstAddress ?? "");
   }, [dstAddress]);
@@ -564,6 +569,15 @@ export default function BurnCard({
             skip={solanaUSDCAccountLoading}
             mustBeActive
           >
+            {isDifferentRecipient && recipientAddressValid && (
+              <div className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-200 border border-orange-500 dark:border-orange-800 rounded-xl px-4 py-3 flex items-center gap-x-3">
+                <InformationCircleIcon className="size-6" />
+                <div>
+                  The recipient address does not match the currently connected
+                  address.
+                </div>
+              </div>
+            )}
             <ApproveGuard
               tokenAddress={srcChain.usdc}
               amount={amount}
