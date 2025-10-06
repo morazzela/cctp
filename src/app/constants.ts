@@ -12,6 +12,7 @@ import {
   sonic,
   unichain,
   worldchain,
+  ink,
 } from "@reown/appkit/networks";
 import { createChainFromNetwork } from "./utils";
 import { hyperevm, xdc } from "./chains";
@@ -241,12 +242,25 @@ export const PLUME = createChainFromNetwork(plumeMainnet, {
   hasV2: true,
 });
 
+export const INK = createChainFromNetwork(ink, {
+  domain: 21,
+  icon: "/images/chains/ink.svg",
+  standardETA: 10,
+  tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
+  messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
+  tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
+  usdc: "0x2D270e6886d130D724215A266106e6832161EAEd",
+  hasV1: false,
+  hasV2: true,
+});
+
 export const CHAINS = [
   ETHEREUM,
   ARBITRUM,
   XDC,
   HYPEREVM,
   PLUME,
+  INK,
   SEI,
   SOLANA,
   AVALANCHE,
