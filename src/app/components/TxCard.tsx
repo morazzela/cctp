@@ -9,8 +9,11 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
 import ConnectGuard from "./guard/ConnectGuard";
-import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
-import { sleep } from "../utils";
+import {
+  Connection,
+  useAppKitConnection,
+} from "@reown/appkit-adapter-solana/react";
+import { sleep, waitForSolanaTx } from "../utils";
 
 type Props = {
   tx: BurnTx;
@@ -41,10 +44,12 @@ export default function TxCard({ tx, clearTx }: Props) {
     }
 
     setClaiming(true);
-    const hash = await receive().catch((err) => {
+
+    const hash = await receive().catch((err: Error) => {
       console.error(err);
       setClaiming(false);
     });
+
     setClaiming(false);
 
     if (!hash) {
@@ -52,23 +57,14 @@ export default function TxCard({ tx, clearTx }: Props) {
     }
 
     setConfirmationPending(true);
+
     if (data.dstChain.isEVM) {
       await client?.waitForTransactionReceipt({
         hash: hash as Hex,
         pollingInterval: 10_000,
       });
     } else if (data.dstChain.isSolana) {
-      let success = false;
-      do {
-        const tx = await connection?.getTransaction(hash, {
-          commitment: "confirmed",
-          maxSupportedTransactionVersion: 0,
-        });
-
-        success = !!tx;
-
-        await sleep(5_000);
-      } while (success === false);
+      await waitForSolanaTx(hash, connection as Connection);
     }
     await sleep(5_000);
     await refetchNonceUsed();

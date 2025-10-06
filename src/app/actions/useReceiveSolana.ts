@@ -20,7 +20,7 @@ import {
   decodeEventNonceFromMessageV2,
   evmAddressToBase58PublicKey,
   getReceiveV2PDAS,
-  sleep,
+  waitForSolanaTx,
 } from "../utils";
 import * as spl from "@solana/spl-token";
 
@@ -165,73 +165,59 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       }).compileToV0Message(),
     );
 
-    const txSize = tx.serialize().length;
     const simulation = await connection.simulateTransaction(tx);
 
-    if (
-      txSize > 1232 ||
-      (simulation.value.unitsConsumed !== undefined &&
-        simulation.value.unitsConsumed > 200_000) ||
-      (simulation.value.err !== null && !!accountInfo)
-    ) {
-      const slot = await connection.getSlot();
+    if (simulation.value.err !== null) {
+      throw new Error(simulation.value.err.toString());
+    }
 
-      const [createIx, lookupTableAddress] =
-        AddressLookupTableProgram.createLookupTable({
-          authority: pk,
-          payer: pk,
-          recentSlot: slot,
-        });
+    const slot = await connection.getSlot();
 
-      const extendIx = AddressLookupTableProgram.extendLookupTable({
-        payer: pk,
+    const [createIx, lookupTableAddress] =
+      AddressLookupTableProgram.createLookupTable({
         authority: pk,
-        lookupTable: lookupTableAddress,
-        addresses: accountMetas.map((meta) => meta.pubkey),
+        payer: pk,
+        recentSlot: slot,
       });
 
-      const tableTx = new VersionedTransaction(
-        new TransactionMessage({
-          payerKey: pk,
-          recentBlockhash,
-          instructions: [createIx, extendIx],
-        }).compileToV0Message(),
-      );
+    const extendIx = AddressLookupTableProgram.extendLookupTable({
+      payer: pk,
+      authority: pk,
+      lookupTable: lookupTableAddress,
+      addresses: accountMetas.map((meta) => meta.pubkey),
+    });
 
-      const sign = await walletProvider.signAndSendTransaction(tableTx);
+    const tableTx = new VersionedTransaction(
+      new TransactionMessage({
+        payerKey: pk,
+        recentBlockhash,
+        instructions: [createIx, extendIx],
+      }).compileToV0Message(),
+    );
 
-      let success = false;
-      do {
-        const tx = await connection?.getTransaction(sign, {
-          commitment: "finalized",
-          maxSupportedTransactionVersion: 0,
-        });
+    const sign = await walletProvider.signAndSendTransaction(tableTx);
 
-        success = !!tx;
+    await waitForSolanaTx(sign, connection);
 
-        await sleep(3_000);
-      } while (success === false);
+    const { value: lookupTableAccount } =
+      await connection.getAddressLookupTable(lookupTableAddress);
 
-      const { value: lookupTableAccount } =
-        await connection.getAddressLookupTable(lookupTableAddress);
-
-      if (!lookupTableAccount) {
-        txs.push(tx);
-        return txs;
-      }
-
-      tx = new VersionedTransaction(
-        new TransactionMessage({
-          instructions: [
-            ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
-            ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1n }),
-            ix,
-          ],
-          payerKey: pk,
-          recentBlockhash,
-        }).compileToV0Message([lookupTableAccount]),
-      );
+    if (!lookupTableAccount) {
+      txs.push(tx);
+      return txs;
     }
+
+    tx = new VersionedTransaction(
+      new TransactionMessage({
+        instructions: [
+          ComputeBudgetProgram.setComputeUnitLimit({ units: 300_000 }),
+          ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1n }),
+          ix,
+        ],
+        payerKey: pk,
+        recentBlockhash,
+      }).compileToV0Message([lookupTableAccount]),
+    );
 
     txs.push(tx);
 

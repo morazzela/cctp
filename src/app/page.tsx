@@ -13,7 +13,7 @@ import {
 import ChainIcon from "./components/ui/ChainIcon";
 import Link from "next/link";
 import ShadowLogo from "./components/ui/ShadowLogo";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MoonIcon, SunIcon } from "@heroicons/react/16/solid";
 import ShadowBackground from "./components/ui/ShadowBackground";
 import {
@@ -33,6 +33,7 @@ function App() {
   const [dark, setDark] = useLocalStorage("dark-mode", false);
   const appKit = useAppKit();
   const { setThemeMode } = useAppKitTheme();
+  const [selectedTx, setSelectedTx] = useState<BurnTx>();
 
   const validTxs = useMemo(() => {
     if (!evmAddress && !solanaAddress) {
@@ -134,12 +135,16 @@ function App() {
                 className="w-full absolute -z-10 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
               />
             </div>
-            <BurnCard />
+            <BurnCard selectedTx={selectedTx} setSelectedTx={setSelectedTx} />
           </div>
         </div>
         {validTxs.length > 0 && (
           <div className="flex w-full">
-            <History transactions={validTxs} />
+            <History
+              setSelectedTx={setSelectedTx}
+              selectedTx={selectedTx}
+              transactions={validTxs}
+            />
           </div>
         )}
       </div>

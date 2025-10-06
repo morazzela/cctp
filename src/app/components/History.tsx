@@ -1,9 +1,8 @@
 import { BurnTx } from "../types";
 import { useBurnTxDetails, useETA } from "../hooks/useBurnTxDetails";
 import moment from "moment";
-import { usePublicClient } from "wagmi";
 import { USDC_ICON } from "../constants";
-import { formatUnits, Hex } from "viem";
+import { formatUnits } from "viem";
 import ChainIcon from "./ui/ChainIcon";
 import {
   ArrowLongRightIcon,
@@ -12,21 +11,19 @@ import {
   CheckCircleIcon,
 } from "@heroicons/react/16/solid";
 import Link from "next/link";
-import { useReceive } from "../actions/useReceive";
 import { useMemo } from "react";
-import { useUSDCBalance } from "../hooks/useUSDCBalance";
-import {
-  useAppKit,
-  useAppKitAccount,
-  useAppKitNetwork,
-} from "@reown/appkit/react";
-import { useConnection } from "@solana/wallet-adapter-react";
 
 type HistoryProps = {
   transactions: BurnTx[];
+  setSelectedTx: { (tx: BurnTx): void };
+  selectedTx: BurnTx | undefined;
 };
 
-export default function History({ transactions }: HistoryProps) {
+export default function History({
+  transactions,
+  setSelectedTx,
+  selectedTx,
+}: HistoryProps) {
   const sortedTxs = useMemo(() => {
     const txs = [...transactions];
     return txs.sort((a, b) => (a.time > b.time ? -1 : 1));
@@ -43,61 +40,29 @@ export default function History({ transactions }: HistoryProps) {
       </div>
       <div className="w-full flex flex-col gap-y-2">
         {sortedTxs.slice(0, 10).map((tx) => (
-          <Row key={tx.hash + "-" + tx.srcDomain} tx={tx} />
+          <Row
+            onClick={setSelectedTx}
+            key={tx.hash + "-" + tx.srcDomain}
+            tx={tx}
+            isSelected={selectedTx?.hash === tx.hash}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function Row({ tx }: { tx: BurnTx }) {
-  const { data, isLoading, refetchNonceUsed } = useBurnTxDetails(tx);
-  const client = usePublicClient({ chainId: data?.dstChain?.id as number });
+function Row({
+  tx,
+  onClick,
+  isSelected,
+}: {
+  isSelected: boolean;
+  tx: BurnTx;
+  onClick: { (tx: BurnTx): void };
+}) {
+  const { data, isLoading } = useBurnTxDetails(tx);
   const eta = useETA(data);
-  const receive = useReceive(data);
-  const { isConnected } = useAppKitAccount({
-    namespace: data?.dstChain?.namespace,
-  });
-  const { connection: solanaConnection } = useConnection();
-  const { chainId, switchNetwork } = useAppKitNetwork();
-  const { open } = useAppKit();
-  const { refetch: refetchBalance } = useUSDCBalance(data?.dstChain);
-
-  const onMintClick = async () => {
-    if (!receive || !data || !data.dstChain) {
-      return;
-    }
-
-    if (!isConnected) {
-      open({
-        view: "Connect",
-        namespace: data.dstChain.namespace,
-      });
-
-      return;
-    }
-
-    if (data.dstChain.id !== chainId) {
-      switchNetwork(data.dstChain.network);
-
-      return;
-    }
-
-    const hash = await receive();
-
-    if (!hash) {
-      return;
-    }
-
-    if (data.dstChain.isEVM) {
-      await client?.waitForTransactionReceipt({ hash: hash as Hex });
-    } else if (data.dstChain.isSolana) {
-      await solanaConnection.confirmTransaction(hash, "confirmed");
-    }
-
-    await refetchNonceUsed();
-    await refetchBalance();
-  };
 
   if (isLoading || data === undefined) {
     return;
@@ -158,14 +123,18 @@ function Row({ tx }: { tx: BurnTx }) {
         )}
         <div className="max-lg:col-span-5 ml-auto flex gap-x-2">
           {data.isComplete && (
-            <button onClick={onMintClick} className="btn btn-sm btn-primary">
+            <button
+              onClick={() => onClick(tx)}
+              disabled={isSelected}
+              className="btn btn-sm btn-primary"
+            >
               Claim
             </button>
           )}
           <Link
             href={data.srcChain.getTxUri(data.hash) ?? ""}
             target="_blank"
-            className="btn btn-sm btn-primary"
+            className="btn btn-sm btn-primary whitespace-nowrap"
           >
             View Tx
           </Link>

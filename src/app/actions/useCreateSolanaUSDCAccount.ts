@@ -3,7 +3,11 @@ import {
   TransactionMessage,
   VersionedTransaction,
 } from "@solana/web3.js";
-import { getChecksumedAddress, getSolanaUSDCAccount, sleep } from "../utils";
+import {
+  getChecksumedAddress,
+  getSolanaUSDCAccount,
+  waitForSolanaTx,
+} from "../utils";
 import { SOLANA } from "../constants";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -33,8 +37,6 @@ export function useCreateSolanaUSDCAccount(
   useEffect(() => {
     async function main() {
       setIsLoading(true);
-
-      console.log(enabled, checksumedRecipient, connection);
 
       if (enabled === false || checksumedRecipient === null || !connection) {
         setAccountAddress(null);
@@ -89,19 +91,7 @@ export function useCreateSolanaUSDCAccount(
 
     try {
       const sign = await walletProvider.signAndSendTransaction(tx);
-
-      let success = false;
-
-      do {
-        const tx = await connection.getTransaction(sign, {
-          commitment: "finalized",
-          maxSupportedTransactionVersion: 0,
-        });
-
-        success = !!tx;
-
-        await sleep(3_000);
-      } while (success === false);
+      await waitForSolanaTx(sign, connection);
     } catch (err) {
       console.error(err);
       setIsCreating(false);

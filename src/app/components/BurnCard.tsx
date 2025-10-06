@@ -27,12 +27,20 @@ import TxCard from "./TxCard";
 import { useBurn } from "../actions/useBurn";
 import ManualClaimCard from "./ManualClaimCard";
 import { useBurnLimits } from "../hooks/useBurnLimits";
-import { getChecksumedAddress, shouldUseV1, sleep } from "../utils";
+import { getChecksumedAddress, shouldUseV1, waitForSolanaTx } from "../utils";
 import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useCreateSolanaUSDCAccount } from "../actions/useCreateSolanaUSDCAccount";
 
-export default function BurnCard() {
+type Props = {
+  selectedTx: BurnTx | undefined;
+  setSelectedTx: { (tx: BurnTx | undefined): void };
+};
+
+export default function BurnCard({
+  selectedTx: currentBurnTx,
+  setSelectedTx: setCurrentBurnTx,
+}: Props) {
   const isClient = useIsClient();
   const [, setTransactions] = useLocalStorage<BurnTx[]>(
     LOCAL_STORAGE_TRANSACTIONS_KEY,
@@ -49,7 +57,6 @@ export default function BurnCard() {
   const { data: fastBurnAllowance, isLoading: fastBurnAllowanceLoading } =
     useFastBurnAllowance();
   const { data: burnLimits, isLoading: burnLimitsLoading } = useBurnLimits();
-  const [currentBurnTx, setCurrentBurnTx] = useState<BurnTx | undefined>();
 
   const [fast, setFast] = useState(false);
   const [recipientAddress, setRecipientAddress] = useState<string>(
@@ -258,27 +265,11 @@ export default function BurnCard() {
     } else if (
       srcChain.isSolana &&
       typeof res === "object" &&
-      "signature" in res
+      "signature" in res &&
+      solanaConnection !== undefined
     ) {
-      let confirmed = false;
-      do {
-        console.log("1", res.signature);
-
-        const tx = await solanaConnection?.getTransaction(res.signature, {
-          commitment: "confirmed",
-          maxSupportedTransactionVersion: 0,
-        });
-
-        console.log("2", tx);
-
-        confirmed = !!tx && tx.blockTime !== null && tx.blockTime !== undefined;
-
-        if (!tx) {
-          await sleep(5000);
-        } else {
-          time = Number(tx.blockTime);
-        }
-      } while (confirmed === false);
+      const tx = await waitForSolanaTx(res.signature, solanaConnection);
+      time = Number(tx.blockTime);
     }
 
     const burnTx: BurnTx = {
@@ -303,6 +294,7 @@ export default function BurnCard() {
     srcChain.domain,
     srcChain.isEVM,
     srcChain.isSolana,
+    setCurrentBurnTx,
   ]);
 
   const onSwitch = () => {

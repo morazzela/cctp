@@ -74,6 +74,7 @@ export function useBurnTxDetails(tx: BurnTx) {
       if (
         !resWithNonceUsed ||
         resWithNonceUsed.isMinted ||
+        resWithNonceUsed.isComplete ||
         !resWithNonceUsed.isFast
       ) {
         return;
@@ -245,8 +246,6 @@ export function useSolanaBurnTxDetails(
 
       const hasMessages = messages !== undefined && messages.length > 0;
 
-      console.log(messages);
-
       if (!hasMessages) {
         return;
       }
@@ -256,8 +255,6 @@ export function useSolanaBurnTxDetails(
       const dstChain = CHAINS.find(
         (c) => c.domain === Number(msg.decodedMessage?.destinationDomain),
       );
-
-      console.log(dstChain);
 
       if (!dstChain) {
         return;
@@ -269,8 +266,6 @@ export function useSolanaBurnTxDetails(
         commitment: "confirmed",
         maxSupportedTransactionVersion: 0,
       });
-
-      console.log(onChainTx);
 
       if (!onChainTx) {
         return;

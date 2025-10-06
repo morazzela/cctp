@@ -2,13 +2,35 @@ import { Chain } from "./types";
 import { CHAINS, SOLANA } from "./constants";
 import { Address, getAddress, isAddress, toBytes, toHex } from "viem";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, VersionedTransactionResponse } from "@solana/web3.js";
 import * as anchor from "@coral-xyz/anchor";
 import { getAssociatedTokenAddress } from "@solana/spl-token";
 import { MessageTransmitter } from "./idls/MessageTransmitter";
 import { TokenMessengerMinter } from "./idls/TokenMessengerMinter";
 import { MessageTransmitterV2 } from "./idls/MessageTransmitterV2";
 import { TokenMessengerMinterV2 } from "./idls/TokenMessengerMinterV2";
+import { Connection } from "@reown/appkit-adapter-solana";
+
+export async function waitForSolanaTx(
+  signature: string,
+  connection: Connection,
+): Promise<VersionedTransactionResponse> {
+  let success = false;
+  let tx: VersionedTransactionResponse | null;
+
+  do {
+    tx = await connection.getTransaction(signature, {
+      commitment: "finalized",
+      maxSupportedTransactionVersion: 0,
+    });
+
+    success = tx !== null;
+
+    await sleep(3_000);
+  } while (success === false);
+
+  return tx as VersionedTransactionResponse;
+}
 
 export function findChainByDomainId(domain: number): Chain {
   const res = CHAINS.find((c) => c.domain === domain);
@@ -108,8 +130,8 @@ export function getChecksumedAddress(
     try {
       const pk = new PublicKey(address);
       return pk.toString();
+      // eslint-disable-next-line
     } catch (err) {
-      console.error(err);
       return null;
     }
   }
