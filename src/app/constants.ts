@@ -87,6 +87,7 @@ export const BASE = createChainFromNetwork(base, {
   usdc: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
   hasV1: true,
   hasV2: true,
+  blockConfirmationsRequired: 3,
 });
 
 export const ARBITRUM = createChainFromNetwork(arbitrum, {

@@ -74,6 +74,7 @@ type CreateChainFromNetworkProps = {
   icon: string;
   hasV1: boolean;
   hasV2: boolean;
+  blockConfirmationsRequired?: number;
 };
 
 export function createChainFromNetwork(

@@ -257,6 +257,7 @@ export default function BurnCard({
     if (srcChain.isEVM) {
       const receipt = await client?.waitForTransactionReceipt({
         hash: res as Hex,
+        confirmations: srcChain?.blockConfirmationsRequired,
       });
       const block = await client?.getBlock({
         blockNumber: receipt?.blockNumber,
@@ -294,6 +295,7 @@ export default function BurnCard({
     srcChain.domain,
     srcChain.isEVM,
     srcChain.isSolana,
+    srcChain.blockConfirmationsRequired,
     setCurrentBurnTx,
   ]);
 

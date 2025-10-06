@@ -5,6 +5,8 @@ export interface Chain {
   isEVM: boolean;
   isSolana: boolean;
 
+  blockConfirmationsRequired?: number;
+
   network: AppKitNetwork;
   namespace: ChainNamespace | undefined;
 

@@ -66,10 +66,10 @@ export default function TxCard({ tx, clearTx }: Props) {
     } else if (data.dstChain.isSolana) {
       await waitForSolanaTx(hash, connection as Connection);
     }
-    await sleep(5_000);
-    await refetchNonceUsed();
     setConfirmationPending(false);
     setClaimed(true);
+    await sleep(5_000);
+    await refetchNonceUsed();
   }, [receive, data, client, connection, refetchNonceUsed]);
 
   useEffect(() => {
