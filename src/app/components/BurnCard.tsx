@@ -542,13 +542,22 @@ export default function BurnCard({
             </div>
           )}
         </div>
+        {isDifferentRecipient && recipientAddressValid && (
+          <div className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-200 border border-orange-500 dark:border-orange-800 rounded-xl px-4 py-3 flex items-center gap-x-3">
+            <InformationCircleIcon className="size-6" />
+            <div>
+              The recipient address does not match the currently connected
+              address.
+            </div>
+          </div>
+        )}
         {!solanaUSDCAccountLoading &&
         needSolanaUSDCAccount &&
         amount > 0n &&
         recipientAddressValid ? (
           <>
-            <div className="bg-red-500 dark:bg-red-950 text-red-50 dark:text-red-100 dark:border-red-500 rounded-xl px-4 py-3 flex items-center gap-x-3">
-              <ExclamationTriangleIcon className="size-6" />
+            <div className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-200 border border-orange-500 dark:border-orange-800 rounded-xl px-4 py-3 flex items-center gap-x-3">
+              <InformationCircleIcon className="size-6" />
               <div>The recipient address must have an active USDC account.</div>
             </div>
             <ConnectGuard chain={SOLANA} mustBeActive>
@@ -569,15 +578,6 @@ export default function BurnCard({
             skip={solanaUSDCAccountLoading}
             mustBeActive
           >
-            {isDifferentRecipient && recipientAddressValid && (
-              <div className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-200 border border-orange-500 dark:border-orange-800 rounded-xl px-4 py-3 flex items-center gap-x-3">
-                <InformationCircleIcon className="size-6" />
-                <div>
-                  The recipient address does not match the currently connected
-                  address.
-                </div>
-              </div>
-            )}
             <ApproveGuard
               tokenAddress={srcChain.usdc}
               amount={amount}

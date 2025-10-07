@@ -5,7 +5,11 @@ import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
 import ChainIcon from "./ui/ChainIcon";
 import { useCallback, useEffect, useState } from "react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import {
+  CheckIcon,
+  ExclamationCircleIcon,
+  XMarkIcon,
+} from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
 import ConnectGuard from "./guard/ConnectGuard";
@@ -27,10 +31,15 @@ export default function TxCard({ tx, clearTx }: Props) {
   const [confirmationPending, setConfirmationPending] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [claiming, setClaiming] = useState(false);
+  const [error, setError] = useState("");
   const client = usePublicClient({
     chainId: (data?.dstChain?.id ?? 1) as number,
   });
   const { connection } = useAppKitConnection();
+
+  useEffect(() => {
+    setError("");
+  }, [tx]);
 
   const onClaim = useCallback(async () => {
     if (
@@ -43,10 +52,11 @@ export default function TxCard({ tx, clearTx }: Props) {
       return;
     }
 
+    setError("");
     setClaiming(true);
 
     const hash = await receive().catch((err: Error) => {
-      console.error(err);
+      setError(err.message);
       setClaiming(false);
     });
 
@@ -184,9 +194,9 @@ export default function TxCard({ tx, clearTx }: Props) {
                       cy={50}
                       r={46}
                       fill="none"
-                      strokeDasharray={!data.isPending ? "" : "100 1000"}
+                      strokeDasharray={data.isMinted ? "" : "100 1000"}
                       strokeWidth={3}
-                      className={`origin-center ${!data.isPending ? "" : "animate-spin"}`}
+                      className={`origin-center ${data.isMinted ? "" : "animate-spin"}`}
                       stroke="currentColor"
                     />
                   </svg>
@@ -213,6 +223,12 @@ export default function TxCard({ tx, clearTx }: Props) {
               </div>
             </div>
             <div className="w-full">
+              {error !== "" && (
+                <div className="mb-4 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-200 border border-red-500 dark:border-red-800 rounded-xl px-4 py-3 flex items-center gap-x-3 overflow-x-auto">
+                  <ExclamationCircleIcon className="size-6" />
+                  <div>{error}</div>
+                </div>
+              )}
               {data.isMinted && !claimed ? (
                 <button
                   onClick={() => clearTx()}
