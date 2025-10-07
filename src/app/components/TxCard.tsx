@@ -5,11 +5,7 @@ import Loader from "./ui/Loader";
 import { USDC_ICON } from "../constants";
 import ChainIcon from "./ui/ChainIcon";
 import { useCallback, useEffect, useState } from "react";
-import {
-  CheckIcon,
-  ExclamationCircleIcon,
-  XMarkIcon,
-} from "@heroicons/react/16/solid";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useReceive } from "../actions/useReceive";
 import { usePublicClient } from "wagmi";
 import ConnectGuard from "./guard/ConnectGuard";
@@ -18,6 +14,7 @@ import {
   useAppKitConnection,
 } from "@reown/appkit-adapter-solana/react";
 import { sleep, waitForSolanaTx } from "../utils";
+import Alert from "./Alert";
 
 type Props = {
   tx: BurnTx;
@@ -223,12 +220,7 @@ export default function TxCard({ tx, clearTx }: Props) {
               </div>
             </div>
             <div className="w-full">
-              {error !== "" && (
-                <div className="mb-4 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-200 border border-red-500 dark:border-red-800 rounded-xl px-4 py-3 flex items-center gap-x-3 overflow-x-auto">
-                  <ExclamationCircleIcon className="size-6" />
-                  <div>{error}</div>
-                </div>
-              )}
+              {error !== "" && <Alert type="error">{error}</Alert>}
               {data.isMinted && !claimed ? (
                 <button
                   onClick={() => clearTx()}

@@ -21,7 +21,6 @@ import {
   ArrowsRightLeftIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  InformationCircleIcon,
 } from "@heroicons/react/16/solid";
 import { useUSDCBalance } from "../hooks/useUSDCBalance";
 import TxCard from "./TxCard";
@@ -32,6 +31,7 @@ import { getChecksumedAddress, shouldUseV1, waitForSolanaTx } from "../utils";
 import { useAppKitConnection } from "@reown/appkit-adapter-solana/react";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { useCreateSolanaUSDCAccount } from "../actions/useCreateSolanaUSDCAccount";
+import Alert from "./Alert";
 
 type Props = {
   selectedTx: BurnTx | undefined;
@@ -543,23 +543,19 @@ export default function BurnCard({
           )}
         </div>
         {isDifferentRecipient && recipientAddressValid && (
-          <div className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-200 border border-orange-500 dark:border-orange-800 rounded-xl px-4 py-3 flex items-center gap-x-3">
-            <InformationCircleIcon className="size-6" />
-            <div>
-              The recipient address does not match the currently connected
-              address.
-            </div>
-          </div>
+          <Alert type="warning">
+            The recipient address does not match the currently connected
+            address.
+          </Alert>
         )}
         {!solanaUSDCAccountLoading &&
         needSolanaUSDCAccount &&
         amount > 0n &&
         recipientAddressValid ? (
           <>
-            <div className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-200 border border-orange-500 dark:border-orange-800 rounded-xl px-4 py-3 flex items-center gap-x-3">
-              <InformationCircleIcon className="size-6" />
-              <div>The recipient address must have an active USDC account.</div>
-            </div>
+            <Alert type="error">
+              The recipient address must have an active USDC account.
+            </Alert>
             <ConnectGuard chain={SOLANA} mustBeActive>
               <button
                 disabled={isCreatingSolanaUSDCAccount}
