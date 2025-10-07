@@ -220,7 +220,20 @@ export default function TxCard({ tx, clearTx }: Props) {
               </div>
             </div>
             <div className="w-full">
-              {error !== "" && <Alert type="error">{error}</Alert>}
+              {error !== "" && (
+                <Alert type="error" className="mb-4">
+                  {error}
+                </Alert>
+              )}
+              {data.isComplete &&
+                !confirmationPending &&
+                data.dstChain?.isSolana && (
+                  <Alert className="mb-4" type="info">
+                    You’ll need to complete two transactions: the first to
+                    create the lookup table, and the second to claim your USDC
+                    on Solana.
+                  </Alert>
+                )}
               {data.isMinted && !claimed ? (
                 <button
                   onClick={() => clearTx()}
@@ -247,7 +260,9 @@ export default function TxCard({ tx, clearTx }: Props) {
                         : !data.isMinted
                           ? claiming
                             ? "Claiming..."
-                            : "Claim"
+                            : data.dstChain?.isSolana
+                              ? "Create Lookup Table & Claim"
+                              : "Claim"
                           : "Claimed !"}
                   </button>
                 </ConnectGuard>
