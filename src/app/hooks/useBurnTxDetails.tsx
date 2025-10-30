@@ -74,13 +74,15 @@ export function useBurnTxDetails(tx: BurnTx) {
       if (
         !resWithNonceUsed ||
         resWithNonceUsed.isMinted ||
-        resWithNonceUsed.isComplete ||
         !resWithNonceUsed.isFast
       ) {
         return;
       }
 
-      if (resWithNonceUsed.time > now - 86400) {
+      if (
+        resWithNonceUsed.time > now - 86400 &&
+        resWithNonceUsed.dstChain?.isEVM
+      ) {
         return;
       }
 

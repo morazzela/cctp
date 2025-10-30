@@ -165,12 +165,6 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       }).compileToV0Message(),
     );
 
-    const simulation = await connection.simulateTransaction(tx);
-
-    if (simulation.value.err !== null) {
-      throw new Error(simulation.value.err.toString());
-    }
-
     const slot = await connection.getSlot();
 
     const [createIx, lookupTableAddress] =
@@ -203,8 +197,7 @@ export function useSolanaReceive(data?: UseBurnTxDetailsType) {
       await connection.getAddressLookupTable(lookupTableAddress);
 
     if (!lookupTableAccount) {
-      txs.push(tx);
-      return txs;
+      throw new Error("Unable to find lookup table on-chain.");
     }
 
     tx = new VersionedTransaction(
