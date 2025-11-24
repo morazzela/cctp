@@ -16,6 +16,7 @@ import {
   sei,
   plumeMainnet,
   ink,
+  monad,
 } from "@reown/appkit/networks";
 import { hyperevm, xdc } from "./app/chains";
 
@@ -39,6 +40,7 @@ const evmNetworks: [any, ...any[]] = [
   xdc,
   plumeMainnet,
   ink,
+  monad,
 ];
 
 // eslint-disable-next-line
