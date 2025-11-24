@@ -17,7 +17,7 @@ import { ConnectionProvider } from "@solana/wallet-adapter-react";
 const queryClient = new QueryClient();
 
 const metadata = {
-  name: "CCTP V2 Bridge",
+  name: "CCTP Bridge",
   description: "Move your USDC instantly with zero added fees.",
   url: "https://cctp.to/", // origin must match your domain & subdomain
   icons: ["https://cctp.to/images/icon.ico"],
