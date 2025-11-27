@@ -246,7 +246,8 @@ export const PLUME = createChainFromNetwork(plumeMainnet, {
 export const INK = createChainFromNetwork(ink, {
   domain: 21,
   icon: "/images/chains/ink.svg",
-  standardETA: 10,
+  standardETA: 60 * 20,
+  fastETA: 8,
   tokenMessengerV2: "0x28b5a0e9C621a5BadaA536219b3a228C8168cf5d",
   messageTransmitterV2: "0x81D40F21F12A8F0E3252Bccb954D722d4c464B64",
   tokenMinterV2: "0xfd78EE919681417d192449715b2594ab58f5D002",
